@@ -1,0 +1,31 @@
+/**
+ * Known logo URLs for popular tokens
+ * Used as fallback when API doesn't return logos
+ */
+
+// Known logo URLs for popular tokens
+// These are fallbacks - Jupiter's token list API will be used first
+const POPULAR_TOKEN_LOGOS: Record<string, string> = {
+  // Major tokens with guaranteed logos
+  'So11111111111111111111111111111111111111112': 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png',
+  'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v': 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png', // USDC
+  'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB': 'https://coin-images.coingecko.com/coins/images/325/large/Tether.png?1696501661', // USDT
+  'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263': 'https://coin-images.coingecko.com/coins/images/28600/large/bonk.jpg?1696527587', // BONK
+  'EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm': 'https://coin-images.coingecko.com/coins/images/33566/large/dogwifhat.jpg?1702499428', // WIF
+  '4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R': 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R/logo.png', // RAY
+  'HZ1JovNiVvGrGNiiYvEozEVgZ58xaU3RKwX8eACQBCt3': 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/HZ1JovNiVvGrGNiiYvEozEVgZ58xaU3RKwX8eACQBCt3/logo.png', // PYTH
+  'J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn': 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn/logo.png', // JitoSOL
+  
+  // Pump.fun tokens (these APIs are more reliable for pump tokens)
+  'a3W4qutoEJA4232T2gwZUfgYJTetr96pU4SJMwppump': 'https://pumpapi.fun/api/token/a3W4qutoEJA4232T2gwZUfgYJTetr96pU4SJMwppump/image', // WhiteWhale
+  '8Jx8AAHj86wbQgUTjGuj6GTTL5Ps3cqxKRTvpaJApump': 'https://pumpapi.fun/api/token/8Jx8AAHj86wbQgUTjGuj6GTTL5Ps3cqxKRTvpaJApump/image', // PENGUIN
+  'Cm6fNnMk7NfzStP9CZpsQA2v3jjzbcYGAxdJySmHpump': 'https://pumpapi.fun/api/token/Cm6fNnMk7NfzStP9CZpsQA2v3jjzbcYGAxdJySmHpump/image', // BUTT
+  'BwTu5zJqEyLYawwYoGTWT7UxC85eLYQWRcta1GiEbonk': 'https://pumpapi.fun/api/token/BwTu5zJqEyLYawwYoGTWT7UxC85eLYQWRcta1GiEbonk/image', // URA (Uranus)
+};
+
+/**
+ * Get known logo URL for a token address
+ */
+export function getKnownTokenLogo(address: string): string | undefined {
+  return POPULAR_TOKEN_LOGOS[address] || POPULAR_TOKEN_LOGOS[address.toLowerCase()];
+}
