@@ -43,7 +43,12 @@ ls tests/
 Install pytest and other testing dependencies:
 
 ```bash
-pip3 install pytest pytest-mock requests
+pip3 install --break-system-packages pytest pytest-mock requests
+```
+
+**Note:** On macOS with Homebrew Python, you may need the `--break-system-packages` flag. If you get permission errors, try:
+```bash
+pip3 install --user pytest pytest-mock requests
 ```
 
 **What this installs:**
