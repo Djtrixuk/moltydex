@@ -13,7 +13,23 @@ import requests
 examples_dir = Path(__file__).parent.parent / "examples"
 sys.path.insert(0, str(examples_dir))
 
-from x402_integration_example import X402PaymentHandler
+# Mock solana imports before loading module (for unit tests)
+sys.modules['solana'] = MagicMock()
+sys.modules['solana.rpc'] = MagicMock()
+sys.modules['solana.rpc.api'] = MagicMock()
+sys.modules['solders'] = MagicMock()
+sys.modules['solders.keypair'] = MagicMock()
+sys.modules['solders.transaction'] = MagicMock()
+
+# Import module with hyphen in filename using importlib
+import importlib.util
+spec = importlib.util.spec_from_file_location(
+    "x402_integration_example",
+    examples_dir / "x402-integration-example.py"
+)
+x402_module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(x402_module)
+X402PaymentHandler = x402_module.X402PaymentHandler
 
 
 class TestX402PaymentHandler:
@@ -22,10 +38,13 @@ class TestX402PaymentHandler:
     @pytest.fixture
     def handler(self):
         """Create handler instance with mocked wallet"""
+        mock_keypair = MagicMock()
+        mock_keypair.pubkey.return_value = MagicMock()
+        mock_keypair.pubkey.return_value.__str__ = lambda x: 'test_wallet_address'
+        
         with patch('builtins.open'), \
              patch('json.load', return_value={'secret_key': 'test_key'}), \
-             patch('solders.keypair.Keypair.from_base58_string'), \
-             patch('str', return_value='test_wallet_address'):
+             patch('solders.keypair.Keypair.from_base58_string', return_value=mock_keypair):
             handler = X402PaymentHandler("wallet.json")
             handler.wallet_address = "test_wallet_address"
             return handler
