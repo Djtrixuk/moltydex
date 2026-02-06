@@ -68,21 +68,35 @@ async function main() {
     console.log('\n💰 Testing Fee Calculation...\n');
     const quote = await testFeeInQuote();
     
-    if (quote.fee_amount) {
+    // Check for fee in different response formats
+    const feeAmount = quote.fee_amount || quote.fee_breakdown?.aggregator_fee?.amount;
+    const outputAfterFee = quote.output_after_fee || quote.output_amount;
+    
+    if (feeAmount || quote.fee_breakdown) {
       console.log('✅ Fees are being calculated:');
       console.log(`   Input: ${quote.input_amount} lamports`);
       console.log(`   Output: ${quote.output_amount} lamports`);
-      console.log(`   Fee Amount: ${quote.fee_amount} lamports`);
-      console.log(`   Output After Fee: ${quote.output_after_fee} lamports`);
       
-      const feePercent = (BigInt(quote.fee_amount) * 10000n) / BigInt(quote.output_amount);
-      console.log(`   Fee Percentage: ${Number(feePercent) / 100}%`);
+      if (quote.fee_breakdown?.aggregator_fee) {
+        const fee = quote.fee_breakdown.aggregator_fee;
+        console.log(`   Fee: ${fee.amount} lamports (${fee.percentage})`);
+        console.log(`   Output After Fee: ${quote.output_after_fee} lamports`);
+      } else if (feeAmount) {
+        console.log(`   Fee Amount: ${feeAmount} lamports`);
+        console.log(`   Output After Fee: ${outputAfterFee} lamports`);
+        const feePercent = (BigInt(feeAmount) * 10000n) / BigInt(quote.output_amount);
+        console.log(`   Fee Percentage: ${Number(feePercent) / 100}%`);
+      }
       
       if (!health.fee_wallet_configured) {
         console.log('\n⚠️  NOTE: Fees are calculated but NOT collected because FEE_WALLET is not set.');
+        console.log(`   Set FEE_WALLET=ATYWjod5jkQm5RxrC65irY8e97UUY42LFM45ZGuNK3JL in Vercel`);
+      } else {
+        console.log('\n✅ Fee collection is ENABLED! Fees will be sent to your wallet.');
       }
     } else {
-      console.log('❌ Fee amount not found in quote response');
+      console.log('❌ Fee information not found in quote response');
+      console.log('   Response keys:', Object.keys(quote).join(', '));
     }
     
   } catch (err) {
