@@ -187,53 +187,104 @@ export default function Home() {
                 </div>
               </header>
 
-              {/* x402 Payment Handler Section */}
-              <section className="mb-8 md:mb-12 px-4">
-                <div className="max-w-4xl mx-auto bg-gradient-to-r from-blue-900/30 to-purple-900/30 rounded-lg p-6 md:p-8 border border-blue-500/30">
-                  <h2 className="text-2xl md:text-3xl font-bold mb-4 text-center">
-                    Automatic x402 Payment Handler
-                  </h2>
-                  <p className="text-gray-300 mb-6 text-center max-w-2xl mx-auto">
-                    The <strong className="text-white">only x402 payment handler</strong> with automatic token swapping. 
-                    Your AI agents can pay for APIs automatically, even when they don't have the exact token required.
-                  </p>
-                  <div className="grid md:grid-cols-3 gap-4 mb-6">
-                    <div className="text-center">
-                      <div className="text-2xl mb-2">🔄</div>
-                      <h3 className="font-semibold mb-1">Automatic Swapping</h3>
-                      <p className="text-sm text-gray-400">Swaps any token → required token automatically</p>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl mb-2">⚡</div>
-                      <h3 className="font-semibold mb-1">Zero Friction</h3>
-                      <p className="text-sm text-gray-400">No manual steps, no pre-swapping needed</p>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl mb-2">💰</div>
-                      <h3 className="font-semibold mb-1">Zero Fees</h3>
-                      <p className="text-sm text-gray-400">0% platform fees, completely free</p>
-                    </div>
-                  </div>
-                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                    <Link
-                      href="/x402-payments"
-                      className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors text-center"
-                    >
-                      Learn About x402 Payments
-                    </Link>
-                    <Link
-                      href="/developers"
-                      className="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-lg font-semibold transition-colors text-center"
-                    >
-                      View Integration Guide
-                    </Link>
-                  </div>
-                </div>
-              </section>
-
               {/* Main Swap Interface */}
               <section aria-label="Token Swap Interface">
                 <EnhancedSwapInterface />
+              </section>
+
+              {/* x402 Payment Handler Section - Redesigned */}
+              <section className="mt-8 md:mt-12 px-4">
+                <div className="max-w-5xl mx-auto relative">
+                  {/* Modern Card with Glass Effect */}
+                  <div className="relative bg-gradient-to-br from-blue-950/40 via-purple-950/40 to-indigo-950/40 rounded-2xl p-8 md:p-10 border border-blue-500/20 backdrop-blur-sm shadow-2xl overflow-hidden">
+                    {/* Subtle Background Pattern */}
+                    <div className="absolute inset-0 opacity-5">
+                      <div className="absolute inset-0" style={{
+                        backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
+                        backgroundSize: '40px 40px'
+                      }}></div>
+                    </div>
+                    
+                    {/* Content */}
+                    <div className="relative z-10">
+                      {/* Header */}
+                      <div className="text-center mb-8">
+                        <h2 className="text-3xl md:text-4xl font-bold mb-3 bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent">
+                          Automatic x402 Payment Handler
+                        </h2>
+                        <p className="text-gray-300 text-lg max-w-2xl mx-auto leading-relaxed">
+                          The <strong className="text-white font-semibold">only x402 payment handler</strong> with automatic token swapping. 
+                          Your AI agents can pay for APIs automatically, even when they don't have the exact token required.
+                        </p>
+                      </div>
+
+                      {/* Features Grid */}
+                      <div className="grid md:grid-cols-3 gap-6 mb-8">
+                        <div className="group relative bg-gray-900/40 rounded-xl p-6 border border-gray-800/50 hover:border-blue-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/20">
+                          <div className="flex flex-col items-center text-center">
+                            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500/20 to-cyan-500/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                              <svg className="w-7 h-7 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                              </svg>
+                            </div>
+                            <h3 className="font-semibold text-white mb-2 text-lg">Automatic Swapping</h3>
+                            <p className="text-sm text-gray-400 leading-relaxed">Swaps any token → required token automatically</p>
+                          </div>
+                        </div>
+                        
+                        <div className="group relative bg-gray-900/40 rounded-xl p-6 border border-gray-800/50 hover:border-purple-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20">
+                          <div className="flex flex-col items-center text-center">
+                            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                              <svg className="w-7 h-7 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                              </svg>
+                            </div>
+                            <h3 className="font-semibold text-white mb-2 text-lg">Zero Friction</h3>
+                            <p className="text-sm text-gray-400 leading-relaxed">No manual steps, no pre-swapping needed</p>
+                          </div>
+                        </div>
+                        
+                        <div className="group relative bg-gray-900/40 rounded-xl p-6 border border-gray-800/50 hover:border-green-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-green-500/20">
+                          <div className="flex flex-col items-center text-center">
+                            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-green-500/20 to-emerald-500/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                              <svg className="w-7 h-7 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                            </div>
+                            <h3 className="font-semibold text-white mb-2 text-lg">Zero Fees</h3>
+                            <p className="text-sm text-gray-400 leading-relaxed">0% platform fees, completely free</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* CTA Buttons */}
+                      <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                        <Link
+                          href="/x402-payments"
+                          className="group relative px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white rounded-xl font-semibold transition-all duration-300 text-center shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-950"
+                        >
+                          <span className="relative z-10 flex items-center justify-center gap-2">
+                            Learn About x402 Payments
+                            <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                            </svg>
+                          </span>
+                        </Link>
+                        <Link
+                          href="/developers"
+                          className="group px-8 py-4 bg-gray-800/80 hover:bg-gray-700/80 text-white rounded-xl font-semibold transition-all duration-300 text-center border border-gray-700/50 hover:border-gray-600/50 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-950"
+                        >
+                          <span className="flex items-center justify-center gap-2">
+                            View Integration Guide
+                            <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                            </svg>
+                          </span>
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </section>
 
               {/* Footer Info */}
