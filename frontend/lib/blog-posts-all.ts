@@ -142,32 +142,6 @@ export const blogPosts: BlogPost[] = [
   
   // Original Posts (to be optimized)
   {
-    slug: 'getting-started-with-moltydex-in-5-minutes',
-    title: 'Getting Started with MoltyDEX in 5 Minutes',
-    description: 'The fastest way to add automatic x402 payment handling to your AI agent. Quick start guide for TypeScript, JavaScript, and Python.',
-    keywords: ['MoltyDEX', 'getting started', 'x402', 'quick start', 'Solana'],
-    author: 'MoltyDEX Team',
-    date: '2026-02-08',
-    category: 'Getting Started',
-    tags: ['x402', 'getting-started'],
-    canonical: 'https://moltydex.com/blog/getting-started-with-moltydex-in-5-minutes',
-    content: '', // Will be loaded from markdown files
-    optimized: false,
-  },
-  {
-    slug: 'how-to-integrate-moltydex-with-your-agent',
-    title: 'How to Integrate MoltyDEX with Your AI Agent',
-    description: 'Complete guide to integrating MoltyDEX for automatic token swapping in your AI agent.',
-    keywords: ['MoltyDEX', 'integration', 'AI agent', 'x402'],
-    author: 'MoltyDEX Team',
-    date: '2026-02-08',
-    category: 'Integration',
-    tags: ['x402', 'integration'],
-    canonical: 'https://moltydex.com/blog/how-to-integrate-moltydex-with-your-agent',
-    content: '', // Will be loaded from markdown files
-    optimized: false,
-  },
-  {
     slug: 'how-to-build-x402-agent',
     title: 'How to Build an AI Agent That Pays for APIs Automatically',
     description: 'Complete guide to building AI agents that handle x402 payments with automatic token swapping.',
@@ -220,32 +194,6 @@ export const blogPosts: BlogPost[] = [
     optimized: false,
   },
   {
-    slug: 'understanding-x402-protocol-for-developers',
-    title: 'Understanding x402 Protocol for Developers',
-    description: 'Complete guide to x402 Payment Required protocol for API developers and agent builders.',
-    keywords: ['x402', 'protocol', 'developers', 'payments'],
-    author: 'MoltyDEX Team',
-    date: '2026-02-08',
-    category: 'Technical',
-    tags: ['x402', 'protocol'],
-    canonical: 'https://moltydex.com/blog/understanding-x402-protocol-for-developers',
-    content: '', // Will be loaded from markdown files
-    optimized: false,
-  },
-  {
-    slug: 'solana-x402-payment-best-practices',
-    title: 'Solana x402 Payment Best Practices for AI Agents',
-    description: 'Complete guide to implementing reliable x402 payments on Solana.',
-    keywords: ['Solana', 'x402', 'best practices', 'payments'],
-    author: 'MoltyDEX Team',
-    date: '2026-02-08',
-    category: 'Best Practices',
-    tags: ['Solana', 'x402'],
-    canonical: 'https://moltydex.com/blog/solana-x402-payment-best-practices',
-    content: '', // Will be loaded from markdown files
-    optimized: false,
-  },
-  {
     slug: 'the-complete-guide-to-x402-payments-on-solana',
     title: 'The Complete Guide to x402 Payments on Solana',
     description: 'Everything you need to know about implementing x402 payments for AI agents on Solana.',
@@ -255,19 +203,6 @@ export const blogPosts: BlogPost[] = [
     category: 'Guide',
     tags: ['x402', 'Solana'],
     canonical: 'https://moltydex.com/blog/the-complete-guide-to-x402-payments-on-solana',
-    content: '', // Will be loaded from markdown files
-    optimized: false,
-  },
-  {
-    slug: 'the-future-of-agent-payments',
-    title: 'The Future of Agent Payments: Why x402 + Automatic Swapping Changes Everything',
-    description: 'How x402 payments and automatic token swapping will transform AI agent capabilities.',
-    keywords: ['future', 'agent payments', 'x402', 'automation'],
-    author: 'MoltyDEX Team',
-    date: '2026-02-08',
-    category: 'Future',
-    tags: ['future', 'x402'],
-    canonical: 'https://moltydex.com/blog/the-future-of-agent-payments',
     content: '', // Will be loaded from markdown files
     optimized: false,
   },
