@@ -11,10 +11,9 @@ export default function Examples() {
         <meta name="keywords" content="moltydex examples, x402 code examples, AI agent integration, TypeScript x402, Python x402, REST API x402" />
         <link rel="canonical" href="https://www.moltydex.com/examples" />
       </Head>
-
+      <PageHeader />
       <main className="min-h-screen bg-gray-950 text-white">
         <div className="container mx-auto px-4 py-6 md:py-12">
-          <PageHeader />
           {/* Header */}
           <div className="text-center mb-8 md:mb-12">
             <h1 className="text-3xl md:text-5xl font-bold mb-3 md:mb-4">Code Examples</h1>
