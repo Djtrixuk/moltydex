@@ -30,21 +30,8 @@ export default function Whitepaper() {
               Comprehensive documentation of MoltyDEX - x402 Token Aggregator for AI Agents on Solana
             </p>
           </header>
-          <h1 className="text-5xl font-bold text-white mb-2">MoltyDEX Whitepaper</h1>
-          <h2 className="text-xl text-gray-300">
-            x402 Token Aggregator for AI Agents on Solana
-          </h2>
-          <p className="text-sm text-gray-400 mt-2">
-            Version 1.0 • February 2026
-          </p>
-          <p className="text-base text-gray-400 mt-4 max-w-3xl">
-            Comprehensive documentation of MoltyDEX architecture, API design, x402 protocol integration, 
-            and agent-specific features. Learn how MoltyDEX enables AI agents to swap tokens, make payments, 
-            and interact with the Solana blockchain programmatically.
-          </p>
-        </header>
 
-        {/* Content */}
+          {/* Content */}
         <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-2xl text-gray-100 space-y-8">
           
           {/* Executive Summary */}
