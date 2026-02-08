@@ -41,6 +41,7 @@ Thumbs.db
 !package.json
 !tsconfig.json
 !next.config.js
+!vercel.json
 id.json
 wallet.json
 keypair.json
