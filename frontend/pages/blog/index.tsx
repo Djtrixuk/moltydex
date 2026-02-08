@@ -45,152 +45,161 @@ export default function BlogIndex() {
         subtitle="Your resource for x402 payments, automatic token swapping, and AI agent automation"
       />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Categories */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold mb-4">Categories</h2>
-          <div className="flex flex-wrap gap-2">
-            {categories.map(category => (
-              <span
-                key={category}
-                className="px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-lg text-sm"
-              >
-                {category}
-              </span>
-            ))}
+      <main className="min-h-screen bg-gray-950">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+          {/* Categories */}
+          <div className="mb-10">
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-6">Categories</h2>
+            <div className="flex flex-wrap gap-3">
+              {categories.map(category => (
+                <span
+                  key={category}
+                  className="px-4 py-2 bg-gray-800/60 hover:bg-gray-800 border border-gray-700/50 rounded-lg text-sm text-gray-300 hover:text-white transition-colors cursor-pointer"
+                >
+                  {category}
+                </span>
+              ))}
+            </div>
           </div>
-        </div>
 
-        {/* Featured Articles */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-bold mb-6">Featured Articles</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {blogPosts.slice(0, 3).map(post => (
-              <Link
-                key={post.slug}
-                href={`/blog/${post.slug}`}
-                className="block p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition"
-              >
-                <div className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-                  {post.category} • {new Date(post.date).toLocaleDateString()}
-                </div>
-                <h3 className="text-xl font-semibold mb-2">{post.title}</h3>
-                <p className="text-gray-600 dark:text-gray-300 text-sm line-clamp-3">
-                  {post.description}
-                </p>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {post.tags.slice(0, 3).map(tag => (
-                    <span
-                      key={tag}
-                      className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded text-xs"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </Link>
-            ))}
+          {/* Featured Articles */}
+          <div className="mb-12">
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-8">Featured Articles</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {blogPosts.slice(0, 3).map(post => (
+                <Link
+                  key={post.slug}
+                  href={`/blog/${post.slug}`}
+                  className="group block p-6 bg-gradient-to-br from-gray-900/80 to-gray-800/80 rounded-xl border border-gray-700/50 hover:border-blue-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/10"
+                >
+                  <div className="text-xs text-gray-400 mb-3 font-medium">
+                    {post.category} • {new Date(post.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  </div>
+                  <h3 className="text-lg font-bold text-white mb-3 group-hover:text-blue-400 transition-colors leading-tight line-clamp-2">
+                    {post.title}
+                  </h3>
+                  <p className="text-sm text-gray-400 leading-relaxed mb-4 line-clamp-3">
+                    {post.description}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {post.tags.slice(0, 3).map(tag => (
+                      <span
+                        key={tag}
+                        className="px-2.5 py-1 bg-blue-500/20 text-blue-400 rounded-md text-xs font-medium border border-blue-500/30"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </Link>
+              ))}
+            </div>
           </div>
-        </div>
 
-        {/* All Articles */}
-        <div>
-          <h2 className="text-2xl font-bold mb-6">All Articles</h2>
-          <div className="space-y-6">
-            {blogPosts.map(post => (
-              <Link
-                key={post.slug}
-                href={`/blog/${post.slug}`}
-                className="block p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition"
-              >
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <span className="text-sm text-gray-500 dark:text-gray-400">
-                        {post.category}
-                      </span>
-                      <span className="text-gray-400">•</span>
-                      <span className="text-sm text-gray-500 dark:text-gray-400">
-                        {new Date(post.date).toLocaleDateString()}
-                      </span>
-                    </div>
-                    <h3 className="text-xl font-semibold mb-2">{post.title}</h3>
-                    <p className="text-gray-600 dark:text-gray-300">
-                      {post.description}
-                    </p>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {post.tags.map(tag => (
-                        <span
-                          key={tag}
-                          className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-xs"
-                        >
-                          {tag}
+          {/* All Articles */}
+          <div>
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-8">All Articles</h2>
+            <div className="space-y-4">
+              {blogPosts.map(post => (
+                <Link
+                  key={post.slug}
+                  href={`/blog/${post.slug}`}
+                  className="group block p-6 bg-gradient-to-br from-gray-900/60 to-gray-800/60 rounded-xl border border-gray-700/30 hover:border-blue-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/5"
+                >
+                  <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="text-xs text-gray-400 font-medium">
+                          {post.category}
                         </span>
-                      ))}
+                        <span className="text-gray-600">•</span>
+                        <span className="text-xs text-gray-400">
+                          {new Date(post.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </span>
+                      </div>
+                      <h3 className="text-xl font-bold text-white mb-3 group-hover:text-blue-400 transition-colors leading-tight">
+                        {post.title}
+                      </h3>
+                      <p className="text-base text-gray-400 leading-relaxed mb-4">
+                        {post.description}
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {post.tags.map(tag => (
+                          <span
+                            key={tag}
+                            className="px-2.5 py-1 bg-gray-800/60 text-gray-300 rounded-md text-xs font-medium border border-gray-700/50"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="flex items-center text-blue-400 group-hover:text-blue-300 font-semibold text-sm transition-colors whitespace-nowrap">
+                      Read more
+                      <svg className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                      </svg>
                     </div>
                   </div>
-                  <div className="text-blue-600 dark:text-blue-400 font-medium">
-                    Read more →
-                  </div>
-                </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Topics Section */}
+          <div className="mt-16 pt-12 border-t border-gray-800">
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-8">Explore Topics</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="p-5 bg-gray-900/40 rounded-xl border border-gray-800/50">
+                <h3 className="font-bold text-white mb-2 text-lg">x402 Protocol</h3>
+                <p className="text-sm text-gray-400 leading-relaxed">
+                  Learn about the x402 payment protocol and how to implement it.
+                </p>
+              </div>
+              <div className="p-5 bg-gray-900/40 rounded-xl border border-gray-800/50">
+                <h3 className="font-bold text-white mb-2 text-lg">Token Swapping</h3>
+                <p className="text-sm text-gray-400 leading-relaxed">
+                  Discover automatic token swapping and why it's essential.
+                </p>
+              </div>
+              <div className="p-5 bg-gray-900/40 rounded-xl border border-gray-800/50">
+                <h3 className="font-bold text-white mb-2 text-lg">Agent Automation</h3>
+                <p className="text-sm text-gray-400 leading-relaxed">
+                  Learn how to build reliable AI agents that handle payments automatically.
+                </p>
+              </div>
+              <div className="p-5 bg-gray-900/40 rounded-xl border border-gray-800/50">
+                <h3 className="font-bold text-white mb-2 text-lg">Solana & DeFi</h3>
+                <p className="text-sm text-gray-400 leading-relaxed">
+                  Explore Solana blockchain and DeFi concepts relevant to agent payments.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* CTA */}
+          <div className="mt-16 p-8 md:p-10 bg-gradient-to-r from-blue-950/40 via-purple-950/40 to-indigo-950/40 rounded-2xl border border-blue-500/20 text-center">
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">Start Building</h2>
+            <p className="text-base text-gray-300 mb-8 max-w-2xl mx-auto">
+              Ready to implement automatic token swapping in your agents?
+            </p>
+            <div className="flex flex-wrap justify-center gap-4">
+              <Link
+                href="/developers"
+                className="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 hover:scale-105"
+              >
+                Get Started
               </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* Topics Section */}
-        <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
-          <h2 className="text-2xl font-bold mb-6">Topics</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div>
-              <h3 className="font-semibold mb-2">x402 Protocol</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Learn about the x402 payment protocol and how to implement it.
-              </p>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-2">Token Swapping</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Discover automatic token swapping and why it's essential.
-              </p>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-2">Agent Automation</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Learn how to build reliable AI agents that handle payments automatically.
-              </p>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-2">Solana & DeFi</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Explore Solana blockchain and DeFi concepts relevant to agent payments.
-              </p>
+              <Link
+                href="/examples"
+                className="px-6 py-3 bg-gray-800/80 hover:bg-gray-700/80 text-white rounded-xl font-semibold transition-all duration-300 border border-gray-700/50 hover:border-gray-600/50 hover:scale-105"
+              >
+                View Examples
+              </Link>
             </div>
           </div>
         </div>
-
-        {/* CTA */}
-        <div className="mt-12 p-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-center">
-          <h2 className="text-2xl font-bold mb-4">Start Building</h2>
-          <p className="text-gray-600 dark:text-gray-300 mb-6">
-            Ready to implement automatic token swapping in your agents?
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Link
-              href="/developers"
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-            >
-              Get Started
-            </Link>
-            <Link
-              href="/examples"
-              className="px-6 py-3 bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 border border-blue-600 dark:border-blue-400 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition"
-            >
-              View Examples
-            </Link>
-          </div>
-        </div>
-      </div>
+      </main>
     </>
   );
 }
