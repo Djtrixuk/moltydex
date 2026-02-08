@@ -7,7 +7,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useState, useEffect, useMemo } from 'react';
-import { blogPosts, getAllCategories, getAllTags, getBlogPostsByCategory } from '../../lib/blog-posts';
+import { blogPosts, getAllCategories, getAllTags, getBlogPostsByCategory, getBlogPostsByTag } from '../../lib/blog-posts';
 import PageHeader from '../../components/PageHeader';
 import { BreadcrumbStructuredData } from '../../components/StructuredData';
 
@@ -31,15 +31,29 @@ export default function BlogIndex() {
     }
   }, [categoryFromQuery]);
 
-  // Filter posts based on selected category
+  // Filter posts based on selected category or tag
   const filteredPosts = useMemo(() => {
     if (!selectedCategory) {
       return blogPosts;
     }
+    // Special handling for "x402" - filter by tag instead of category
+    if (selectedCategory === 'x402') {
+      return getBlogPostsByTag('x402');
+    }
     return getBlogPostsByCategory(selectedCategory);
   }, [selectedCategory]);
 
-  // Handle category click
+  // Combine categories with special tag-based filters
+  const filterOptions = useMemo(() => {
+    const categoryList = [...categories];
+    // Add "x402" as a special filter option at the beginning
+    if (!categoryList.includes('x402')) {
+      categoryList.unshift('x402');
+    }
+    return categoryList;
+  }, [categories]);
+
+  // Handle category/tag click
   const handleCategoryClick = (category: string) => {
     if (selectedCategory === category) {
       // Deselect if clicking the same category
@@ -103,8 +117,9 @@ export default function BlogIndex() {
               )}
             </div>
             <div className="flex flex-wrap gap-3">
-              {categories.map(category => {
+              {filterOptions.map(category => {
                 const isActive = selectedCategory === category;
+                const isX402 = category === 'x402';
                 return (
                   <button
                     key={category}
@@ -112,10 +127,12 @@ export default function BlogIndex() {
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                       isActive
                         ? 'bg-blue-600 text-white border-2 border-blue-500 shadow-lg shadow-blue-500/30'
+                        : isX402
+                        ? 'bg-purple-800/60 hover:bg-purple-800 border border-purple-700/50 text-purple-300 hover:text-purple-200 hover:border-purple-600'
                         : 'bg-gray-800/60 hover:bg-gray-800 border border-gray-700/50 text-gray-300 hover:text-white hover:border-gray-600'
                     }`}
                   >
-                    {category}
+                    {category === 'x402' ? 'x402' : category}
                     {isActive && (
                       <span className="ml-2 text-xs">✓</span>
                     )}
@@ -125,7 +142,8 @@ export default function BlogIndex() {
             </div>
             {selectedCategory && (
               <div className="mt-4 text-sm text-gray-400">
-                Showing {filteredPosts.length} {filteredPosts.length === 1 ? 'post' : 'posts'} in <span className="text-blue-400 font-semibold">{selectedCategory}</span>
+                Showing {filteredPosts.length} {filteredPosts.length === 1 ? 'post' : 'posts'} 
+                {selectedCategory === 'x402' ? ' tagged with' : ' in'} <span className="text-blue-400 font-semibold">{selectedCategory}</span>
               </div>
             )}
           </div>
