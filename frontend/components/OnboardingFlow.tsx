@@ -56,7 +56,7 @@ export default function OnboardingFlow() {
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
 
   const handleStepComplete = (stepIndex: number) => {
-    setCompletedSteps(new Set([...completedSteps, stepIndex]));
+    setCompletedSteps(new Set(Array.from(completedSteps).concat([stepIndex])));
     if (stepIndex < steps.length - 1) {
       setCurrentStep(stepIndex + 1);
     }

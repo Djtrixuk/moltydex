@@ -1,0 +1,56 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+target/
+*.solana/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Wallet files (NEVER commit these!)
+*.json
+!package.json
+!tsconfig.json
+!next.config.js
+id.json
+wallet.json
+keypair.json
+
+# Swap tracking data (contains user data)
+data/
+!data/.gitkeep
+.discord-bot-token
+venv/
+
+# Scripts with sensitive API keys
+update-jupiter-key.sh
+UPDATE_JUPITER_KEY.sh
