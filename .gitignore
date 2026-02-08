@@ -55,3 +55,5 @@ venv/
 # Scripts with sensitive API keys
 update-jupiter-key.sh
 UPDATE_JUPITER_KEY.sh
+.vercel
+.env*.local

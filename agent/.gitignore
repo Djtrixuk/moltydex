@@ -1,0 +1,8 @@
+node_modules/
+dist/
+*.log
+.env
+.env.local
+wallet.json
+*.key
+.DS_Store

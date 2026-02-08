@@ -28,76 +28,69 @@ export default function APIProviders() {
       </Head>
       <PageHeader />
       <main className="min-h-screen bg-gray-950 text-white">
-        <div className="container mx-auto px-4 py-6 md:py-12 max-w-4xl">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
           {/* Header */}
-          <div className="text-center mb-8 md:mb-12">
-            <h1 className="text-3xl md:text-5xl font-bold mb-3 md:mb-4">For API Providers</h1>
-            <p className="text-base md:text-xl text-gray-300 max-w-3xl mx-auto px-4">
+          <div className="text-center mb-10 md:mb-12">
+            <h1 className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent">
+              For API Providers
+            </h1>
+            <p className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto">
               Get paid automatically for your API with x402 protocol. Higher conversion, instant payments, zero manual processing.
             </p>
           </div>
 
           {/* Value Proposition */}
           <section className="mb-12">
-            <h2 className="text-3xl font-bold mb-4">Why x402 + MoltyDEX?</h2>
-            <div className="grid md:grid-cols-2 gap-4 mb-6">
-              <div className="bg-white/5 rounded-lg p-6">
-                <h3 className="text-xl font-semibold mb-2">💰 Automatic Payments</h3>
-                <p className="text-gray-300">
-                  Agents pay automatically. No manual payment processing needed.
-                </p>
-              </div>
-              <div className="bg-white/5 rounded-lg p-6">
-                <h3 className="text-xl font-semibold mb-2">🔄 Any Token</h3>
-                <p className="text-gray-300">
-                  Accept any Solana token. Agents swap automatically if needed.
-                </p>
-              </div>
-              <div className="bg-white/5 rounded-lg p-6">
-                <h3 className="text-xl font-semibold mb-2">⚡ Seamless Integration</h3>
-                <p className="text-gray-300">
-                  Just return 402 with payment requirements. That's it.
-                </p>
-              </div>
-              <div className="bg-white/5 rounded-lg p-6">
-                <h3 className="text-xl font-semibold mb-2">📈 Higher Adoption</h3>
-                <p className="text-gray-300">
-                  Agents can use your API without manual payment steps.
-                </p>
-              </div>
+            <h2 className="text-2xl md:text-3xl font-bold mb-8 text-white">Why x402 + MoltyDEX?</h2>
+            <div className="grid md:grid-cols-2 gap-6">
+              {[
+                { icon: '💰', title: 'Automatic Payments', desc: 'Agents pay automatically. No manual payment processing needed.' },
+                { icon: '🔄', title: 'Any Token', desc: 'Accept any Solana token. Agents swap automatically if needed.' },
+                { icon: '⚡', title: 'Seamless Integration', desc: 'Just return 402 with payment requirements. That\'s it.' },
+                { icon: '📈', title: 'Higher Adoption', desc: 'Agents can use your API without manual payment steps.' }
+              ].map((item, idx) => (
+                <div key={idx} className="group bg-gradient-to-br from-gray-900/80 to-gray-800/80 rounded-xl p-6 border border-gray-700/50 hover:border-blue-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/10">
+                  <div className="text-2xl mb-3">{item.icon}</div>
+                  <h3 className="text-xl font-bold mb-2 text-white">{item.title}</h3>
+                  <p className="text-gray-400 text-sm leading-relaxed">{item.desc}</p>
+                </div>
+              ))}
             </div>
           </section>
 
           {/* How It Works */}
           <section className="mb-12">
-            <h2 className="text-3xl font-bold mb-4">How It Works</h2>
-            <div className="bg-white/5 rounded-lg p-6 mb-6">
-              <ol className="list-decimal list-inside space-y-4 text-gray-300">
-                <li>
-                  <strong className="text-white">Agent calls your API</strong> → Request for data/service
-                </li>
-                <li>
-                  <strong className="text-white">You return 402 Payment Required</strong> → With payment requirements
-                </li>
-                <li>
-                  <strong className="text-white">Agent automatically pays</strong> → Using MoltyDEX auto-pay agent
-                </li>
-                <li>
-                  <strong className="text-white">Agent retries request</strong> → With payment proof
-                </li>
-                <li>
-                  <strong className="text-white">You serve the request</strong> → Payment verified, data returned
-                </li>
-              </ol>
+            <h2 className="text-2xl md:text-3xl font-bold mb-8 text-white">How It Works</h2>
+            <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 rounded-xl p-6 md:p-8 border border-gray-700/50">
+              <div className="space-y-4">
+                {[
+                  { step: '1', title: 'Agent calls your API', desc: 'Request for data/service' },
+                  { step: '2', title: 'You return 402 Payment Required', desc: 'With payment requirements' },
+                  { step: '3', title: 'Agent automatically pays', desc: 'Using MoltyDEX auto-pay agent' },
+                  { step: '4', title: 'Agent retries request', desc: 'With payment proof' },
+                  { step: '5', title: 'You serve the request', desc: 'Payment verified, data returned' }
+                ].map((item, idx) => (
+                  <div key={idx} className="flex items-start gap-4">
+                    <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-lg flex items-center justify-center text-white font-bold text-sm shrink-0">
+                      {item.step}
+                    </div>
+                    <div className="flex-1 pt-1">
+                      <strong className="text-white">{item.title}</strong>
+                      <span className="text-gray-400"> → {item.desc}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </section>
 
           {/* Implementation */}
           <section className="mb-12">
-            <h2 className="text-3xl font-bold mb-4">Implementation</h2>
-            <div className="bg-white/5 rounded-lg p-6 mb-6">
-              <h3 className="text-xl font-semibold mb-4">Step 1: Return 402 Response</h3>
-              <pre className="bg-black/30 p-4 rounded-lg overflow-x-auto text-sm mb-4">
+            <h2 className="text-2xl md:text-3xl font-bold mb-8 text-white">Implementation</h2>
+            <div className="space-y-6">
+              <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 rounded-xl p-6 border border-gray-700/50">
+                <h3 className="text-xl font-bold mb-4 text-white">Step 1: Return 402 Response</h3>
+                <pre className="bg-gray-950/80 p-4 rounded-lg overflow-x-auto text-sm text-gray-300 border border-gray-800/50">
 {`// Your API endpoint
 app.get('/api/data', (req, res) => {
   // Check if payment required
@@ -115,12 +108,12 @@ app.get('/api/data', (req, res) => {
   // Payment verified, return data
   res.json({ data: '...' });
 });`}
-              </pre>
-            </div>
+                </pre>
+              </div>
 
-            <div className="bg-white/5 rounded-lg p-6">
-              <h3 className="text-xl font-semibold mb-4">Step 2: Verify Payment</h3>
-              <pre className="bg-black/30 p-4 rounded-lg overflow-x-auto text-sm">
+              <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 rounded-xl p-6 border border-gray-700/50">
+                <h3 className="text-xl font-bold mb-4 text-white">Step 2: Verify Payment</h3>
+                <pre className="bg-gray-950/80 p-4 rounded-lg overflow-x-auto text-sm text-gray-300 border border-gray-800/50">
 {`// Verify payment from X-Payment header
 function verifyPayment(req) {
   const paymentSignature = req.headers['x-payment'];
@@ -128,72 +121,53 @@ function verifyPayment(req) {
   // Check amount, token, recipient match
   return isValid;
 }`}
-              </pre>
+                </pre>
+              </div>
             </div>
           </section>
 
           {/* Benefits */}
           <section className="mb-12">
-            <h2 className="text-3xl font-bold mb-4">Benefits</h2>
-            <div className="space-y-4">
-              <div className="bg-white/5 rounded-lg p-6">
-                <h3 className="text-xl font-semibold mb-2">🚀 Higher Conversion</h3>
-                <p className="text-gray-300">
-                  Agents pay automatically with zero friction. No manual payment steps means more API usage and higher revenue.
-                </p>
-              </div>
-              <div className="bg-white/5 rounded-lg p-6">
-                <h3 className="text-xl font-semibold mb-2">💰 Instant Payments</h3>
-                <p className="text-gray-300">
-                  Payments settle on-chain instantly. No waiting periods, chargebacks, or manual processing delays.
-                </p>
-              </div>
-              <div className="bg-white/5 rounded-lg p-6">
-                <h3 className="text-xl font-semibold mb-2">🔄 Accept Any Token</h3>
-                <p className="text-gray-300">
-                  Agents automatically swap to your required token via MoltyDEX. Accept USDC, SOL, or any Solana token seamlessly.
-                </p>
-              </div>
-              <div className="bg-white/5 rounded-lg p-6">
-                <h3 className="text-xl font-semibold mb-2">🌐 Global & 24/7</h3>
-                <p className="text-gray-300">
-                  Accept payments from anywhere in the world, anytime. Solana operates globally without borders or banking hours.
-                </p>
-              </div>
-              <div className="bg-white/5 rounded-lg p-6">
-                <h3 className="text-xl font-semibold mb-2">🔒 Secure & Transparent</h3>
-                <p className="text-gray-300">
-                  All payments are on-chain, verifiable, and immutable. No chargebacks, no disputes—just secure transactions.
-                </p>
-              </div>
-              <div className="bg-white/5 rounded-lg p-6">
-                <h3 className="text-xl font-semibold mb-2">📈 Scalable Revenue</h3>
-                <p className="text-gray-300">
-                  Charge per-request, per-call, or per-operation. Perfect for APIs with variable usage patterns. Scale revenue with usage.
-                </p>
-              </div>
+            <h2 className="text-2xl md:text-3xl font-bold mb-8 text-white">Benefits</h2>
+            <div className="grid md:grid-cols-2 gap-6">
+              {[
+                { icon: '🚀', title: 'Higher Conversion', desc: 'Agents pay automatically with zero friction. No manual payment steps means more API usage and higher revenue.' },
+                { icon: '💰', title: 'Instant Payments', desc: 'Payments settle on-chain instantly. No waiting periods, chargebacks, or manual processing delays.' },
+                { icon: '🔄', title: 'Accept Any Token', desc: 'Agents automatically swap to your required token via MoltyDEX. Accept USDC, SOL, or any Solana token seamlessly.' },
+                { icon: '🌐', title: 'Global & 24/7', desc: 'Accept payments from anywhere in the world, anytime. Solana operates globally without borders or banking hours.' },
+                { icon: '🔒', title: 'Secure & Transparent', desc: 'All payments are on-chain, verifiable, and immutable. No chargebacks, no disputes—just secure transactions.' },
+                { icon: '📈', title: 'Scalable Revenue', desc: 'Charge per-request, per-call, or per-operation. Perfect for APIs with variable usage patterns. Scale revenue with usage.' }
+              ].map((item, idx) => (
+                <div key={idx} className="group bg-gradient-to-br from-gray-900/80 to-gray-800/80 rounded-xl p-6 border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/10">
+                  <div className="text-2xl mb-3">{item.icon}</div>
+                  <h3 className="text-xl font-bold mb-2 text-white">{item.title}</h3>
+                  <p className="text-gray-400 text-sm leading-relaxed">{item.desc}</p>
+                </div>
+              ))}
             </div>
           </section>
 
           {/* Resources */}
           <section className="mb-12">
-            <h2 className="text-3xl font-bold mb-4">Resources</h2>
-            <div className="grid md:grid-cols-2 gap-4">
+            <h2 className="text-2xl md:text-3xl font-bold mb-8 text-white">Resources</h2>
+            <div className="grid md:grid-cols-2 gap-6">
               <Link
                 href="/whitepaper"
-                className="bg-white/5 rounded-lg p-6 hover:bg-white/10 transition-colors"
+                className="group bg-gradient-to-br from-gray-900/80 to-gray-800/80 rounded-xl p-6 border border-gray-700/50 hover:border-blue-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/10"
               >
-                <h3 className="text-xl font-semibold mb-2">📄 Whitepaper</h3>
-                <p className="text-gray-300">
+                <div className="text-2xl mb-3">📄</div>
+                <h3 className="text-xl font-bold mb-2 text-white">Whitepaper</h3>
+                <p className="text-gray-400 text-sm leading-relaxed">
                   Learn about x402 protocol and MoltyDEX integration
                 </p>
               </Link>
               <Link
                 href="/api-docs"
-                className="bg-white/5 rounded-lg p-6 hover:bg-white/10 transition-colors"
+                className="group bg-gradient-to-br from-gray-900/80 to-gray-800/80 rounded-xl p-6 border border-gray-700/50 hover:border-blue-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/10"
               >
-                <h3 className="text-xl font-semibold mb-2">📚 API Documentation</h3>
-                <p className="text-gray-300">
+                <div className="text-2xl mb-3">📚</div>
+                <h3 className="text-xl font-bold mb-2 text-white">API Documentation</h3>
+                <p className="text-gray-400 text-sm leading-relaxed">
                   Complete API reference and integration guide
                 </p>
               </Link>
@@ -201,21 +175,21 @@ function verifyPayment(req) {
           </section>
 
           {/* Get Started */}
-          <section className="bg-white/5 rounded-lg p-8 text-center">
-            <h2 className="text-3xl font-bold mb-4">Ready to Start Charging?</h2>
-            <p className="text-gray-300 mb-6">
+          <section className="bg-gradient-to-r from-blue-950/40 via-purple-950/40 to-indigo-950/40 rounded-2xl p-8 md:p-10 border border-blue-500/20 text-center">
+            <h2 className="text-2xl md:text-3xl font-bold mb-4 text-white">Ready to Start Charging?</h2>
+            <p className="text-gray-300 mb-8 max-w-2xl mx-auto">
               Integrate x402 payments into your API. Get started in minutes.
             </p>
-            <div className="flex justify-center gap-4 flex-wrap">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/whitepaper"
-                className="px-6 py-3 bg-white text-gray-950 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+                className="px-8 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 hover:scale-105"
               >
                 Read Whitepaper
               </Link>
               <Link
                 href="/api-docs"
-                className="px-6 py-3 bg-white/10 text-white rounded-lg font-semibold hover:bg-white/20 transition-colors border border-white/20"
+                className="px-8 py-3 bg-gray-800/80 hover:bg-gray-700/80 text-white rounded-xl font-semibold transition-all duration-300 border border-gray-700/50 hover:border-gray-600/50 hover:scale-105"
               >
                 View API Docs
               </Link>
@@ -223,7 +197,7 @@ function verifyPayment(req) {
                 href="https://x.com/MoltyDEX"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-6 py-3 bg-white/10 text-white rounded-lg font-semibold hover:bg-white/20 transition-colors border border-white/20"
+                className="px-8 py-3 bg-gray-800/80 hover:bg-gray-700/80 text-white rounded-xl font-semibold transition-all duration-300 border border-gray-700/50 hover:border-gray-600/50 hover:scale-105"
                 aria-label="Follow MoltyDEX on X"
               >
                 Follow on X

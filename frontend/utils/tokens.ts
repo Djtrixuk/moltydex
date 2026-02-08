@@ -53,18 +53,25 @@ export const POPULAR_TOKENS: Token[] = [
     logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R/logo.png',
   },
   {
-    symbol: 'PYTH',
-    name: 'Pyth Network',
-    address: 'HZ1JovNiVvGrGNiiYvEozEVgZ58xaU3RKwX8eACQBCt3',
-    decimals: 6,
-    logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/HZ1JovNiVvGrGNiiYvEozEVgZ58xaU3RKwX8eACQBCt3/logo.png',
+    symbol: 'POPCAT',
+    name: 'Popcat',
+    address: '7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr',
+    decimals: 9,
+    // Logo will be fetched from Jupiter token list or backend API
   },
   {
-    symbol: 'JitoSOL',
-    name: 'Jito Staked SOL',
-    address: 'J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn',
+    symbol: 'JUP',
+    name: 'Jupiter',
+    address: 'JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN',
+    decimals: 6,
+    logo: 'https://static.jup.ag/jup/icon.png',
+  },
+  {
+    symbol: 'BUTT',
+    name: 'Buttcoin',
+    address: 'Cm6fNnMk7NfzStP9CZpsQA2v3jjzbcYGAxdJySmHpump',
     decimals: 9,
-    logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn/logo.png',
+    // Logo will be fetched from pump.fun API or Jupiter token list
   },
 ];
 

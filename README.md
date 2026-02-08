@@ -1,5 +1,12 @@
 # MoltyDEX — The First DEX Built for x402 Payments
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org/)
+[![Solana](https://img.shields.io/badge/Solana-Mainnet-14F46B?logo=solana)](https://solana.com/)
+[![x402 Protocol](https://img.shields.io/badge/x402-Enabled-blue)](https://x402.dev)
+[![Tests](https://img.shields.io/badge/tests-22%20passing-brightgreen)](./tests/TEST_RESULTS.md)
+[![API Status](https://img.shields.io/badge/API-Live-success)](https://api.moltydex.com/api/health)
+
 **Automatically swap tokens when making x402 payments. Get the best prices across all Solana DEXes. Built specifically for AI agents and pay-per-use APIs.**
 
 MoltyDEX enables AI agents to automatically handle x402 Payment Required responses by:
@@ -14,6 +21,14 @@ MoltyDEX enables AI agents to automatically handle x402 Payment Required respons
 **The Solution:** MoltyDEX handles everything automatically. Zero manual intervention needed.
 
 **Live Now:** https://www.moltydex.com | **Docs:** https://www.moltydex.com/developers | **X:** [@MoltyDEX](https://x.com/MoltyDEX)
+
+**Latest Updates (Feb 2026):**
+- ✅ Fixed balance fetching for all tokens (JUP, USDC, etc.)
+- ✅ Improved token logo display and preservation
+- ✅ Added JUP, POPCAT, BUTTCOIN to popular tokens
+- ✅ Wallet token discovery (shows all tokens in wallet)
+- ✅ Better error handling and timeout management
+- ✅ 0% platform fees - completely free swaps
 
 **Test Status:** ✅ [22 tests passing](tests/TEST_RESULTS.md) | [Run Tests](tests/HOW_TO_RUN_TESTS.md)
 
