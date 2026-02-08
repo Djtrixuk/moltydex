@@ -1,0 +1,12 @@
+# robots.txt for MoltyDEX
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+
+# Sitemap location
+Sitemap: https://moltydex.com/sitemap.xml
+
+# Crawl-delay (optional, helps prevent overload)
+Crawl-delay: 1

@@ -18,7 +18,7 @@ export default function TokenLogo({ token, size = 32, className = '' }: TokenLog
   const [imageError, setImageError] = useState(false);
   // If token has logo, start with loading false so it shows immediately
   const [imageLoading, setImageLoading] = useState(!token.logo);
-  // Initialize with token.logo immediately if available
+  // Initialize with token.logo immediately if available (preserve from POPULAR_TOKENS)
   const [logoUrl, setLogoUrl] = useState<string | undefined>(token.logo);
 
   // Fetch logo from backend API if not already present
@@ -28,10 +28,12 @@ export default function TokenLogo({ token, size = 32, className = '' }: TokenLog
     // If token already has logo, use it immediately and show it right away
     if (token.logo) {
       setLogoUrl(token.logo);
-      // Don't set loading to true - show image immediately
-      // The onLoad handler will handle when it's fully loaded
+      setImageLoading(false);
       return;
     }
+    
+    // Reset logo URL when token changes (only if no logo in token definition)
+    setLogoUrl(undefined);
 
     // Otherwise fetch from known logos or API
     setImageLoading(true);
@@ -77,21 +79,40 @@ export default function TokenLogo({ token, size = 32, className = '' }: TokenLog
           )}
           {/* Show image immediately if we have a URL */}
           {logoUrl && (
-            <Image
-              src={logoUrl}
-              alt={`${token.symbol} logo`}
-              width={size}
-              height={size}
-              className="w-full h-full rounded-full object-cover"
-              onError={() => {
-                setImageError(true);
-                setImageLoading(false);
-              }}
-              onLoad={() => {
-                setImageLoading(false);
-              }}
-              unoptimized={true}
-            />
+            // Use regular img tag for pump.fun URLs that redirect (Next.js Image doesn't handle HTTP redirects well)
+            logoUrl.includes('pumpapi.fun') ? (
+              <img
+                src={logoUrl}
+                alt={`${token.symbol} logo`}
+                width={size}
+                height={size}
+                className="w-full h-full rounded-full object-cover"
+                onError={() => {
+                  setImageError(true);
+                  setImageLoading(false);
+                }}
+                onLoad={() => {
+                  setImageLoading(false);
+                }}
+                style={{ width: size, height: size }}
+              />
+            ) : (
+              <Image
+                src={logoUrl}
+                alt={`${token.symbol} logo`}
+                width={size}
+                height={size}
+                className="w-full h-full rounded-full object-cover"
+                onError={() => {
+                  setImageError(true);
+                  setImageLoading(false);
+                }}
+                onLoad={() => {
+                  setImageLoading(false);
+                }}
+                unoptimized={true}
+              />
+            )
           )}
         </>
       )}

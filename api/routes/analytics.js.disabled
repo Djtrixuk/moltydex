@@ -1,0 +1,209 @@
+/**
+ * Analytics routes
+ * Provides swap statistics and points leaderboard
+ */
+
+const express = require('express');
+const router = express.Router();
+
+// Optional swap tracker (may fail in some environments)
+let getSwapStats = null;
+let getWalletSwaps = null;
+let getWalletPoints = null;
+let getLeaderboard = null;
+let updateSwapSignature = null;
+
+try {
+  const swapTracker = require('../utils/swapTracker');
+  getSwapStats = swapTracker.getSwapStats;
+  getWalletSwaps = swapTracker.getWalletSwaps;
+  getWalletPoints = swapTracker.getWalletPoints;
+  getLeaderboard = swapTracker.getLeaderboard;
+  updateSwapSignature = swapTracker.updateSwapSignature;
+} catch (err) {
+  console.warn('Swap tracker not available:', err.message);
+}
+
+/**
+ * GET /api/analytics/stats
+ * Get overall swap statistics
+ */
+router.get('/stats', async (req, res) => {
+  try {
+    if (!getSwapStats) {
+      return res.json({
+        total_swaps: 0,
+        total_volume: '0',
+        timestamp: new Date().toISOString(),
+        note: 'Swap tracking not available',
+      });
+    }
+    const stats = await getSwapStats();
+    res.json({
+      ...stats,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (err) {
+    console.error('Analytics stats error:', err.message);
+    res.status(500).json({
+      error: 'Failed to get analytics stats',
+      message: err.message,
+    });
+  }
+});
+
+/**
+ * GET /api/analytics/swaps/:wallet_address
+ * Get swap history for a wallet
+ */
+router.get('/swaps/:wallet_address', async (req, res) => {
+  try {
+    const { wallet_address } = req.params;
+    const limit = parseInt(req.query.limit) || 50;
+
+    if (!wallet_address) {
+      return res.status(400).json({ error: 'Missing wallet_address' });
+    }
+
+    if (!getWalletSwaps) {
+      return res.json({
+        wallet_address,
+        swaps: [],
+        count: 0,
+        note: 'Swap tracking not available',
+      });
+    }
+
+    const swaps = await getWalletSwaps(wallet_address, limit);
+    res.json({
+      wallet_address,
+      swaps,
+      count: swaps.length,
+    });
+  } catch (err) {
+    console.error('Analytics swaps error:', err.message);
+    res.status(500).json({
+      error: 'Failed to get wallet swaps',
+      message: err.message,
+    });
+  }
+});
+
+/**
+ * GET /api/analytics/points/:wallet_address
+ * Get points for a wallet
+ */
+router.get('/points/:wallet_address', async (req, res) => {
+  try {
+    const { wallet_address } = req.params;
+
+    if (!wallet_address) {
+      return res.status(400).json({ error: 'Missing wallet_address' });
+    }
+
+    if (!getWalletPoints || !getLeaderboard) {
+      return res.json({
+        wallet_address,
+        total_points: 0,
+        swaps_count: 0,
+        last_swap: null,
+        rank: null,
+        total_users: 0,
+        note: 'Points tracking not available',
+      });
+    }
+
+    const points = await getWalletPoints(wallet_address);
+    const leaderboard = await getLeaderboard(100);
+    const rank = leaderboard.findIndex(entry => entry.wallet_address === wallet_address) + 1;
+
+    res.json({
+      wallet_address,
+      ...points,
+      rank: rank || null, // null if not in top 100
+      total_users: leaderboard.length,
+    });
+  } catch (err) {
+    console.error('Analytics points error:', err.message);
+    res.status(500).json({
+      error: 'Failed to get wallet points',
+      message: err.message,
+    });
+  }
+});
+
+/**
+ * GET /api/analytics/leaderboard
+ * Get points leaderboard
+ */
+router.get('/leaderboard', async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 100;
+    
+    if (!getLeaderboard) {
+      return res.json({
+        leaderboard: [],
+        count: 0,
+        timestamp: new Date().toISOString(),
+        note: 'Points tracking not available',
+      });
+    }
+
+    const leaderboard = await getLeaderboard(limit);
+
+    res.json({
+      leaderboard,
+      count: leaderboard.length,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (err) {
+    console.error('Analytics leaderboard error:', err.message);
+    res.status(500).json({
+      error: 'Failed to get leaderboard',
+      message: err.message,
+    });
+  }
+});
+
+/**
+ * POST /api/analytics/swap/:swap_id/signature
+ * Update swap signature when transaction is confirmed
+ */
+router.post('/swap/:swap_id/signature', async (req, res) => {
+  try {
+    const { swap_id } = req.params;
+    const { signature } = req.body;
+
+    if (!signature) {
+      return res.status(400).json({ error: 'Missing signature' });
+    }
+
+    if (!updateSwapSignature) {
+      return res.status(503).json({
+        error: 'Swap tracking not available',
+        message: 'Cannot update swap signature - tracking service unavailable',
+      });
+    }
+
+    const updated = await updateSwapSignature(swap_id, signature);
+    
+    if (!updated) {
+      return res.status(404).json({ error: 'Swap not found' });
+    }
+
+    res.json({
+      swap_id,
+      signature,
+      updated: true,
+      message: 'Swap signature updated successfully',
+    });
+  } catch (err) {
+    console.error('Update swap signature error:', err.message);
+    res.status(500).json({
+      error: 'Failed to update swap signature',
+      message: err.message,
+    });
+  }
+});
+
+module.exports = router;

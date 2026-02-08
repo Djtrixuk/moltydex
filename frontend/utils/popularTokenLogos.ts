@@ -14,18 +14,21 @@ const POPULAR_TOKEN_LOGOS: Record<string, string> = {
   'EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm': 'https://coin-images.coingecko.com/coins/images/33566/large/dogwifhat.jpg?1702499428', // WIF
   '4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R': 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R/logo.png', // RAY
   'HZ1JovNiVvGrGNiiYvEozEVgZ58xaU3RKwX8eACQBCt3': 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/HZ1JovNiVvGrGNiiYvEozEVgZ58xaU3RKwX8eACQBCt3/logo.png', // PYTH
-  'J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn': 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn/logo.png', // JitoSOL
+  'JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN': 'https://static.jup.ag/jup/icon.png', // JUP
+  'jupyiwryjfskupiha7hker8vutaefosybkedznsdvcn': 'https://static.jup.ag/jup/icon.png', // JUP (lowercase)
   
   // Pump.fun tokens (these APIs are more reliable for pump tokens)
   'a3W4qutoEJA4232T2gwZUfgYJTetr96pU4SJMwppump': 'https://pumpapi.fun/api/token/a3W4qutoEJA4232T2gwZUfgYJTetr96pU4SJMwppump/image', // WhiteWhale
   '8Jx8AAHj86wbQgUTjGuj6GTTL5Ps3cqxKRTvpaJApump': 'https://pumpapi.fun/api/token/8Jx8AAHj86wbQgUTjGuj6GTTL5Ps3cqxKRTvpaJApump/image', // PENGUIN
-  'Cm6fNnMk7NfzStP9CZpsQA2v3jjzbcYGAxdJySmHpump': 'https://pumpapi.fun/api/token/Cm6fNnMk7NfzStP9CZpsQA2v3jjzbcYGAxdJySmHpump/image', // BUTT
   'BwTu5zJqEyLYawwYoGTWT7UxC85eLYQWRcta1GiEbonk': 'https://pumpapi.fun/api/token/BwTu5zJqEyLYawwYoGTWT7UxC85eLYQWRcta1GiEbonk/image', // URA (Uranus)
+  'Cm6fNnMk7NfzStP9CZpsQA2v3jjzbcYGAxdJySmHpump': 'https://pumpapi.fun/api/token/Cm6fNnMk7NfzStP9CZpsQA2v3jjzbcYGAxdJySmHpump/image', // BUTTCOIN
+  'cm6fnnmk7nfzstp9czpsqa2v3jjzbcygaxdjysmhpump': 'https://pumpapi.fun/api/token/Cm6fNnMk7NfzStP9CZpsQA2v3jjzbcYGAxdJySmHpump/image', // BUTTCOIN (lowercase)
 };
 
 /**
  * Get known logo URL for a token address
  */
 export function getKnownTokenLogo(address: string): string | undefined {
-  return POPULAR_TOKEN_LOGOS[address] || POPULAR_TOKEN_LOGOS[address.toLowerCase()];
+  const addrLower = address.toLowerCase();
+  return POPULAR_TOKEN_LOGOS[address] || POPULAR_TOKEN_LOGOS[addrLower];
 }

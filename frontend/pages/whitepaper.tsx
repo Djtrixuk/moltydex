@@ -22,17 +22,19 @@ export default function Whitepaper() {
       </Head>
       <PageHeader />
       <main className="min-h-screen bg-gray-950 text-white">
-        <article className="container mx-auto px-4 py-6 md:py-12 max-w-4xl">
+        <article className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
           {/* Header */}
-          <header className="mb-8 text-center">
-            <h1 className="text-3xl md:text-5xl font-bold mb-3 md:mb-4">MoltyDEX Whitepaper</h1>
-            <p className="text-base md:text-xl text-gray-300 max-w-3xl mx-auto px-4">
+          <header className="mb-10 md:mb-12 text-center">
+            <h1 className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent">
+              MoltyDEX Whitepaper
+            </h1>
+            <p className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto">
               Comprehensive documentation of MoltyDEX - x402 Token Aggregator for AI Agents on Solana
             </p>
           </header>
 
           {/* Content */}
-        <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-2xl text-gray-100 space-y-8">
+          <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 rounded-xl p-8 md:p-12 border border-gray-700/50 space-y-8">
           
           {/* Executive Summary */}
           <section>
@@ -83,18 +85,18 @@ export default function Whitepaper() {
             </ul>
 
             <h3 className="text-2xl font-semibold text-white mt-6 mb-3">1.3 Key Differentiators</h3>
-            <div className="bg-white/5 rounded-lg p-4 mb-4">
-              <p className="mb-2"><strong>vs. Direct Jupiter API:</strong></p>
-              <ul className="list-disc list-inside space-y-1 ml-4">
+            <div className="bg-gray-950/50 rounded-lg p-4 mb-4 border border-gray-800/50">
+              <p className="mb-2 font-semibold text-white"><strong>vs. Direct Jupiter API:</strong></p>
+              <ul className="list-disc list-inside space-y-1 ml-4 text-gray-300 text-sm">
                 <li>Agent-specific features (webhooks, recommendations, enhanced errors)</li>
                 <li>x402 protocol integration</li>
                 <li>Transaction status tracking</li>
                 <li>Batch operations for efficiency</li>
               </ul>
             </div>
-            <div className="bg-white/5 rounded-lg p-4 mb-4">
-              <p className="mb-2"><strong>vs. Traditional DEX Interfaces:</strong></p>
-              <ul className="list-disc list-inside space-y-1 ml-4">
+            <div className="bg-gray-950/50 rounded-lg p-4 mb-4 border border-gray-800/50">
+              <p className="mb-2 font-semibold text-white"><strong>vs. Traditional DEX Interfaces:</strong></p>
+              <ul className="list-disc list-inside space-y-1 ml-4 text-gray-300 text-sm">
                 <li>Programmatic API access (no UI required)</li>
                 <li>Structured error responses with actionable guidance</li>
                 <li>Real-time webhook notifications</li>
@@ -108,16 +110,16 @@ export default function Whitepaper() {
             <h2 className="text-3xl font-bold text-white mb-4">2. Architecture</h2>
             
             <h3 className="text-2xl font-semibold text-white mt-6 mb-3">2.1 System Components</h3>
-            <div className="bg-white/5 rounded-lg p-4 mb-4">
-              <p className="mb-2 font-semibold">API Layer (Express.js)</p>
-              <ul className="list-disc list-inside space-y-1 ml-4 text-sm">
+            <div className="bg-gray-950/50 rounded-lg p-4 mb-4 border border-gray-800/50">
+              <p className="mb-2 font-semibold text-white">API Layer (Express.js)</p>
+              <ul className="list-disc list-inside space-y-1 ml-4 text-sm text-gray-300">
                 <li>RESTful API endpoints</li>
                 <li>Rate limiting and security</li>
                 <li>Request validation</li>
                 <li>Error handling</li>
               </ul>
             </div>
-            <div className="bg-white/5 rounded-lg p-4 mb-4">
+            <div className="bg-gray-950/50 border border-gray-800/50 rounded-lg p-4 mb-4">
               <p className="mb-2 font-semibold">Jupiter Integration</p>
               <ul className="list-disc list-inside space-y-1 ml-4 text-sm">
                 <li>Quote fetching from multiple Jupiter endpoints</li>
@@ -125,7 +127,7 @@ export default function Whitepaper() {
                 <li>Fallback endpoints for reliability</li>
               </ul>
             </div>
-            <div className="bg-white/5 rounded-lg p-4 mb-4">
+            <div className="bg-gray-950/50 border border-gray-800/50 rounded-lg p-4 mb-4">
               <p className="mb-2 font-semibold">Solana RPC</p>
               <ul className="list-disc list-inside space-y-1 ml-4 text-sm">
                 <li>Balance checking</li>
@@ -136,7 +138,7 @@ export default function Whitepaper() {
             </div>
 
             <h3 className="text-2xl font-semibold text-white mt-6 mb-3">2.2 Request Flow</h3>
-            <div className="bg-white/5 rounded-lg p-4 mb-4 font-mono text-sm">
+            <div className="bg-gray-950/50 border border-gray-800/50 rounded-lg p-4 mb-4 font-mono text-sm">
               <p>1. Agent requests quote → MoltyDEX API</p>
               <p>2. MoltyDEX → Jupiter API (multiple endpoints)</p>
               <p>3. Jupiter → Multiple DEXes (finds best route)</p>
@@ -170,7 +172,7 @@ export default function Whitepaper() {
             </ul>
 
             <h3 className="text-2xl font-semibold text-white mt-6 mb-3">3.3 x402 Workflow</h3>
-            <div className="bg-white/5 rounded-lg p-4 mb-4">
+            <div className="bg-gray-950/50 border border-gray-800/50 rounded-lg p-4 mb-4">
               <ol className="list-decimal list-inside space-y-2">
                 <li>Agent receives 402 Payment Required response</li>
                 <li>Agent calls <code className="bg-black/30 px-1 rounded">POST /api/x402/parse-payment</code> to extract requirements</li>
@@ -191,7 +193,7 @@ export default function Whitepaper() {
               Agents can register webhooks to receive real-time notifications when transactions are confirmed or fail. 
               This eliminates the need for polling and enables event-driven architectures.
             </p>
-            <div className="bg-white/5 rounded-lg p-4 mb-4">
+            <div className="bg-gray-950/50 border border-gray-800/50 rounded-lg p-4 mb-4">
               <p className="font-mono text-sm">
                 POST /api/transaction/webhook<br/>
                 {`{ "signature": "...", "callback_url": "https://..." }`}
@@ -203,7 +205,7 @@ export default function Whitepaper() {
               All errors include structured information with error codes, detailed context, and actionable suggestions. 
               Agents can programmatically handle errors and retry with correct actions.
             </p>
-            <div className="bg-white/5 rounded-lg p-4 mb-4">
+            <div className="bg-gray-950/50 border border-gray-800/50 rounded-lg p-4 mb-4">
               <p className="font-mono text-sm">
                 {`{`}<br/>
                 {`  "error": "Insufficient balance",`}<br/>
@@ -244,7 +246,7 @@ export default function Whitepaper() {
             <h2 className="text-3xl font-bold text-white mb-4">5. API Design</h2>
             
             <h3 className="text-2xl font-semibold text-white mt-6 mb-3">5.1 Core Endpoints</h3>
-            <div className="bg-white/5 rounded-lg p-4 mb-4 space-y-2">
+            <div className="bg-gray-950/50 border border-gray-800/50 rounded-lg p-4 mb-4 space-y-2">
               <p><strong>Quotes:</strong> <code className="bg-black/30 px-1 rounded">GET /api/quote</code></p>
               <p><strong>Swap Building:</strong> <code className="bg-black/30 px-1 rounded">POST /api/swap/build</code></p>
               <p><strong>Balance:</strong> <code className="bg-black/30 px-1 rounded">GET /api/balance</code></p>
@@ -253,14 +255,14 @@ export default function Whitepaper() {
             </div>
 
             <h3 className="text-2xl font-semibold text-white mt-6 mb-3">5.2 x402 Endpoints</h3>
-            <div className="bg-white/5 rounded-lg p-4 mb-4 space-y-2">
+            <div className="bg-gray-950/50 border border-gray-800/50 rounded-lg p-4 mb-4 space-y-2">
               <p><strong>Parse Payment:</strong> <code className="bg-black/30 px-1 rounded">POST /api/x402/parse-payment</code></p>
               <p><strong>Prepare Payment:</strong> <code className="bg-black/30 px-1 rounded">POST /api/x402/prepare-payment</code></p>
               <p><strong>Auto-Pay:</strong> <code className="bg-black/30 px-1 rounded">POST /api/x402/auto-pay</code></p>
             </div>
 
             <h3 className="text-2xl font-semibold text-white mt-6 mb-3">5.3 Agent Features</h3>
-            <div className="bg-white/5 rounded-lg p-4 mb-4 space-y-2">
+            <div className="bg-gray-950/50 border border-gray-800/50 rounded-lg p-4 mb-4 space-y-2">
               <p><strong>Webhooks:</strong> <code className="bg-black/30 px-1 rounded">POST /api/transaction/webhook</code></p>
               <p><strong>Recommendations:</strong> <code className="bg-black/30 px-1 rounded">GET /api/tokens/recommend</code></p>
               <p><strong>Rate Limits:</strong> <code className="bg-black/30 px-1 rounded">GET /api/rate-limit/status</code></p>
