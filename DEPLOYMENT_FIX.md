@@ -1,97 +1,57 @@
-# Deployment Fix Summary
+# Fix Vercel Deployment Issue
 
-## Issues Fixed
+## Problem
+Vercel CLI deployment fails with:
+```
+Error: The provided path "~/agentdex/frontend/frontend" does not exist.
+```
 
-1. ✅ **TypeScript Build Error** - Fixed `OnboardingFlow.tsx` Set spreading issue
-2. ✅ **Vercel Configuration** - Added `vercel.json` to configure frontend deployment
-3. ✅ **Security** - Added `update-jupiter-key.sh` to `.gitignore`
+This happens because Vercel's project settings have the **Root Directory** set to `frontend`, but when deploying from the `frontend` directory, it tries to find `frontend/frontend`.
 
-## What Was Committed
+## Solution: Fix Root Directory in Vercel Dashboard
 
-- `frontend/components/OnboardingFlow.tsx` - Fixed TypeScript error
-- `vercel.json` - Vercel deployment configuration
-- `.gitignore` - Updated to allow vercel.json and ignore sensitive scripts
+### Step 1: Go to Project Settings
+1. Open: https://vercel.com/agentdex/moltydex-frontend/settings
+2. Scroll to **"General"** section
+3. Find **"Root Directory"** setting
 
-## Next Steps: Verify Vercel Configuration
+### Step 2: Fix Root Directory
+**Option A: Clear Root Directory (Recommended)**
+- Click **"Edit"** on Root Directory
+- **Clear/Delete** the value (make it empty)
+- Click **"Save"**
+- This tells Vercel the root is where you run `vercel` from
 
-The `vercel.json` I created should help, but you may need to verify/update your Vercel project settings:
+**Option B: Set to Current Directory**
+- Change from `frontend` to `.` (current directory)
+- Click **"Save"**
 
-### Option 1: Vercel Dashboard Configuration (Recommended)
+### Step 3: Deploy
+After fixing, run from the `frontend` directory:
+```bash
+cd frontend
+vercel --prod
+```
 
-1. Go to your Vercel dashboard: https://vercel.com/dashboard
-2. Select your `moltydex` project
-3. Go to **Settings** → **General**
-4. Under **Root Directory**, set it to: `frontend`
-5. Under **Build and Development Settings**:
-   - **Framework Preset**: Next.js
-   - **Build Command**: `npm run build` (or leave default)
-   - **Output Directory**: `.next` (or leave default)
-   - **Install Command**: `npm ci` (or leave default)
+## Alternative: Use GitHub Auto-Deployment (Currently Working)
 
-### Option 2: Use vercel.json (Already Added)
+Your GitHub integration is working! The latest deployment was 56 minutes ago.
 
-The `vercel.json` I created should work, but Vercel might prioritize dashboard settings.
+**To deploy via Git:**
+```bash
+git add .
+git commit -m "Your changes"
+git push origin master
+```
 
-### Verify Deployment
+Vercel will automatically deploy when you push to GitHub.
 
-After the next push (or trigger a redeploy):
+## Quick Test
 
-1. **Check Vercel Dashboard**:
-   - Go to your project → **Deployments**
-   - Check if the latest deployment succeeded
-   - Look at build logs for any errors
+After fixing the root directory, test with:
+```bash
+cd frontend
+vercel --prod
+```
 
-2. **Test Blog Pages**:
-   - https://moltydex.com/blog
-   - https://moltydex.com/blog/complete-guide-x402-payment-handler
-   - https://moltydex.com/x402-payments
-
-3. **Check Build Logs**:
-   - If build fails, check the error messages
-   - Common issues:
-     - Missing dependencies
-     - TypeScript errors
-     - Missing environment variables
-
-## If Blog Still Doesn't Show
-
-### Check These:
-
-1. **Are blog files in the right place?**
-   - `frontend/public/blog-content/*.md` - Should exist
-   - `frontend/pages/blog/[slug].tsx` - Should exist
-   - `frontend/lib/blog-posts-all.ts` - Should have all posts
-
-2. **Is Vercel building from the right directory?**
-   - Should be: `frontend/`
-   - Not: root directory
-
-3. **Are there build errors?**
-   - Check Vercel deployment logs
-   - Run `cd frontend && npm run build` locally to test
-
-4. **Is the deployment actually running?**
-   - Check if Vercel is connected to GitHub
-   - Verify auto-deploy is enabled
-   - Check if deployments are being triggered
-
-## Manual Redeploy
-
-If needed, trigger a manual redeploy:
-
-1. Go to Vercel Dashboard → Your Project → Deployments
-2. Click "..." on latest deployment → "Redeploy"
-3. Or push an empty commit: `git commit --allow-empty -m "Trigger redeploy" && git push`
-
-## Expected Result
-
-After proper configuration:
-- ✅ Blog index at `/blog`
-- ✅ All blog posts accessible
-- ✅ x402 hub page at `/x402-payments`
-- ✅ All SEO improvements live
-- ✅ All UI/UX improvements live
-
----
-
-**Current Status**: Code is pushed, but Vercel configuration may need adjustment in dashboard.
+It should work without the path error.
