@@ -65,11 +65,9 @@ export default function X402Payments() {
         { name: 'Home', url: 'https://moltydex.com' },
         { name: 'x402 Payments', url: 'https://moltydex.com/x402-payments' }
       ]} />
-
+      <PageHeader />
       <main className="min-h-screen bg-gray-950 text-white">
         <div className="container mx-auto px-4 py-6 md:py-12 max-w-6xl">
-          <PageHeader />
-          
           {/* Hero Section */}
           <div className="text-center mb-12 md:mb-16">
             <h1 className="text-4xl md:text-6xl font-bold mb-4 md:mb-6">

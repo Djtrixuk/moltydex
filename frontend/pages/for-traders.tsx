@@ -11,11 +11,9 @@ export default function ForTraders() {
         <meta name="keywords" content="Solana DEX, token swap, best price swap, cheap swap fees, Solana trading, SPL token swap, decentralized exchange" />
         <link rel="canonical" href="https://www.moltydex.com/for-traders" />
       </Head>
-
+      <PageHeader />
       <main className="min-h-screen bg-gray-950 text-white">
         <div className="container mx-auto px-4 py-6 md:py-12">
-          <PageHeader />
-          
           {/* Header */}
           <div className="text-center mb-8 md:mb-12">
             <h1 className="text-3xl md:text-5xl font-bold mb-3 md:mb-4">For Traders</h1>

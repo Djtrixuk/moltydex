@@ -26,10 +26,9 @@ export default function Pricing() {
         <meta name="twitter:description" content="0% fees - completely free swaps. Transparent pricing. No hidden fees." />
         <meta name="twitter:image" content="https://moltydex.com/moltydex-logo-full.png" />
       </Head>
-
+      <PageHeader />
       <main className="min-h-screen bg-gray-950 text-white">
         <div className="container mx-auto px-4 py-6 md:py-12">
-          <PageHeader />
           {/* Header */}
           <div className="text-center mb-8 md:mb-12">
             <h1 className="text-3xl md:text-5xl font-bold mb-3 md:mb-4">Pricing</h1>
