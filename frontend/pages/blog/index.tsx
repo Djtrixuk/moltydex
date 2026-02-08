@@ -5,13 +5,52 @@
 
 import Head from 'next/head';
 import Link from 'next/link';
-import { blogPosts, getAllCategories, getAllTags } from '../../lib/blog-posts';
+import { useRouter } from 'next/router';
+import { useState, useEffect, useMemo } from 'react';
+import { blogPosts, getAllCategories, getAllTags, getBlogPostsByCategory } from '../../lib/blog-posts';
 import PageHeader from '../../components/PageHeader';
 import { BreadcrumbStructuredData } from '../../components/StructuredData';
 
 export default function BlogIndex() {
+  const router = useRouter();
   const categories = getAllCategories();
   const tags = getAllTags();
+  
+  // Get category from URL query params
+  const categoryFromQuery = router.query.category as string | undefined;
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(
+    categoryFromQuery || null
+  );
+
+  // Update state when URL query changes
+  useEffect(() => {
+    if (categoryFromQuery) {
+      setSelectedCategory(categoryFromQuery);
+    } else {
+      setSelectedCategory(null);
+    }
+  }, [categoryFromQuery]);
+
+  // Filter posts based on selected category
+  const filteredPosts = useMemo(() => {
+    if (!selectedCategory) {
+      return blogPosts;
+    }
+    return getBlogPostsByCategory(selectedCategory);
+  }, [selectedCategory]);
+
+  // Handle category click
+  const handleCategoryClick = (category: string) => {
+    if (selectedCategory === category) {
+      // Deselect if clicking the same category
+      setSelectedCategory(null);
+      router.push('/blog', undefined, { shallow: true });
+    } else {
+      // Select new category
+      setSelectedCategory(category);
+      router.push(`/blog?category=${encodeURIComponent(category)}`, undefined, { shallow: true });
+    }
+  };
 
   return (
     <>
@@ -49,24 +88,54 @@ export default function BlogIndex() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
           {/* Categories */}
           <div className="mb-10">
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-6">Categories</h2>
-            <div className="flex flex-wrap gap-3">
-              {categories.map(category => (
-                <span
-                  key={category}
-                  className="px-4 py-2 bg-gray-800/60 hover:bg-gray-800 border border-gray-700/50 rounded-lg text-sm text-gray-300 hover:text-white transition-colors cursor-pointer"
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl md:text-3xl font-bold text-white">Categories</h2>
+              {selectedCategory && (
+                <button
+                  onClick={() => handleCategoryClick(selectedCategory)}
+                  className="text-sm text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-1"
                 >
-                  {category}
-                </span>
-              ))}
+                  Clear filter
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
             </div>
+            <div className="flex flex-wrap gap-3">
+              {categories.map(category => {
+                const isActive = selectedCategory === category;
+                return (
+                  <button
+                    key={category}
+                    onClick={() => handleCategoryClick(category)}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                      isActive
+                        ? 'bg-blue-600 text-white border-2 border-blue-500 shadow-lg shadow-blue-500/30'
+                        : 'bg-gray-800/60 hover:bg-gray-800 border border-gray-700/50 text-gray-300 hover:text-white hover:border-gray-600'
+                    }`}
+                  >
+                    {category}
+                    {isActive && (
+                      <span className="ml-2 text-xs">✓</span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+            {selectedCategory && (
+              <div className="mt-4 text-sm text-gray-400">
+                Showing {filteredPosts.length} {filteredPosts.length === 1 ? 'post' : 'posts'} in <span className="text-blue-400 font-semibold">{selectedCategory}</span>
+              </div>
+            )}
           </div>
 
           {/* Featured Articles */}
-          <div className="mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-8">Featured Articles</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {blogPosts.slice(0, 3).map(post => (
+          {!selectedCategory && (
+            <div className="mb-12">
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-8">Featured Articles</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {blogPosts.slice(0, 3).map(post => (
                 <Link
                   key={post.slug}
                   href={`/blog/${post.slug}`}
@@ -92,15 +161,29 @@ export default function BlogIndex() {
                     ))}
                   </div>
                 </Link>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* All Articles */}
           <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-8">All Articles</h2>
-            <div className="space-y-4">
-              {blogPosts.map(post => (
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-8">
+              {selectedCategory ? `${selectedCategory} Articles` : 'All Articles'}
+            </h2>
+            {filteredPosts.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-gray-400 text-lg mb-4">No posts found in this category.</p>
+                <button
+                  onClick={() => handleCategoryClick(selectedCategory!)}
+                  className="text-blue-400 hover:text-blue-300 transition-colors"
+                >
+                  Clear filter to see all posts
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {filteredPosts.map(post => (
                 <Link
                   key={post.slug}
                   href={`/blog/${post.slug}`}
@@ -142,8 +225,9 @@ export default function BlogIndex() {
                     </div>
                   </div>
                 </Link>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Topics Section */}
