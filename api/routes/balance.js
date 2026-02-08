@@ -57,8 +57,8 @@ router.get('/balance', async (req, res) => {
     }
 
     // Track balance check
-    trackEvent('balance', { token_mint: token_mint || 'SOL', wallet_address });
-    trackEvent('api_call', { endpoint: '/api/balance' });
+    await trackEvent('balance', { token_mint: token_mint || 'SOL', wallet_address });
+    await trackEvent('api_call', { endpoint: '/api/balance' });
 
     if (balance.balance === '0' && !token_mint) {
       return res.json(balance);

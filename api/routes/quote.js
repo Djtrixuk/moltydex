@@ -100,8 +100,8 @@ router.get('/quote', async (req, res) => {
         const feeAmount = (outputAmount * BigInt(FEE_BPS)) / 10000n;
         const outputAfterFee = outputAmount - feeAmount;
         // Track quote request (demo mode)
-        trackEvent('quote', { input_mint, output_mint, demo: true });
-        trackEvent('api_call', { endpoint: '/api/quote' });
+        await trackEvent('quote', { input_mint, output_mint, demo: true });
+        await trackEvent('api_call', { endpoint: '/api/quote' });
         
         return res.json({
           input_mint,
@@ -196,8 +196,8 @@ router.get('/quote', async (req, res) => {
     const minimumOutput = (outputAfterFee * slippageMultiplier) / 1n;
 
     // Track quote request
-    trackEvent('quote', { input_mint, output_mint });
-    trackEvent('api_call', { endpoint: '/api/quote' });
+    await trackEvent('quote', { input_mint, output_mint });
+    await trackEvent('api_call', { endpoint: '/api/quote' });
     
     res.json({
       input_mint,

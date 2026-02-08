@@ -105,14 +105,14 @@ router.post('/build', async (req, res) => {
       });
       
       // Track failed swap
-      trackEvent('swap', {
+      await trackEvent('swap', {
         success: false,
         input_mint,
         output_mint,
         wallet_address,
         error: swapError.message,
       });
-      trackEvent('api_call', { endpoint: '/api/swap/build' });
+      await trackEvent('api_call', { endpoint: '/api/swap/build' });
       
       throw swapError;
     }
@@ -141,13 +141,13 @@ router.post('/build', async (req, res) => {
     }
 
     // Track successful swap build
-    trackEvent('swap', {
+    await trackEvent('swap', {
       success: true,
       input_mint,
       output_mint,
       wallet_address,
     });
-    trackEvent('api_call', { endpoint: '/api/swap/build' });
+    await trackEvent('api_call', { endpoint: '/api/swap/build' });
     
     // Return unsigned transaction
     res.json({
@@ -168,14 +168,14 @@ router.post('/build', async (req, res) => {
     });
     
     // Track failed swap
-    trackEvent('swap', {
+    await trackEvent('swap', {
       success: false,
       input_mint: req.body?.input_mint,
       output_mint: req.body?.output_mint,
       wallet_address: req.body?.wallet_address,
       error: err.message,
     });
-    trackEvent('api_call', { endpoint: '/api/swap/build' });
+    await trackEvent('api_call', { endpoint: '/api/swap/build' });
     
     res.status(500).json({
       error: err.response?.data?.error || err.message,
