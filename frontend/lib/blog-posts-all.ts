@@ -134,7 +134,7 @@ export const blogPosts: BlogPost[] = [
     author: 'MoltyDEX Team',
     date: '2026-02-08',
     category: 'Comparison',
-    tags: ['DEX', 'aggregator', 'Solana', 'trading', 'cryptocurrency'],
+    tags: ['DEX', 'aggregator', 'Solana', 'trading', 'cryptocurrency', 'x402', 'agents'],
     canonical: 'https://moltydex.com/blog/comparing-moltydex-other-dex-aggregators-complete-guide',
     content: '', // Will be loaded from markdown files
     optimized: true,
@@ -175,7 +175,7 @@ export const blogPosts: BlogPost[] = [
     author: 'MoltyDEX Team',
     date: '2026-02-08',
     category: 'Comparison',
-    tags: ['DEX', 'comparison'],
+    tags: ['DEX', 'comparison', 'x402', 'agents'],
     canonical: 'https://moltydex.com/blog/comparing-moltydex-to-other-dex-aggregators',
     content: '', // Will be loaded from markdown files
     optimized: false,
@@ -188,7 +188,7 @@ export const blogPosts: BlogPost[] = [
     author: 'MoltyDEX Team',
     date: '2026-02-08',
     category: 'Guide',
-    tags: ['DEX', 'agents'],
+    tags: ['DEX', 'agents', 'x402'],
     canonical: 'https://moltydex.com/blog/how-to-choose-a-dex-aggregator-for-agents',
     content: '', // Will be loaded from markdown files
     optimized: false,
@@ -214,7 +214,7 @@ export const blogPosts: BlogPost[] = [
     author: 'MoltyDEX Team',
     date: '2026-02-08',
     category: 'Company',
-    tags: ['company'],
+    tags: ['company', 'x402', 'agents'],
     canonical: 'https://moltydex.com/blog/why-we-built-moltydex',
     content: '', // Will be loaded from markdown files
     optimized: false,
@@ -227,7 +227,7 @@ export const blogPosts: BlogPost[] = [
     author: 'MoltyDEX Team',
     date: '2026-02-08',
     category: 'Company',
-    tags: ['company'],
+    tags: ['company', 'x402'],
     canonical: 'https://moltydex.com/blog/why-moltydex-is-different',
     content: '', // Will be loaded from markdown files
     optimized: false,
@@ -266,7 +266,7 @@ export const blogPosts: BlogPost[] = [
     author: 'MoltyDEX Team',
     date: '2026-02-08',
     category: 'Automation',
-    tags: ['automation'],
+    tags: ['automation', 'x402', 'agents'],
     canonical: 'https://moltydex.com/blog/5-ways-moltydex-improves-agent-automation',
     content: '', // Will be loaded from markdown files
     optimized: false,
