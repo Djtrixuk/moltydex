@@ -32,8 +32,8 @@ export default function Home() {
     <>
       <Head>
         <title>MoltyDEX - Fast, Cheap Token Swaps for Humans & AI Agents | Best Price Solana DEX</title>
-        <meta name="description" content="Swap any SPL token on Solana with best prices across all DEXes. 0.1% fees - lowest in market. Fast, secure swaps for humans (web interface) and AI agents (automatic x402 payments)." />
-        <meta name="keywords" content="Solana DEX, token swap Solana, best price swap, x402 protocol, AI agent payments, Jupiter aggregator, DeFi Solana, SPL token swap, decentralized exchange Solana, token aggregator, Solana trading, Raydium swap, Orca swap, Meteora swap, x402 payments, AI agent swap, automatic token swap, pay-per-use API, micropayments Solana" />
+        <meta name="description" content="Swap any SPL token on Solana with best prices across all DEXes. 0% fees - completely free swaps. Fast, secure swaps for humans (web interface) and AI agents (automatic x402 payments). Free Solana token swap, best price DEX aggregator, x402 payment swap, AI agent payments." />
+        <meta name="keywords" content="Solana DEX, token swap Solana, best price swap, x402 protocol, AI agent payments, Jupiter aggregator, DeFi Solana, SPL token swap, decentralized exchange Solana, token aggregator, Solana trading, Raydium swap, Orca swap, Meteora swap, x402 payments, AI agent swap, automatic token swap, pay-per-use API, micropayments Solana, free token swap, zero fee DEX, Solana token exchange, best price Solana, swap SOL to USDC, swap USDC to SOL" />
         <link rel="canonical" href="https://moltydex.com/" />
         <link rel="alternate" type="application/rss+xml" title="MoltyDEX" href="https://moltydex.com/sitemap.xml" />
         
@@ -41,7 +41,7 @@ export default function Home() {
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://moltydex.com/" />
         <meta property="og:title" content="MoltyDEX - Fast, Cheap Token Swaps for Humans & AI Agents" />
-        <meta property="og:description" content="Swap any SPL token on Solana with best prices across all DEXes. 0.1% fees - lowest in market. Fast, secure swaps for humans and AI agents." />
+        <meta property="og:description" content="Swap any SPL token on Solana with best prices across all DEXes. 0% fees - completely free swaps. Fast, secure swaps for humans and AI agents." />
         <meta property="og:image" content="https://moltydex.com/moltydex-logo-full.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
@@ -52,7 +52,7 @@ export default function Home() {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:url" content="https://moltydex.com/" />
         <meta name="twitter:title" content="MoltyDEX - Fast, Cheap Token Swaps for Humans & AI Agents" />
-        <meta name="twitter:description" content="Swap any SPL token on Solana with best prices across all DEXes. 0.1% fees - lowest in market." />
+        <meta name="twitter:description" content="Swap any SPL token on Solana with best prices across all DEXes. 0% fees - completely free swaps." />
         <meta name="twitter:image" content="https://moltydex.com/moltydex-logo-full.png" />
         <meta name="twitter:image:alt" content="MoltyDEX Logo" />
         <meta name="twitter:creator" content="@MoltyDEX" />
@@ -97,6 +97,12 @@ export default function Home() {
                     For API Providers
                   </Link>
                   <Link
+                    href="/blog"
+                    className="text-sm text-gray-300 hover:text-white transition-colors"
+                  >
+                    Blog
+                  </Link>
+                  <Link
                     href="/use-cases"
                     className="text-sm text-gray-300 hover:text-white transition-colors"
                   >
@@ -128,12 +134,12 @@ export default function Home() {
               {/* Header */}
               <header className="text-center mb-6 md:mb-8">
                 <h1 className="text-3xl md:text-5xl font-bold text-white mb-2">MoltyDEX</h1>
-                <h2 className="text-lg md:text-xl text-gray-300 mb-3 md:mb-4 px-4">
+                <h2 className="text-lg md:text-xl text-cyan-400 font-semibold mb-3 md:mb-4 px-4">
                   Fast, Cheap Token Swaps for Humans & AI Agents
                 </h2>
                 <p className="text-sm md:text-base text-gray-400 max-w-2xl mx-auto mb-4 px-4">
                   Swap any SPL token on Solana with <strong className="text-white">best prices</strong> across all DEXes. 
-                  <strong className="text-white"> 0.1% fees</strong> - the lowest in the market. 
+                  <strong className="text-white"> 0% fees</strong> - completely free swaps. 
                   Fast, secure, and works for both <strong className="text-white">humans</strong> (web interface) and 
                   <strong className="text-white"> AI agents</strong> (automatic x402 payments).
                 </p>
@@ -142,7 +148,7 @@ export default function Home() {
                     Best Prices
                   </span>
                   <span className="px-2 py-1 bg-white/5 text-gray-400 rounded-full text-xs border border-white/5">
-                    Low Fees (0.1%)
+                    Zero Fees (0%)
                   </span>
                   <span className="px-2 py-1 bg-white/5 text-gray-400 rounded-full text-xs border border-white/5">
                     For Humans & Agents
