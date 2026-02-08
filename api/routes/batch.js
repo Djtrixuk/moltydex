@@ -145,8 +145,8 @@ router.post('/balance', async (req, res) => {
     });
 
     // Track batch balance request
-    trackEvent('balance', { batch: true, token_count: token_mints.length });
-    trackEvent('api_call', { endpoint: '/api/batch/balance' });
+    await trackEvent('balance', { batch: true, token_count: token_mints.length });
+    await trackEvent('api_call', { endpoint: '/api/batch/balance' });
     
     res.json({
       wallet_address,
