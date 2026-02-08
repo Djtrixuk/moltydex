@@ -31,6 +31,12 @@ export default function PageHeader({ title, subtitle }: PageHeaderProps = {}) {
           For Traders
         </Link>
         <Link
+          href="/x402-payments"
+          className="text-sm text-gray-300 hover:text-white transition-colors font-semibold"
+        >
+          x402 Payments
+        </Link>
+        <Link
           href="/developers"
           className="text-sm text-gray-300 hover:text-white transition-colors"
         >
@@ -41,6 +47,12 @@ export default function PageHeader({ title, subtitle }: PageHeaderProps = {}) {
           className="text-sm text-gray-300 hover:text-white transition-colors"
         >
           For API Providers
+        </Link>
+        <Link
+          href="/blog"
+          className="text-sm text-gray-300 hover:text-white transition-colors"
+        >
+          Blog
         </Link>
         <Link
           href="/use-cases"
