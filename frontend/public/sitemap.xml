@@ -186,6 +186,20 @@
     <priority>0.8</priority>
   </url>
   
+  <url>
+    <loc>https://moltydex.com/blog/complete-guide-x402-payment-handler</loc>
+    <lastmod>2026-02-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://moltydex.com/blog/complete-guide-x402-communities-where-to-join</loc>
+    <lastmod>2026-02-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
   <!-- Original Blog Posts -->
   <url>
     <loc>https://moltydex.com/blog/getting-started-with-moltydex-in-5-minutes</loc>
@@ -304,6 +318,41 @@
     <lastmod>2026-02-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+  </url>
+  
+  <url>
+    <loc>https://moltydex.com/blog/complete-guide-x402-payment-handler</loc>
+    <lastmod>2026-02-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://moltydex.com/blog/complete-guide-x402-communities-where-to-join</loc>
+    <lastmod>2026-02-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://moltydex.com/blog/moltydex-progress-update-february-2026</loc>
+    <lastmod>2026-02-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://moltydex.com/blog/moltydex-functionality-audit-february-2026</loc>
+    <lastmod>2026-02-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://moltydex.com/blog/phase-3-ux-improvements-february-2026</loc>
+    <lastmod>2026-02-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
   
 </urlset>

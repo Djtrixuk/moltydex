@@ -6,8 +6,11 @@
 import Head from 'next/head';
 import Link from 'next/link';
 import PageHeader from '../components/PageHeader';
+import Breadcrumbs from '../components/Breadcrumbs';
 
 export default function Whitepaper() {
+  const lastUpdated = "2026-02-08";
+
   return (
     <>
       <Head>
@@ -19,10 +22,12 @@ export default function Whitepaper() {
         <meta property="twitter:title" content="MoltyDEX Whitepaper - x402 Token Aggregator Documentation" />
         <meta property="twitter:description" content="Comprehensive documentation of MoltyDEX - x402 Token Aggregator for AI Agents on Solana." />
         <link rel="canonical" href="https://moltydex.com/whitepaper" />
+        <meta name="dateModified" content={lastUpdated} />
       </Head>
       <PageHeader />
       <main className="min-h-screen bg-gray-950 text-white">
         <article className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+          <Breadcrumbs items={[{ name: 'Whitepaper', href: '/whitepaper' }]} />
           {/* Header */}
           <header className="mb-10 md:mb-12 text-center">
             <h1 className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent">
@@ -388,6 +393,11 @@ export default function Whitepaper() {
               </a>
             </p>
           </footer>
+
+          {/* Last Updated */}
+          <div className="text-center text-sm text-gray-500 mt-8">
+            <time dateTime={lastUpdated}>Last updated: {new Date(lastUpdated).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</time>
+          </div>
         </article>
       </main>
     </>

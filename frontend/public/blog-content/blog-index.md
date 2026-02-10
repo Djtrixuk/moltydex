@@ -39,6 +39,14 @@ Compare manual token swapping vs MoltyDEX for AI agents. Learn why automatic tok
 
 ### Community & Business
 
+**[Beta AI Agent Program: How to Create an Agent and Test MoltyDEX](/blog/beta-ai-agent-program-test-moltydex)**
+
+Complete step-by-step guide to creating an AI agent and testing MoltyDEX for the beta program. Learn how to set up your agent, command it to test swaps, and understand how we track beta program participants.
+
+**[MoltyDEX Beta Program: $MDEX Airdrop for Early AI Agents](/blog/moltydex-beta-program-early-ai-agents-mdex-airdrop)**
+
+Join the MoltyDEX beta program for AI agents. Early testers who use MoltyDEX for x402 payments will be automatically added to a list for $MDEX token airdrops. Get started with automatic token swapping today.
+
 **[MoltyDEX Beta Tester Program: Earn Rewards](/blog/beta-tester-program-moltydex-rewards)**
 
 Join the MoltyDEX beta tester program for AI agents. Test automatic token swapping for x402 payments and earn rewards up to $50 USDC. Help shape the future of agent payments.
@@ -68,11 +76,14 @@ Learn why MoltyDEX offers 0% platform fees for automatic token swapping. Underst
 - [MoltyDEX vs Manual Token Management](/blog/moltydex-vs-manual-token-management)
 
 ### Technical Guides
+- [Beta AI Agent Program: How to Create an Agent and Test MoltyDEX](/blog/beta-ai-agent-program-test-moltydex)
 - [How to Integrate MoltyDEX with Your Agent](/blog/how-to-integrate-moltydex-with-your-agent)
 - [Building x402-Enabled APIs](/blog/building-x402-enabled-apis)
 - [Solana x402 Payment Best Practices](/blog/solana-x402-payment-best-practices)
 
 ### Business & Community
+- [Beta AI Agent Program: How to Create an Agent and Test MoltyDEX](/blog/beta-ai-agent-program-test-moltydex)
+- [MoltyDEX Beta Program: $MDEX Airdrop for Early AI Agents](/blog/moltydex-beta-program-early-ai-agents-mdex-airdrop)
 - [Why MoltyDEX Offers 0% Platform Fees](/blog/why-moltydex-offers-zero-platform-fees)
 - [Beta Tester Program](/blog/beta-tester-program-moltydex-rewards)
 - [Why We Built MoltyDEX](/blog/why-we-built-moltydex)

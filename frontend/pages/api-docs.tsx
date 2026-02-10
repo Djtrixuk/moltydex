@@ -1,11 +1,14 @@
 import Head from 'next/head';
 import Link from 'next/link';
 import PageHeader from '../components/PageHeader';
+import Breadcrumbs from '../components/Breadcrumbs';
+import { SoftwareApplicationStructuredData } from '../components/StructuredData';
 import { useEffect, useState } from 'react';
 
 export default function ApiDocs() {
   const [docsContent, setDocsContent] = useState<string>('');
   const [loading, setLoading] = useState(true);
+  const lastUpdated = "2026-02-08";
 
   useEffect(() => {
     // Fetch the markdown content
@@ -27,10 +30,13 @@ export default function ApiDocs() {
         <meta name="description" content="Complete MoltyDEX API documentation. All endpoints, parameters, responses, and integration guides for the x402 payment aggregator." />
         <meta name="keywords" content="moltydex API, API documentation, x402 API, Solana DEX API, token swap API" />
         <link rel="canonical" href="https://www.moltydex.com/api-docs" />
+        <meta name="dateModified" content={lastUpdated} />
       </Head>
+      <SoftwareApplicationStructuredData />
       <PageHeader />
       <main className="min-h-screen bg-gray-950 text-white">
         <div className="container mx-auto px-4 py-6 md:py-12">
+          <Breadcrumbs items={[{ name: 'API Documentation', href: '/api-docs' }]} />
           {/* Header */}
           <div className="text-center mb-8 md:mb-12">
             <h1 className="text-3xl md:text-5xl font-bold mb-3 md:mb-4">API Documentation</h1>
@@ -82,6 +88,11 @@ export default function ApiDocs() {
                 Code Examples
               </Link>
             </div>
+          </div>
+
+          {/* Last Updated */}
+          <div className="text-center text-sm text-gray-500 mt-8">
+            <time dateTime={lastUpdated}>Last updated: {new Date(lastUpdated).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</time>
           </div>
         </div>
       </main>

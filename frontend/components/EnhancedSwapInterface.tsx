@@ -58,6 +58,11 @@ export default function EnhancedSwapInterface() {
   const [walletTokens, setWalletTokens] = useState<Token[]>([]);
   const [walletTokensLoading, setWalletTokensLoading] = useState(false);
   
+  // Refs for keyboard shortcuts
+  const amountInInputRef = useRef<HTMLInputElement>(null);
+  const tokenInSelectorRef = useRef<HTMLButtonElement>(null);
+  const tokenOutSelectorRef = useRef<HTMLButtonElement>(null);
+
   // Reset state on mount to prevent stale success messages from persisting
   useEffect(() => {
     // Clear any stale transaction state on mount
@@ -75,6 +80,23 @@ export default function EnhancedSwapInterface() {
       }
       currentPollingSignatureRef.current = null;
     };
+  }, []);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ctrl/Cmd+K: Focus amount input
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        amountInInputRef.current?.focus();
+      }
+      
+      // Tab: Switch between inputs (handled by browser, but we can enhance)
+      // Shift+Tab: Go backwards
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   // Preload logos for popular tokens on mount
@@ -97,6 +119,15 @@ export default function EnhancedSwapInterface() {
   const [quote, setQuote] = useState<QuoteResponse | null>(null);
   const [quoteLoading, setQuoteLoading] = useState(false);
   const quoteFetchedAt = useRef<number>(0);
+  const txStartTime = useRef<number>(0);
+  
+  // Store swap details for receipt (before clearing on success)
+  const [lastSwapDetails, setLastSwapDetails] = useState<{
+    amountIn: string;
+    tokenIn: Token;
+    tokenOut: Token;
+    quote: QuoteResponse;
+  } | null>(null);
   
   // Slippage tolerance
   const [slippageBps, setSlippageBps] = useState(DEFAULT_SLIPPAGE_BPS);
@@ -391,13 +422,11 @@ export default function EnhancedSwapInterface() {
       }
     }
 
-    // Validate balance before attempting swap
+    // Error Prevention: Pre-validate balance and quote freshness
     const swapAmount = parseFloat(amountIn);
     const availableBalance = parseFloat(tokenInBalance.balance || '0');
     
-    // Reserve small buffer only for SOL transaction fees (network fees, not platform fees)
-    // For SOL: reserve ~0.000005 SOL for transaction fees
-    // For SPL tokens: no reservation needed (network fees paid in SOL separately)
+    // Check balance
     const reservedForNetworkFees = tokenIn.address.toLowerCase() === 'so11111111111111111111111111111111111111112' 
       ? 0.000005 
       : 0;
@@ -411,6 +440,22 @@ export default function EnhancedSwapInterface() {
         (reservedForNetworkFees > 0 ? ` Reserve ${reservedForNetworkFees.toFixed(9)} ${tokenIn.symbol} for network fees.` : '')
       );
       setStatus('error');
+      return;
+    }
+    
+    // Check quote freshness
+    if (!quote) {
+      setError('Please wait for quote to load before swapping.');
+      setStatus('error');
+      return;
+    }
+    
+    const quoteAgeMs = Date.now() - quoteFetchedAt.current;
+    if (quoteAgeMs > QUOTE_STALE_MS) {
+      setError('Quote is stale. Please refetch the quote before swapping.');
+      setStatus('error');
+      // Auto-refetch quote
+      fetchQuote();
       return;
     }
 
@@ -611,6 +656,47 @@ export default function EnhancedSwapInterface() {
                              (statusResult.status === 'processed' && !statusResult.error);
 
           if (isConfirmed) {
+            // Store swap details for receipt before clearing
+            if (amountIn && quote) {
+              setLastSwapDetails({
+                amountIn,
+                tokenIn,
+                tokenOut,
+                quote,
+              });
+              
+              // Save to swap history
+              try {
+                const SWAP_HISTORY_KEY = 'moltydex_swap_history';
+                const MAX_HISTORY_ITEMS = 20;
+                const stored = localStorage.getItem(SWAP_HISTORY_KEY);
+                const history = stored ? JSON.parse(stored) : [];
+                
+                const swapRecord = {
+                  timestamp: Date.now(),
+                  amountIn,
+                  tokenIn: {
+                    symbol: tokenIn.symbol,
+                    address: tokenIn.address,
+                    decimals: tokenIn.decimals,
+                  },
+                  tokenOut: {
+                    symbol: tokenOut.symbol,
+                    address: tokenOut.address,
+                    decimals: tokenOut.decimals,
+                  },
+                  amountOut: quote.output_after_fee,
+                  priceImpact: quote.price_impact || null,
+                  txSignature: pollingSignature,
+                };
+                
+                // Add to front and limit to MAX_HISTORY_ITEMS
+                const updated = [swapRecord, ...history].slice(0, MAX_HISTORY_ITEMS);
+                localStorage.setItem(SWAP_HISTORY_KEY, JSON.stringify(updated));
+              } catch (err) {
+                console.error('Failed to save swap history:', err);
+              }
+            }
             setStatus('success');
             setAmountIn('');
             setQuote(null);
@@ -692,6 +778,7 @@ export default function EnhancedSwapInterface() {
                 setStatus('idle');
                 setTxSignature(null);
                 setTxStatus(null);
+                setLastSwapDetails(null); // Clear receipt data
               }
             }, 5000);
           } else if (statusResult.error || statusResult.status === 'failed') {
@@ -1075,11 +1162,42 @@ export default function EnhancedSwapInterface() {
     }
   };
 
+  // Swap history state
+  const [showSwapHistory, setShowSwapHistory] = useState(false);
+  const [swapHistory, setSwapHistory] = useState<any[]>([]);
+
+  // Load swap history
+  useEffect(() => {
+    try {
+      const SWAP_HISTORY_KEY = 'moltydex_swap_history';
+      const stored = localStorage.getItem(SWAP_HISTORY_KEY);
+      if (stored) {
+        setSwapHistory(JSON.parse(stored));
+      }
+    } catch (err) {
+      console.error('Failed to load swap history:', err);
+    }
+  }, [status]); // Reload when swap status changes
+
   return (
     <div className="max-w-md mx-auto bg-white/10 backdrop-blur-lg rounded-xl md:rounded-2xl p-4 md:p-6 shadow-2xl">
       <div className="flex items-center justify-between mb-4 md:mb-6">
         <h2 className="text-xl md:text-2xl font-bold text-white">Swap Tokens</h2>
         <div className="flex items-center gap-1.5 md:gap-2">
+          {swapHistory.length > 0 && (
+            <button
+              onClick={() => setShowSwapHistory(!showSwapHistory)}
+              className={`text-[10px] md:text-xs px-2 md:px-3 py-1 md:py-1.5 rounded-lg font-medium transition-colors touch-manipulation ${
+                showSwapHistory
+                  ? 'bg-white/20 hover:bg-white/30 text-white border border-white/20'
+                  : 'bg-white/10 hover:bg-white/20 text-gray-300 border border-white/10'
+              }`}
+              title="View Swap History"
+            >
+              <span className="hidden md:inline">📜 History ({swapHistory.length})</span>
+              <span className="md:hidden">📜</span>
+            </button>
+          )}
           <SlippageSettings slippageBps={slippageBps} onSlippageChange={setSlippageBps} />
           <button
             onClick={() => setDeveloperMode(!developerMode)}
@@ -1095,6 +1213,63 @@ export default function EnhancedSwapInterface() {
           </button>
         </div>
       </div>
+
+      {/* Swap History Panel */}
+      {showSwapHistory && swapHistory.length > 0 && (
+        <div className="mb-4 p-4 bg-white/5 rounded-xl border border-white/10 max-h-[300px] overflow-y-auto">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-semibold text-white">Swap History</h3>
+            <button
+              onClick={() => {
+                if (confirm('Clear all swap history?')) {
+                  localStorage.removeItem('moltydex_swap_history');
+                  setSwapHistory([]);
+                  setShowSwapHistory(false);
+                }
+              }}
+              className="text-xs text-gray-400 hover:text-gray-300"
+            >
+              Clear
+            </button>
+          </div>
+          <div className="space-y-2">
+            {swapHistory.map((swap, index) => (
+              <div
+                key={index}
+                className="p-3 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors"
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-white text-sm font-medium">
+                      {formatAmount(swap.amountIn, swap.tokenIn.decimals)} {swap.tokenIn.symbol}
+                    </span>
+                    <span className="text-gray-400">→</span>
+                    <span className="text-white text-sm font-medium">
+                      {formatAmount(swap.amountOut, swap.tokenOut.decimals)} {swap.tokenOut.symbol}
+                    </span>
+                  </div>
+                  <a
+                    href={`https://solscan.io/tx/${swap.txSignature}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-blue-400 hover:text-blue-300"
+                  >
+                    View →
+                  </a>
+                </div>
+                <div className="flex items-center justify-between text-xs text-gray-400">
+                  <span>{new Date(swap.timestamp).toLocaleString()}</span>
+                  {swap.priceImpact && (
+                    <span className={parseFloat(swap.priceImpact) > 1 ? 'text-red-400' : 'text-gray-400'}>
+                      {parseFloat(swap.priceImpact).toFixed(2)}% impact
+                    </span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="space-y-3 md:space-y-4">
         {/* From Token */}
@@ -1117,6 +1292,49 @@ export default function EnhancedSwapInterface() {
                   <span className="text-[10px] md:text-xs text-gray-400">
                     {tokenInBalance.balance} {tokenIn.symbol}
                   </span>
+                )}
+                {connected && (
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      if (!publicKey) return;
+                      try {
+                        // Refresh balance for current token
+                        const tokenMints = [tokenIn.address];
+                        const batchResponse = await getBatchBalances(publicKey.toString(), tokenMints);
+                        if (batchResponse.results[0]?.success && batchResponse.results[0]?.data) {
+                          const decimals = batchResponse.results[0].data.decimals ?? 9;
+                          const rawBalance = batchResponse.results[0].data.balance || '0';
+                          const formattedBalance = formatAmount(rawBalance, decimals);
+                          setBalanceCache(prev => ({
+                            ...prev,
+                            [tokenIn.address.toLowerCase()]: formattedBalance,
+                          }));
+                        }
+                        // Also refresh all balances
+                        const allTokenMints = allTokens.map(t => t.address);
+                        const allBatchResponse = await getBatchBalances(publicKey.toString(), allTokenMints);
+                        const cache: { [key: string]: string | null } = {};
+                        allBatchResponse.results.forEach(result => {
+                          if (result.success && result.data) {
+                            const decimals = result.data.decimals ?? 9;
+                            const rawBalance = result.data.balance || '0';
+                            cache[result.token_mint] = formatAmount(rawBalance, decimals);
+                          } else {
+                            cache[result.token_mint] = null;
+                          }
+                        });
+                        setBalanceCache(cache);
+                      } catch (err) {
+                        console.error('Failed to refresh balance:', err);
+                      }
+                    }}
+                    className="text-[10px] md:text-xs text-gray-400 hover:text-gray-300 transition-colors p-0.5 hover:bg-white/10 rounded"
+                    title="Refresh balance"
+                    disabled={tokenInBalance.loading}
+                  >
+                    ↻
+                  </button>
                 )}
                 {tokenInBalance.balance !== null && parseFloat(tokenInBalance.balance || '0') > 0 && (
                   <>
@@ -1171,6 +1389,7 @@ export default function EnhancedSwapInterface() {
             {/* Amount input - full width */}
             <div className="flex-1 min-w-0">
               <input
+                ref={amountInInputRef}
                 type="number"
                 value={amountIn}
                 onChange={(e) => {
@@ -1186,12 +1405,24 @@ export default function EnhancedSwapInterface() {
                   setAmountIn(value);
                   setError(null); // Clear error when user types
                 }}
+                onKeyDown={(e) => {
+                  // Tab: Switch to token selector or swap button
+                  if (e.key === 'Tab' && !e.shiftKey) {
+                    // Let browser handle default Tab behavior
+                  }
+                  // Enter: Trigger swap if button is enabled
+                  if (e.key === 'Enter' && !e.shiftKey && amountIn && quote && status === 'idle') {
+                    e.preventDefault();
+                    handleSwap();
+                  }
+                }}
                 placeholder="0.0"
                 step="any"
                 min="0"
                 max={tokenInBalance.balance ? parseFloat(tokenInBalance.balance) : undefined}
                 disabled={status === 'loading' || status === 'signing' || status === 'sending' || status === 'confirming'}
                 className="w-full h-12 md:h-16 px-2 md:px-4 bg-transparent text-white placeholder-gray-500 focus:outline-none text-right text-lg md:text-2xl font-bold [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Press Ctrl/Cmd+K to focus, Enter to swap"
               />
             </div>
           </div>
@@ -1214,7 +1445,7 @@ export default function EnhancedSwapInterface() {
           <div className="flex items-center justify-between mb-2 md:mb-3">
             <label className="text-xs md:text-sm font-medium text-gray-300">To</label>
             {connected && (
-              <>
+              <div className="flex items-center gap-1 md:gap-1.5">
                 {tokenOutBalance.loading ? (
                   <BalanceSkeleton />
                 ) : (
@@ -1222,7 +1453,48 @@ export default function EnhancedSwapInterface() {
                     {tokenOutBalance.balance ?? '0'} {tokenOut.symbol}
                   </span>
                 )}
-              </>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (!publicKey) return;
+                    try {
+                      // Refresh balance for current token
+                      const tokenMints = [tokenOut.address];
+                      const batchResponse = await getBatchBalances(publicKey.toString(), tokenMints);
+                      if (batchResponse.results[0]?.success && batchResponse.results[0]?.data) {
+                        const decimals = batchResponse.results[0].data.decimals ?? 9;
+                        const rawBalance = batchResponse.results[0].data.balance || '0';
+                        const formattedBalance = formatAmount(rawBalance, decimals);
+                        setBalanceCache(prev => ({
+                          ...prev,
+                          [tokenOut.address.toLowerCase()]: formattedBalance,
+                        }));
+                      }
+                      // Also refresh all balances
+                      const allTokenMints = allTokens.map(t => t.address);
+                      const allBatchResponse = await getBatchBalances(publicKey.toString(), allTokenMints);
+                      const cache: { [key: string]: string | null } = {};
+                      allBatchResponse.results.forEach(result => {
+                        if (result.success && result.data) {
+                          const decimals = result.data.decimals ?? 9;
+                          const rawBalance = result.data.balance || '0';
+                          cache[result.token_mint] = formatAmount(rawBalance, decimals);
+                        } else {
+                          cache[result.token_mint] = null;
+                        }
+                      });
+                      setBalanceCache(cache);
+                    } catch (err) {
+                      console.error('Failed to refresh balance:', err);
+                    }
+                  }}
+                  className="text-[10px] md:text-xs text-gray-400 hover:text-gray-300 transition-colors p-0.5 hover:bg-white/10 rounded"
+                  title="Refresh balance"
+                  disabled={tokenOutBalance.loading}
+                >
+                  ↻
+                </button>
+              </div>
             )}
           </div>
           <div className="flex items-center gap-2 md:gap-3">
@@ -1308,17 +1580,60 @@ export default function EnhancedSwapInterface() {
           <div className="bg-white/5 rounded-xl p-4 border border-white/10 space-y-2.5 text-sm">
             <div className="flex justify-between items-center">
               <span className="text-gray-400">You'll receive</span>
-              <span className="text-white font-semibold text-base">
-                {formatAmount(quote.output_after_fee, tokenOut.decimals)} {tokenOut.symbol}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-white font-semibold text-base">
+                  {formatAmount(quote.output_after_fee, tokenOut.decimals)} {tokenOut.symbol}
+                </span>
+                <span className="px-2 py-0.5 bg-green-500/20 text-green-400 text-[10px] font-medium rounded border border-green-500/30">
+                  Best price via Jupiter
+                </span>
+              </div>
             </div>
+            {/* Exchange Rate */}
+            {amountIn && parseFloat(amountIn) > 0 && (
+              <div className="flex justify-between items-center text-gray-400">
+                <span>Exchange rate</span>
+                <span className="text-gray-300">
+                  1 {tokenIn.symbol} = {formatAmount(
+                    (parseFloat(quote.output_after_fee) / parseFloat(amountIn)).toString(),
+                    tokenOut.decimals
+                  )} {tokenOut.symbol}
+                </span>
+              </div>
+            )}
             <div className="flex justify-between items-center text-gray-400">
-              <span>Fee (0%)</span>
+              <div className="flex items-center gap-1.5">
+                <span>Fee (0%)</span>
+                <div className="group relative">
+                  <svg className="w-3.5 h-3.5 text-gray-500 hover:text-gray-400 cursor-help" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                  </svg>
+                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-50">
+                    <div className="bg-gray-800 text-white text-xs rounded-lg p-2 w-48 shadow-xl border border-gray-700">
+                      <p className="font-semibold mb-1">Platform Fee</p>
+                      <p>MoltyDEX charges 0% platform fees. You only pay Solana network fees (typically ~0.000005 SOL) for transaction processing.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
               <span>0 {tokenOut.symbol}</span>
             </div>
             {quote.price_impact && (
               <div className="flex justify-between items-center">
-                <span className="text-gray-400">Price impact</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-gray-400">Price impact</span>
+                  <div className="group relative">
+                    <svg className="w-3.5 h-3.5 text-gray-500 hover:text-gray-400 cursor-help" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                    </svg>
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-50">
+                      <div className="bg-gray-800 text-white text-xs rounded-lg p-2 w-48 shadow-xl border border-gray-700">
+                        <p className="font-semibold mb-1">Price Impact</p>
+                        <p>How much the swap price differs from the market price. Higher impact means less favorable rates. Consider smaller amounts or refetching the quote.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
                 <span className={`font-medium ${
                   parseFloat(quote.price_impact) > 1
                     ? 'text-red-400'
@@ -1330,6 +1645,11 @@ export default function EnhancedSwapInterface() {
                 </span>
               </div>
             )}
+            {/* Estimated Time to Complete */}
+            <div className="flex justify-between items-center text-gray-400">
+              <span>Estimated time</span>
+              <span className="text-gray-300">~30 seconds</span>
+            </div>
           </div>
         )}
 
@@ -1343,14 +1663,37 @@ export default function EnhancedSwapInterface() {
               <div className="flex-1">
                 <p className="font-semibold mb-1">Error: {error}</p>
                 {txSignature && (
-                  <a
-                    href={`https://solscan.io/tx/${txSignature}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs underline hover:opacity-80 mt-1 inline-block text-red-200"
-                  >
-                    View transaction on Solscan →
-                  </a>
+                  <div className="flex items-center gap-2 mt-2">
+                    <a
+                      href={`https://solscan.io/tx/${txSignature}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs underline hover:opacity-80 text-red-200"
+                    >
+                      View transaction on Solscan →
+                    </a>
+                    <button
+                      type="button"
+                      onClick={async (e) => {
+                        try {
+                          await navigator.clipboard.writeText(txSignature);
+                          // Show temporary feedback
+                          const btn = e.currentTarget;
+                          const originalText = btn.textContent;
+                          btn.textContent = '✓ Copied!';
+                          setTimeout(() => {
+                            btn.textContent = originalText;
+                          }, 2000);
+                        } catch (err) {
+                          console.error('Failed to copy:', err);
+                        }
+                      }}
+                      className="text-xs px-2 py-1 bg-red-500/30 hover:bg-red-500/50 rounded text-red-200 transition-colors"
+                      title="Copy transaction signature"
+                    >
+                      Copy TX
+                    </button>
+                  </div>
                 )}
                 {error.toLowerCase().includes('insufficient') && (
                   <p className="text-xs mt-2 text-red-300/80">
@@ -1382,21 +1725,58 @@ export default function EnhancedSwapInterface() {
                     💡 <strong>Tip:</strong> Transaction is too large. Try swapping a smaller amount.
                   </p>
                 )}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setError(null);
-                    setStatus('idle');
-                    setTxSignature(null);
-                    setTxStatus(null);
-                    if (amountIn) {
-                      fetchQuote();
-                    }
-                  }}
-                  className="mt-2 px-3 py-1.5 bg-red-500/30 hover:bg-red-500/50 rounded text-white text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-red-500"
-                >
-                  Try Again
-                </button>
+                <div className="flex gap-2 mt-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setError(null);
+                      setStatus('idle');
+                      setTxSignature(null);
+                      setTxStatus(null);
+                      if (amountIn) {
+                        fetchQuote();
+                      }
+                    }}
+                    className="px-3 py-1.5 bg-red-500/30 hover:bg-red-500/50 rounded text-white text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-red-500"
+                  >
+                    Try Again
+                  </button>
+                  {error && !error.toLowerCase().includes('rejected') && !error.toLowerCase().includes('user') && !error.toLowerCase().includes('cancelled') && (
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        // Retry swap: refetch quote and execute swap again
+                        if (!amountIn || !publicKey || !connected) return;
+                        
+                        try {
+                          setError(null);
+                          setStatus('loading');
+                          
+                          // Refetch quote first
+                          await fetchQuote();
+                          
+                          // Wait a moment for quote to update
+                          await new Promise(resolve => setTimeout(resolve, 500));
+                          
+                          // Execute swap if quote is available
+                          if (quote && amountIn) {
+                            await handleSwap();
+                          } else {
+                            // If no quote, just refetch
+                            setStatus('idle');
+                          }
+                        } catch (err) {
+                          console.error('Retry swap failed:', err);
+                          setError('Failed to retry swap. Please try again.');
+                          setStatus('error');
+                        }
+                      }}
+                      className="px-3 py-1.5 bg-blue-500/30 hover:bg-blue-500/50 rounded text-white text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      Retry Swap
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -1418,33 +1798,164 @@ export default function EnhancedSwapInterface() {
                 </div>
                 <div className="flex-1">
                   <p className="font-semibold">Transaction Confirming...</p>
-                  <p className="text-xs mt-1 opacity-80">
+                  
+                  {/* Progress Steps */}
+                  <div className="mt-3 space-y-2">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-green-400"></div>
+                      <span className="text-xs text-gray-300">Transaction sent</span>
+                      <span className="text-xs text-gray-500">~2s</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className={`w-2 h-2 rounded-full ${
+                        txStatus?.confirmation_status === 'processed' || txStatus?.confirmation_status === 'confirmed' || txStatus?.confirmation_status === 'finalized'
+                          ? 'bg-green-400'
+                          : 'bg-yellow-400 animate-pulse'
+                      }`}></div>
+                      <span className="text-xs text-gray-300">Processing on network</span>
+                      <span className="text-xs text-gray-500">~10s</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className={`w-2 h-2 rounded-full ${
+                        txStatus?.confirmation_status === 'confirmed' || txStatus?.confirmation_status === 'finalized'
+                          ? 'bg-green-400'
+                          : txStatus?.confirmation_status === 'processed'
+                          ? 'bg-yellow-400 animate-pulse'
+                          : 'bg-gray-500'
+                      }`}></div>
+                      <span className="text-xs text-gray-300">Finalizing confirmation</span>
+                      <span className="text-xs text-gray-500">~20s</span>
+                    </div>
+                  </div>
+                  
+                  <p className="text-xs mt-2 opacity-80">
                     {txStatus?.confirmation_status 
                       ? `Status: ${txStatus.confirmation_status}`
                       : 'Waiting for confirmation'}
                   </p>
-                  <a
-                    href={`https://solscan.io/tx/${txSignature}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs underline hover:opacity-80 mt-1 inline-block"
-                  >
-                    View on Solscan
-                  </a>
+                  <p className="text-xs mt-1 text-gray-400">
+                    Estimated time remaining: ~{Math.max(0, 30 - Math.floor((Date.now() - (txStartTime.current || Date.now())) / 1000))}s
+                  </p>
+                  <div className="flex items-center gap-2 mt-2">
+                    <a
+                      href={`https://solscan.io/tx/${txSignature}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs underline hover:opacity-80"
+                    >
+                      View on Solscan →
+                    </a>
+                    <button
+                      type="button"
+                      onClick={async (e) => {
+                        try {
+                          await navigator.clipboard.writeText(txSignature);
+                          const btn = e.currentTarget;
+                          const originalText = btn.textContent;
+                          btn.textContent = '✓ Copied!';
+                          setTimeout(() => {
+                            btn.textContent = originalText;
+                          }, 2000);
+                        } catch (err) {
+                          console.error('Failed to copy:', err);
+                        }
+                      }}
+                      className="text-xs px-2 py-1 bg-white/10 hover:bg-white/20 rounded text-gray-300 transition-colors"
+                      title="Copy transaction signature"
+                    >
+                      Copy TX
+                    </button>
+                  </div>
                 </div>
               </div>
             ) : (
               <>
-                <p className="font-semibold">Swap successful!</p>
-                <a
-                  href={`https://solscan.io/tx/${txSignature}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline hover:opacity-80"
-                >
-                  View on Solscan
-                </a>
-                <p className="text-xs opacity-80 mt-2">You can start a new swap now</p>
+                <div className="flex items-start gap-2">
+                  <svg className="w-5 h-5 flex-shrink-0 mt-0.5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <div className="flex-1">
+                    <p className="font-semibold">Swap successful!</p>
+                    
+                    {/* Transaction Receipt */}
+                    {lastSwapDetails && txSignature && (
+                      <div className="mt-3 p-3 bg-white/5 rounded-lg border border-white/10 space-y-2 text-xs">
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-400">You paid</span>
+                          <span className="text-white font-medium">
+                            {formatAmount(lastSwapDetails.amountIn, lastSwapDetails.tokenIn.decimals)} {lastSwapDetails.tokenIn.symbol}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-400">You received</span>
+                          <span className="text-white font-medium">
+                            {formatAmount(lastSwapDetails.quote.output_after_fee, lastSwapDetails.tokenOut.decimals)} {lastSwapDetails.tokenOut.symbol}
+                          </span>
+                        </div>
+                        {lastSwapDetails.quote.price_impact && (
+                          <div className="flex justify-between items-center">
+                            <span className="text-gray-400">Price impact</span>
+                            <span className="text-gray-300">
+                              {parseFloat(lastSwapDetails.quote.price_impact).toFixed(2)}%
+                            </span>
+                          </div>
+                        )}
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-400">Fee</span>
+                          <span className="text-gray-300">0 {lastSwapDetails.tokenOut.symbol} (0%)</span>
+                        </div>
+                        <div className="flex justify-between items-center pt-2 border-t border-white/10">
+                          <span className="text-gray-400">Transaction</span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-gray-300 font-mono text-[10px]">
+                              {txSignature.slice(0, 8)}...{txSignature.slice(-8)}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={async (e) => {
+                                try {
+                                  await navigator.clipboard.writeText(txSignature);
+                                  const btn = e.currentTarget;
+                                  const originalText = btn.textContent;
+                                  btn.textContent = '✓';
+                                  setTimeout(() => {
+                                    btn.textContent = originalText;
+                                  }, 2000);
+                                } catch (err) {
+                                  console.error('Failed to copy:', err);
+                                }
+                              }}
+                              className="text-gray-400 hover:text-gray-300 transition-colors"
+                              title="Copy transaction signature"
+                            >
+                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-400">Time</span>
+                          <span className="text-gray-300">
+                            {new Date().toLocaleTimeString()}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                    
+                    <div className="flex items-center gap-2 mt-2">
+                      <a
+                        href={`https://solscan.io/tx/${txSignature}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs underline hover:opacity-80"
+                      >
+                        View on Solscan →
+                      </a>
+                    </div>
+                    <p className="text-xs opacity-80 mt-2">You can start a new swap now</p>
+                  </div>
+                </div>
               </>
             )}
           </div>

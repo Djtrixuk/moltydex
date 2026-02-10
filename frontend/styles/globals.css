@@ -76,3 +76,18 @@ code {
   background-size: 200px 100%;
   animation: skeleton-loading 1.5s ease-in-out infinite;
 }
+
+/* Ensure wallet adapter modal appears above all other elements */
+.wallet-adapter-modal-wrapper,
+.wallet-adapter-modal-overlay,
+.wallet-adapter-modal-container,
+.wallet-adapter-modal {
+  z-index: 9999 !important;
+}
+
+/* Ensure wallet button is clickable */
+.wallet-adapter-button {
+  position: relative;
+  z-index: 10;
+  pointer-events: auto !important;
+}

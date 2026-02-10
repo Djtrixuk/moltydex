@@ -13,7 +13,6 @@
     }
   ],
   "env": {
-    "FEE_BPS": "10",
-    "SOLANA_RPC_URL": "https://api.mainnet-beta.solana.com"
+    "FEE_BPS": "10"
   }
 }

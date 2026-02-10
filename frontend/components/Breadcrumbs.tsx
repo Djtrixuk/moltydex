@@ -28,37 +28,43 @@ export default function Breadcrumbs({ items }: BreadcrumbsProps) {
     url: `https://moltydex.com${item.href}`
   }));
 
+  // Hide visual breadcrumb on homepage (only "Home" with no other items)
+  // But still include structured data for SEO
+  const isHomepage = items.length === 0;
+
   return (
     <>
       <BreadcrumbStructuredData items={structuredDataItems} />
-      <nav aria-label="Breadcrumb" className="mb-4 md:mb-6">
-        <ol className="flex items-center gap-2 text-sm text-gray-400 flex-wrap">
-          {allItems.map((item, index) => {
-            const isLast = index === allItems.length - 1;
-            return (
-              <li key={item.href} className="flex items-center gap-2">
-                {isLast ? (
-                  <span className="text-white font-medium" aria-current="page">
-                    {item.name}
-                  </span>
-                ) : (
-                  <>
-                    <Link
-                      href={item.href}
-                      className="hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
-                    >
+      {!isHomepage && (
+        <nav aria-label="Breadcrumb" className="mb-4 md:mb-6">
+          <ol className="flex items-center gap-2 text-sm text-gray-400 flex-wrap">
+            {allItems.map((item, index) => {
+              const isLast = index === allItems.length - 1;
+              return (
+                <li key={item.href} className="flex items-center gap-2">
+                  {isLast ? (
+                    <span className="text-white font-medium" aria-current="page">
                       {item.name}
-                    </Link>
-                    <span aria-hidden="true" className="text-gray-500">
-                      /
                     </span>
-                  </>
-                )}
-              </li>
-            );
-          })}
-        </ol>
-      </nav>
+                  ) : (
+                    <>
+                      <Link
+                        href={item.href}
+                        className="hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+                      >
+                        {item.name}
+                      </Link>
+                      <span aria-hidden="true" className="text-gray-500">
+                        /
+                      </span>
+                    </>
+                  )}
+                </li>
+              );
+            })}
+          </ol>
+        </nav>
+      )}
     </>
   );
 }

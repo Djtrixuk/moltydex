@@ -110,66 +110,83 @@ async function saveStats(stats) {
  * Track an event
  */
 async function trackEvent(type, data = {}) {
-  const date = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-  
-  // Get current stats
-  const stats = useRedis ? await getStats() : {
-    ...usageStats,
-    uniqueWallets: Array.from(usageStats.uniqueWallets),
-  };
-  
-  // Convert uniqueWallets array back to Set for manipulation
-  if (Array.isArray(stats.uniqueWallets)) {
-    stats.uniqueWallets = new Set(stats.uniqueWallets);
-  }
-  
-  switch (type) {
-    case 'swap':
-      stats.swaps.total++;
-      if (data.success) {
-        stats.swaps.successful++;
-      } else {
-        stats.swaps.failed++;
-      }
-      
-      const pair = `${data.input_mint || 'unknown'}_${data.output_mint || 'unknown'}`;
-      stats.swaps.byTokenPair[pair] = (stats.swaps.byTokenPair[pair] || 0) + 1;
-      
-      stats.swaps.byDate[date] = (stats.swaps.byDate[date] || 0) + 1;
-      
-      if (data.wallet_address) {
-        stats.uniqueWallets.add(data.wallet_address);
-      }
-      
-      // Log swap for debugging
-      console.log(`[analytics] Swap tracked: ${data.success ? 'SUCCESS' : 'FAILED'} - ${pair} - wallet: ${data.wallet_address?.substring(0, 8)}...`);
-      break;
-      
-    case 'quote':
-      stats.quotes.total++;
-      stats.quotes.byDate[date] = (stats.quotes.byDate[date] || 0) + 1;
-      break;
-      
-    case 'balance':
-      stats.balances.total++;
-      stats.balances.byDate[date] = (stats.balances.byDate[date] || 0) + 1;
-      break;
-      
-    case 'api_call':
-      stats.apiCalls.total++;
-      const endpoint = data.endpoint || 'unknown';
-      stats.apiCalls.byEndpoint[endpoint] = (stats.apiCalls.byEndpoint[endpoint] || 0) + 1;
-      stats.apiCalls.byDate[date] = (stats.apiCalls.byDate[date] || 0) + 1;
-      break;
-  }
-  
-  // Save back to Redis or update in-memory
-  if (useRedis) {
-    await saveStats(stats);
-  } else {
-    // Update in-memory stats
-    Object.assign(usageStats, stats);
-    usageStats.uniqueWallets = stats.uniqueWallets;
+  try {
+    const date = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+    
+    // Get current stats
+    let stats;
+    if (useRedis) {
+      stats = await getStats();
+    } else {
+      // For in-memory, work directly with usageStats to avoid shallow copy issues
+      stats = usageStats;
+    }
+    
+    // Convert uniqueWallets array back to Set for manipulation if needed
+    if (Array.isArray(stats.uniqueWallets)) {
+      stats.uniqueWallets = new Set(stats.uniqueWallets);
+    }
+    
+    switch (type) {
+      case 'swap':
+        stats.swaps.total++;
+        if (data.success) {
+          stats.swaps.successful++;
+        } else {
+          stats.swaps.failed++;
+        }
+        
+        const pair = `${data.input_mint || 'unknown'}_${data.output_mint || 'unknown'}`;
+        stats.swaps.byTokenPair[pair] = (stats.swaps.byTokenPair[pair] || 0) + 1;
+        
+        stats.swaps.byDate[date] = (stats.swaps.byDate[date] || 0) + 1;
+        
+        if (data.wallet_address) {
+          stats.uniqueWallets.add(data.wallet_address);
+        }
+        
+        // Log swap for debugging with more details
+        const logDetails = {
+          success: data.success ? 'SUCCESS' : 'FAILED',
+          pair,
+          wallet: data.wallet_address?.substring(0, 8) || 'no wallet',
+          error: data.error || 'none',
+          hasInputMint: !!data.input_mint,
+          hasOutputMint: !!data.output_mint,
+        };
+        console.log(`[analytics] Swap tracked:`, logDetails);
+        break;
+        
+      case 'quote':
+        stats.quotes.total++;
+        stats.quotes.byDate[date] = (stats.quotes.byDate[date] || 0) + 1;
+        break;
+        
+      case 'balance':
+        stats.balances.total++;
+        stats.balances.byDate[date] = (stats.balances.byDate[date] || 0) + 1;
+        break;
+        
+      case 'api_call':
+        stats.apiCalls.total++;
+        const endpoint = data.endpoint || 'unknown';
+        stats.apiCalls.byEndpoint[endpoint] = (stats.apiCalls.byEndpoint[endpoint] || 0) + 1;
+        stats.apiCalls.byDate[date] = (stats.apiCalls.byDate[date] || 0) + 1;
+        break;
+    }
+    
+    // Save back to Redis or update in-memory
+    if (useRedis) {
+      await saveStats(stats);
+    }
+    // For in-memory, stats is already a reference to usageStats, so changes are already applied
+  } catch (err) {
+    console.error('[analytics] Error tracking event:', {
+      type,
+      error: err.message,
+      stack: err.stack,
+    });
+    // Don't throw - tracking failures shouldn't break the main functionality
   }
 }
 
@@ -286,5 +303,22 @@ router.post('/track', async (req, res) => {
 
 // Export trackEvent for use in other routes
 router.trackEvent = trackEvent;
+
+/**
+ * GET /api/analytics/debug
+ * Debug endpoint to check Redis configuration
+ */
+router.get('/debug', (req, res) => {
+  res.json({
+    redisConfigured: useRedis,
+    hasRedisClient: !!redis,
+    envVars: {
+      hasUrl: !!process.env.UPSTASH_REDIS_REST_URL,
+      hasToken: !!process.env.UPSTASH_REDIS_REST_TOKEN,
+      urlPrefix: process.env.UPSTASH_REDIS_REST_URL?.substring(0, 20) + '...' || 'not set',
+    },
+    storage: useRedis ? 'redis' : 'memory',
+  });
+});
 
 module.exports = router;

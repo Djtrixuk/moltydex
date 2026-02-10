@@ -1,8 +1,11 @@
 import Head from 'next/head';
 import Link from 'next/link';
 import PageHeader from '../components/PageHeader';
+import Breadcrumbs from '../components/Breadcrumbs';
 
 export default function UseCases() {
+  const lastUpdated = "2026-02-08";
+
   return (
     <>
       <Head>
@@ -10,10 +13,12 @@ export default function UseCases() {
         <meta name="description" content="Real-world use cases for MoltyDEX: Premium API access, automated data collection, pay-per-use AI services, and x402 protocol integration. See how AI agents use MoltyDEX for automatic token swapping." />
         <meta name="keywords" content="x402 use cases, AI agent payments, automated token swap, premium API access, pay-per-use API, x402 protocol integration, Solana agent payments" />
         <link rel="canonical" href="https://www.moltydex.com/use-cases" />
+        <meta name="dateModified" content={lastUpdated} />
       </Head>
       <PageHeader />
       <main className="min-h-screen bg-gray-950 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+          <Breadcrumbs items={[{ name: 'Use Cases', href: '/use-cases' }]} />
           {/* Header */}
           <div className="text-center mb-10 md:mb-12">
             <h1 className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent">
@@ -116,6 +121,11 @@ export default function UseCases() {
               </Link>
             </div>
           </div>
+        </div>
+
+        {/* Last Updated */}
+        <div className="text-center text-sm text-gray-500 mt-8">
+          <time dateTime={lastUpdated}>Last updated: {new Date(lastUpdated).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</time>
         </div>
       </main>
     </>

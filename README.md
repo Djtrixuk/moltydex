@@ -6,6 +6,8 @@
 [![x402 Protocol](https://img.shields.io/badge/x402-Enabled-blue)](https://x402.dev)
 [![Tests](https://img.shields.io/badge/tests-22%20passing-brightgreen)](./tests/TEST_RESULTS.md)
 [![API Status](https://img.shields.io/badge/API-Live-success)](https://api.moltydex.com/api/health)
+[![GitHub stars](https://img.shields.io/github/stars/Djtrixuk/moltydex?style=social)](https://github.com/Djtrixuk/moltydex)
+[![GitHub forks](https://img.shields.io/github/forks/Djtrixuk/moltydex?style=social)](https://github.com/Djtrixuk/moltydex)
 
 **Automatically swap tokens when making x402 payments. Get the best prices across all Solana DEXes. Built specifically for AI agents and pay-per-use APIs.**
 
@@ -21,6 +23,8 @@ MoltyDEX enables AI agents to automatically handle x402 Payment Required respons
 **The Solution:** MoltyDEX handles everything automatically. Zero manual intervention needed.
 
 **Live Now:** https://www.moltydex.com | **Docs:** https://www.moltydex.com/developers | **X:** [@MoltyDEX](https://x.com/MoltyDEX)
+
+> 💡 **Hackathon Submission:** See [HACKATHON.md](./HACKATHON.md) for complete submission details
 
 **Latest Updates (Feb 2026):**
 - ✅ Fixed balance fetching for all tokens (JUP, USDC, etc.)
@@ -52,6 +56,24 @@ MoltyDEX enables AI agents to automatically handle x402 Payment Required respons
 ---
 
 ## Architecture
+
+### System Flow
+
+```mermaid
+graph TB
+    A[AI Agent] -->|HTTP Request| B[API Provider]
+    B -->|402 Payment Required| C[MoltyDEX API]
+    C -->|Check Balance| D[Solana RPC]
+    C -->|Get Quote| E[Jupiter Aggregator]
+    E -->|Route| F[Solana DEXes<br/>Raydium/Orca/Meteora]
+    C -->|Build Swap TX| A
+    A -->|Sign & Send| D
+    D -->|Confirm| A
+    A -->|Retry Request| B
+    B -->|200 OK| A
+```
+
+### Project Structure
 
 ```
 moltydex/
@@ -206,6 +228,12 @@ See **[agent/README.md](./agent/README.md)** for full documentation.
 
 ---
 
+## Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
+
+---
+
 ## License
 
-MIT
+MIT - See [LICENSE](./LICENSE) for details

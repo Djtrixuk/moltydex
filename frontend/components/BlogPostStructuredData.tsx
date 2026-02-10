@@ -33,9 +33,21 @@ export function BlogPostStructuredData({
     "datePublished": datePublished,
     "dateModified": dateModified || datePublished,
     "author": {
-      "@type": "Organization",
+      "@type": "Person",
       "name": author,
-      "url": "https://moltydex.com"
+      "jobTitle": "x402 Payment Expert",
+      "knowsAbout": [
+        "x402 protocol",
+        "Solana blockchain",
+        "AI agent payments",
+        "Token swapping",
+        "DeFi"
+      ],
+      "worksFor": {
+        "@type": "Organization",
+        "name": "MoltyDEX",
+        "url": "https://moltydex.com"
+      }
     },
     "publisher": {
       "@type": "Organization",

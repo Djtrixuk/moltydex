@@ -7,6 +7,7 @@
 import Head from 'next/head';
 import Link from 'next/link';
 import PageHeader from '../components/PageHeader';
+import Breadcrumbs from '../components/Breadcrumbs';
 import { BreadcrumbStructuredData, PaymentServiceStructuredData, HowToStructuredData } from '../components/StructuredData';
 
 export default function X402Payments() {
@@ -32,6 +33,8 @@ export default function X402Payments() {
       text: "Track payment success rates, monitor balances, and scale your agent operations. MoltyDEX handles all payment complexity automatically."
     }
   ];
+
+  const lastUpdated = "2026-02-08";
 
   return (
     <>
@@ -61,13 +64,10 @@ export default function X402Payments() {
         description="Step-by-step guide to integrating automatic x402 payment handling in your AI agents"
         steps={integrationSteps}
       />
-      <BreadcrumbStructuredData items={[
-        { name: 'Home', url: 'https://moltydex.com' },
-        { name: 'x402 Payments', url: 'https://moltydex.com/x402-payments' }
-      ]} />
       <PageHeader />
       <main className="min-h-screen bg-gray-950 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+          <Breadcrumbs items={[{ name: 'x402 Payments', href: '/x402-payments' }]} />
           {/* Hero Section */}
           <div className="text-center mb-10 md:mb-12">
             <h1 className="text-4xl md:text-6xl font-bold mb-4 md:mb-6 bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent">
@@ -309,6 +309,11 @@ const data = await response.json(); // Works seamlessly!`}
               ))}
             </div>
           </section>
+
+          {/* Last Updated */}
+          <div className="text-center text-sm text-gray-500 mb-6">
+            <time dateTime={lastUpdated}>Last updated: {new Date(lastUpdated).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</time>
+          </div>
 
           {/* CTA Section */}
           <section className="bg-gradient-to-r from-blue-950/40 via-purple-950/40 to-indigo-950/40 rounded-2xl p-8 md:p-10 border border-blue-500/20 text-center">

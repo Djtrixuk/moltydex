@@ -2,142 +2,292 @@
 
 Thank you for your interest in contributing to MoltyDEX! This document provides guidelines and instructions for contributing.
 
-## Code of Conduct
+---
 
-By participating in this project, you agree to abide by our [Code of Conduct](CODE_OF_CONDUCT.md).
-
-## How to Contribute
-
-### Reporting Bugs
-
-- Use the [Bug Report template](.github/ISSUE_TEMPLATE/bug_report.md)
-- Include steps to reproduce
-- Provide environment details (Node.js version, OS, etc.)
-- Include error messages and logs
-
-### Suggesting Features
-
-- Use the [Feature Request template](.github/ISSUE_TEMPLATE/feature_request.md)
-- Clearly describe the use case
-- Explain why this feature would be valuable
-- Consider implementation complexity
-
-### Pull Requests
-
-1. **Fork the repository**
-2. **Create a feature branch**
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
-3. **Make your changes**
-   - Follow the code style
-   - Add tests if applicable
-   - Update documentation
-4. **Test your changes**
-   ```bash
-   cd api && npm test
-   ```
-5. **Commit your changes**
-   ```bash
-   git commit -m "feat: add your feature description"
-   ```
-   Use conventional commits:
-   - `feat:` for new features
-   - `fix:` for bug fixes
-   - `docs:` for documentation
-   - `style:` for formatting
-   - `refactor:` for code refactoring
-   - `test:` for tests
-   - `chore:` for maintenance
-6. **Push to your fork**
-   ```bash
-   git push origin feature/your-feature-name
-   ```
-7. **Open a Pull Request**
-   - Use the PR template
-   - Reference related issues
-   - Request review from maintainers
-
-## Development Setup
+## 🚀 Getting Started
 
 ### Prerequisites
 
-- Node.js 18+
-- npm or yarn
+- Node.js 18+ (for API and frontend)
+- Python 3.9+ (for SDK and tests)
+- Git
 - Solana wallet (for testing)
 
-### Local Development
+### Development Setup
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/your-username/agentdex.git
-   cd agentdex
+   git clone https://github.com/Djtrixuk/moltydex.git
+   cd moltydex
    ```
 
-2. **Install dependencies**
+2. **Set up API**
    ```bash
    cd api
    npm install
-   ```
-
-3. **Set up environment variables**
-   ```bash
    cp .env.example .env
-   # Edit .env and add your JUPITER_API_KEY
-   ```
-
-4. **Run the API**
-   ```bash
+   # Add JUPITER_API_KEY to .env
    npm start
    ```
 
-5. **Run tests**
+3. **Set up Frontend**
    ```bash
-   npm test
+   cd frontend
+   npm install
+   npm run dev
    ```
 
-## Code Style
+4. **Set up Python SDK**
+   ```bash
+   cd sdk
+   pip install -r requirements.txt
+   ```
 
-- Use ESLint configuration (if available)
-- Follow existing code patterns
-- Write clear, self-documenting code
-- Add comments for complex logic
-- Keep functions focused and small
+---
 
-## Testing
+## 🧪 Running Tests
 
-- Write tests for new features
-- Ensure all tests pass before submitting PR
-- Add integration tests for API endpoints
-- Test error cases and edge cases
+### Python Tests
 
-## Documentation
-
-- Update README.md for user-facing changes
-- Update API docs for endpoint changes
-- Add code comments for complex logic
-- Update CHANGELOG.md for significant changes
-
-## Project Structure
-
-```
-agentdex/
-├── api/              # Express.js API
-│   ├── routes/       # API route handlers
-│   ├── utils/        # Utility functions
-│   └── middleware/   # Express middleware
-├── frontend/         # Next.js frontend
-├── sdk/              # Python SDK
-├── agent/            # x402 Auto-Pay Agent
-└── tests/            # Test files
+```bash
+cd tests
+python -m pytest -v
 ```
 
-## Questions?
+### Test Coverage
 
-- Open an issue for questions
-- Check existing issues and PRs
-- Review the documentation
+- **Basic Functionality:** Module imports, class structure
+- **x402 Handler:** Payment parsing, balance checking, swap logic
+- **Agent Integration:** LangChain, AutoGPT, custom agents
 
-## License
+See [TEST_RESULTS.md](./tests/TEST_RESULTS.md) for detailed results.
 
-By contributing, you agree that your contributions will be licensed under the MIT License.
+---
+
+## 📝 Code Style
+
+### JavaScript/TypeScript
+
+- Use ESLint configuration (if present)
+- Follow existing code style
+- Use async/await for promises
+- Add JSDoc comments for functions
+
+### Python
+
+- Follow PEP 8 style guide
+- Use type hints where possible
+- Add docstrings for functions and classes
+- Maximum line length: 100 characters
+
+---
+
+## 🔄 Development Workflow
+
+### 1. Create a Branch
+
+```bash
+git checkout -b feature/your-feature-name
+# or
+git checkout -b fix/your-bug-fix
+```
+
+### 2. Make Changes
+
+- Write clear, readable code
+- Add tests for new features
+- Update documentation as needed
+- Follow existing patterns
+
+### 3. Test Your Changes
+
+```bash
+# Run tests
+python -m pytest tests/ -v
+
+# Test API locally
+cd api && npm start
+
+# Test frontend locally
+cd frontend && npm run dev
+```
+
+### 4. Commit Your Changes
+
+Use clear, descriptive commit messages:
+
+```bash
+git commit -m "feat: add new token recommendation endpoint"
+git commit -m "fix: resolve balance checking issue for wrapped SOL"
+git commit -m "docs: update API documentation"
+```
+
+**Commit Message Format:**
+- `feat:` - New feature
+- `fix:` - Bug fix
+- `docs:` - Documentation changes
+- `test:` - Test additions/changes
+- `refactor:` - Code refactoring
+- `chore:` - Maintenance tasks
+
+### 5. Push and Create Pull Request
+
+```bash
+git push origin feature/your-feature-name
+```
+
+Then create a pull request on GitHub.
+
+---
+
+## 📋 Pull Request Process
+
+### Before Submitting
+
+- [ ] Code follows project style guidelines
+- [ ] Tests pass locally
+- [ ] Documentation updated (if needed)
+- [ ] No console.log statements left in code
+- [ ] No sensitive data committed
+
+### Pull Request Template
+
+Use the PR template (`.github/pull_request_template.md`) and fill out:
+- Description of changes
+- Type of change
+- Related issues
+- Testing performed
+- Checklist items
+
+### Review Process
+
+1. PR will be reviewed by maintainers
+2. Address any feedback
+3. Once approved, PR will be merged
+
+---
+
+## 🐛 Reporting Bugs
+
+### Before Reporting
+
+1. Check if the bug has already been reported
+2. Try to reproduce the bug
+3. Check if it's a known issue
+
+### Bug Report Template
+
+Use the bug report template (`.github/ISSUE_TEMPLATE/bug_report.md`):
+
+- **Description:** Clear description of the bug
+- **Steps to Reproduce:** How to reproduce the issue
+- **Expected Behavior:** What should happen
+- **Actual Behavior:** What actually happens
+- **Environment:** Node.js version, OS, etc.
+- **Additional Context:** Screenshots, logs, etc.
+
+---
+
+## 💡 Feature Requests
+
+### Before Requesting
+
+1. Check if the feature already exists
+2. Check if it's planned
+3. Consider if it fits the project scope
+
+### Feature Request Template
+
+Use the feature request template (`.github/ISSUE_TEMPLATE/feature_request.md`):
+
+- **Description:** Clear description of the feature
+- **Use Case:** Why is this feature needed?
+- **Proposed Solution:** How should it work?
+- **Alternatives:** Other solutions considered
+- **Additional Context:** Examples, mockups, etc.
+
+---
+
+## 📚 Documentation
+
+### API Documentation
+
+- Update API endpoint documentation in `api/README.md`
+- Add examples for new endpoints
+- Document request/response formats
+
+### Code Documentation
+
+- Add JSDoc comments for JavaScript functions
+- Add docstrings for Python functions
+- Update README.md for major changes
+
+### User Documentation
+
+- Update user-facing docs in `docs/`
+- Add examples in `examples/`
+- Update blog posts if needed
+
+---
+
+## 🔒 Security
+
+### Reporting Security Issues
+
+**Do NOT** create a public GitHub issue for security vulnerabilities.
+
+Instead, email security concerns to: [Your email]
+
+Include:
+- Description of the vulnerability
+- Steps to reproduce
+- Potential impact
+- Suggested fix (if any)
+
+---
+
+## 🎯 Areas for Contribution
+
+### High Priority
+
+- Additional SDK languages (Rust, Go)
+- More test coverage
+- Performance optimizations
+- Error handling improvements
+
+### Medium Priority
+
+- UI/UX improvements
+- Additional examples
+- Documentation improvements
+- Integration guides
+
+### Low Priority
+
+- Code refactoring
+- Style improvements
+- Documentation cleanup
+
+---
+
+## ❓ Questions?
+
+- **GitHub Issues:** For bugs and feature requests
+- **Discussions:** For questions and ideas
+- **Email:** [Your email]
+
+---
+
+## 📜 Code of Conduct
+
+Please read and follow our [Code of Conduct](./CODE_OF_CONDUCT.md).
+
+---
+
+## 🙏 Thank You!
+
+Your contributions make MoltyDEX better for everyone. Thank you for taking the time to contribute!
+
+---
+
+**Happy Coding!** 🚀

@@ -41,6 +41,7 @@ app.use(compression());
 
 // Body parsing and rate limiting
 app.use(express.json());
+app.use(require('./middleware/requestId')); // Add Request ID to all responses
 app.use(require('./middleware/rateLimitHeaders'));
 app.use(apiLimiter);
 
@@ -119,6 +120,7 @@ const server = app.listen(PORT, HOST, () => {
   console.log(`  POST /api/batch/token-metadata - Batch token metadata`);
   console.log(`  POST /api/x402/parse-payment - Parse 402 response`);
   console.log(`  POST /api/x402/prepare-payment - Prepare payment`);
+  console.log(`  POST /api/x402/simulate-payment - Simulate payment (no execution)`);
   console.log(`  POST /api/x402/auto-pay - Complete x402 auto-pay flow`);
   console.log(`  GET  /api/x402/recommended-tokens - Get recommended tokens`);
   console.log(`  POST /api/transaction/webhook - Register webhook for transaction status`);

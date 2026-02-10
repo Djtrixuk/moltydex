@@ -5,7 +5,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { type Token } from '../utils/tokens';
+import { type Token, POPULAR_TOKENS } from '../utils/tokens';
 import { useTokenBalance } from '../hooks/useTokenBalance';
 import TokenLogo from './TokenLogo';
 
@@ -98,6 +98,7 @@ export default function TokenSelector({
   const [customAddressInput, setCustomAddressInput] = useState('');
   const [customTokenLoading, setCustomTokenLoading] = useState(false);
   const [customTokenError, setCustomTokenError] = useState<string | null>(null);
+  const [favoritesUpdateTrigger, setFavoritesUpdateTrigger] = useState(0); // Force re-render when favorites change
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown when clicking outside
@@ -116,6 +117,45 @@ export default function TokenSelector({
     }
   }, [isOpen]);
 
+  // Determine token category
+  const getTokenCategory = (token: Token): 'stablecoin' | 'popular' | 'wallet' | 'custom' => {
+    // Stablecoins
+    const stablecoinAddresses = [
+      'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', // USDC
+      'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB', // USDT
+    ];
+    if (stablecoinAddresses.includes(token.address)) {
+      return 'stablecoin';
+    }
+    
+    // Check if token is in popular tokens
+    if (POPULAR_TOKENS.some((t: Token) => t.address === token.address)) {
+      return 'popular';
+    }
+    
+    // Check if token is from wallet (has balance in walletTokenBalances)
+    if (walletTokenBalances && walletTokenBalances[token.address] !== undefined) {
+      return 'wallet';
+    }
+    
+    // Default to custom
+    return 'custom';
+  };
+
+  // Get category label and styling
+  const getCategoryTag = (category: 'stablecoin' | 'popular' | 'wallet' | 'custom') => {
+    switch (category) {
+      case 'stablecoin':
+        return { label: 'Stablecoin', className: 'bg-blue-500/20 text-blue-400 border-blue-500/30' };
+      case 'popular':
+        return { label: 'Popular', className: 'bg-purple-500/20 text-purple-400 border-purple-500/30' };
+      case 'wallet':
+        return { label: 'Your Tokens', className: 'bg-green-500/20 text-green-400 border-green-500/30' };
+      default:
+        return null;
+    }
+  };
+
   // Filter tokens based on search
   const filteredTokens = tokens.filter((token) => {
     const query = searchQuery.toLowerCase();
@@ -126,7 +166,98 @@ export default function TokenSelector({
     );
   });
 
+  // Recent tokens functionality
+  const RECENT_TOKENS_KEY = 'moltydex_recent_tokens';
+  const MAX_RECENT_TOKENS = 8;
+
+  const getRecentTokens = (): Token[] => {
+    try {
+      const stored = localStorage.getItem(RECENT_TOKENS_KEY);
+      if (!stored) return [];
+      const addresses = JSON.parse(stored) as string[];
+      // Find tokens from the provided tokens list that match recent addresses
+      return addresses
+        .map(addr => tokens.find(t => t.address.toLowerCase() === addr.toLowerCase()))
+        .filter((t): t is Token => t !== undefined)
+        .slice(0, MAX_RECENT_TOKENS);
+    } catch {
+      return [];
+    }
+  };
+
+  const addToRecentTokens = (token: Token) => {
+    try {
+      const stored = localStorage.getItem(RECENT_TOKENS_KEY);
+      const addresses = stored ? JSON.parse(stored) as string[] : [];
+      // Remove if already exists
+      const filtered = addresses.filter(addr => addr.toLowerCase() !== token.address.toLowerCase());
+      // Add to front
+      const updated = [token.address.toLowerCase(), ...filtered].slice(0, MAX_RECENT_TOKENS);
+      localStorage.setItem(RECENT_TOKENS_KEY, JSON.stringify(updated));
+    } catch {
+      // Ignore localStorage errors
+    }
+  };
+
+  // Favorites functionality
+  const FAVORITES_KEY = 'moltydex_favorite_tokens';
+
+  const getFavoriteTokens = (): Token[] => {
+    try {
+      const stored = localStorage.getItem(FAVORITES_KEY);
+      if (!stored) return [];
+      const addresses = JSON.parse(stored) as string[];
+      // Find tokens from the provided tokens list that match favorite addresses
+      return addresses
+        .map(addr => tokens.find(t => t.address.toLowerCase() === addr.toLowerCase()))
+        .filter((t): t is Token => t !== undefined);
+    } catch {
+      return [];
+    }
+  };
+
+  const isFavorite = (token: Token): boolean => {
+    try {
+      const stored = localStorage.getItem(FAVORITES_KEY);
+      if (!stored) return false;
+      const addresses = JSON.parse(stored) as string[];
+      return addresses.some(addr => addr.toLowerCase() === token.address.toLowerCase());
+    } catch {
+      return false;
+    }
+  };
+
+  const toggleFavorite = (token: Token, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent token selection when clicking star
+    try {
+      const stored = localStorage.getItem(FAVORITES_KEY);
+      const addresses = stored ? JSON.parse(stored) as string[] : [];
+      const tokenAddr = token.address.toLowerCase();
+      const isCurrentlyFavorite = addresses.some(addr => addr.toLowerCase() === tokenAddr);
+      
+      if (isCurrentlyFavorite) {
+        // Remove from favorites
+        const updated = addresses.filter(addr => addr.toLowerCase() !== tokenAddr);
+        localStorage.setItem(FAVORITES_KEY, JSON.stringify(updated));
+      } else {
+        // Add to favorites
+        const updated = [...addresses, tokenAddr];
+        localStorage.setItem(FAVORITES_KEY, JSON.stringify(updated));
+      }
+      // Force re-render by updating state
+      setFavoritesUpdateTrigger(prev => prev + 1);
+    } catch {
+      // Ignore localStorage errors
+    }
+  };
+
+  const recentTokens = getRecentTokens();
+  const recentTokenAddresses = new Set(recentTokens.map(t => t.address.toLowerCase()));
+  const favoriteTokens = getFavoriteTokens();
+  const favoriteTokenAddresses = new Set(favoriteTokens.map(t => t.address.toLowerCase()));
+
   const handleSelect = (token: Token) => {
+    addToRecentTokens(token);
     onSelect(token);
     setIsOpen(false);
     setSearchQuery('');
@@ -219,7 +350,7 @@ export default function TokenSelector({
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute top-full left-0 mt-3 w-[448px] bg-gray-900 rounded-2xl border border-white/20 shadow-2xl z-50 max-h-[700px] flex flex-col">
+        <div className="absolute bottom-full left-0 mb-3 w-[448px] bg-gray-900 rounded-2xl border border-white/20 shadow-2xl z-40 max-h-[600px] flex flex-col">
           {/* Search Bar */}
           <div className="p-4 border-b border-white/10">
             <div className="relative">
@@ -262,6 +393,116 @@ export default function TokenSelector({
             </div>
           </div>
 
+          {/* Favorites Section (only when not searching) */}
+          {!searchQuery && favoriteTokens.length > 0 && (
+            <div className="p-3 border-b border-white/10">
+              <div className="text-xs text-gray-400 mb-2 px-1">Favorites</div>
+              <div className="space-y-1">
+                {favoriteTokens.map((token) => {
+                  const isSelected = token.address === selectedToken.address;
+                  return (
+                    <button
+                      key={token.address}
+                      type="button"
+                      onClick={() => handleSelect(token)}
+                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                        isSelected
+                          ? 'bg-white/20 hover:bg-white/30 border border-white/20'
+                          : 'hover:bg-white/10'
+                      }`}
+                    >
+                      <TokenLogo token={token} size={24} />
+                      <div className="flex-1 min-w-0 text-left">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-white font-medium text-sm">{token.symbol}</span>
+                          {(() => {
+                            const category = getTokenCategory(token);
+                            const tag = getCategoryTag(category);
+                            return tag ? (
+                              <span className={`px-1.5 py-0.5 text-[9px] font-medium rounded border ${tag.className}`}>
+                                {tag.label}
+                              </span>
+                            ) : null;
+                          })()}
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={(e) => toggleFavorite(token, e)}
+                        className="p-1 hover:bg-white/10 rounded transition-colors"
+                        title="Remove from favorites"
+                      >
+                        <svg className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                      </button>
+                      {isSelected && (
+                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path
+                            fillRule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Recent Tokens Section (only when not searching) */}
+          {!searchQuery && recentTokens.length > 0 && (
+            <div className="p-3 border-b border-white/10">
+              <div className="text-xs text-gray-400 mb-2 px-1">Recent</div>
+              <div className="space-y-1">
+                {recentTokens
+                  .filter(token => !favoriteTokenAddresses.has(token.address.toLowerCase())) // Exclude favorites from recent
+                  .map((token) => {
+                    const isSelected = token.address === selectedToken.address;
+                    return (
+                      <button
+                        key={token.address}
+                        type="button"
+                        onClick={() => handleSelect(token)}
+                        className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                          isSelected
+                            ? 'bg-white/20 hover:bg-white/30 border border-white/20'
+                            : 'hover:bg-white/10'
+                        }`}
+                      >
+                        <TokenLogo token={token} size={24} />
+                        <div className="flex-1 min-w-0 text-left">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-white font-medium text-sm">{token.symbol}</span>
+                            {(() => {
+                              const category = getTokenCategory(token);
+                              const tag = getCategoryTag(category);
+                              return tag ? (
+                                <span className={`px-1.5 py-0.5 text-[9px] font-medium rounded border ${tag.className}`}>
+                                  {tag.label}
+                                </span>
+                              ) : null;
+                            })()}
+                          </div>
+                        </div>
+                        {isSelected && (
+                          <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path
+                              fillRule="evenodd"
+                              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        )}
+                      </button>
+                    );
+                  })}
+              </div>
+            </div>
+          )}
+
           {/* Add Custom Token Option (at top when searching) */}
           {showAddToken && searchQuery && (
             <div className="p-3 border-b border-white/10 bg-white/5">
@@ -296,50 +537,109 @@ export default function TokenSelector({
               <div className="p-4 text-center text-gray-400 text-sm">No tokens found</div>
             ) : (
               <div className="p-2">
-                {filteredTokens.map((token) => {
-                  const isSelected = token.address === selectedToken.address;
-                  return (
-                    <button
-                      key={token.address}
-                      type="button"
-                      onClick={() => handleSelect(token)}
-                      className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors ${
-                        isSelected
-                          ? 'bg-white/20 hover:bg-white/30 border border-white/20'
-                          : 'hover:bg-white/10'
-                      }`}
-                    >
-                      {/* Token Logo */}
-                      <TokenLogo token={token} size={32} />
+                {filteredTokens
+                  .filter(token => 
+                    !recentTokenAddresses.has(token.address.toLowerCase()) && 
+                    !favoriteTokenAddresses.has(token.address.toLowerCase()) // Exclude recent and favorites from main list
+                  )
+                  .map((token) => {
+                    const isSelected = token.address === selectedToken.address;
+                    const tokenIsFavorite = isFavorite(token);
+                    return (
+                      <button
+                        key={token.address}
+                        type="button"
+                        onClick={() => handleSelect(token)}
+                        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors ${
+                          isSelected
+                            ? 'bg-white/20 hover:bg-white/30 border border-white/20'
+                            : 'hover:bg-white/10'
+                        }`}
+                      >
+                        {/* Token Logo */}
+                        <TokenLogo token={token} size={32} />
 
-                      {/* Token Info */}
-                      <div className="flex-1 min-w-0 text-left">
-                        <div className="flex items-center gap-2">
-                          <span className="text-white font-semibold text-sm">{token.symbol}</span>
-                          {isSelected && (
-                            <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                              <path
-                                fillRule="evenodd"
-                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                          )}
+                        {/* Token Info */}
+                        <div className="flex-1 min-w-0 text-left">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-white font-semibold text-sm">{token.symbol}</span>
+                            {(() => {
+                              const category = getTokenCategory(token);
+                              const tag = getCategoryTag(category);
+                              return tag ? (
+                                <span className={`px-1.5 py-0.5 text-[9px] font-medium rounded border ${tag.className}`}>
+                                  {tag.label}
+                                </span>
+                              ) : null;
+                            })()}
+                            {isSelected && (
+                              <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path
+                                  fillRule="evenodd"
+                                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-gray-400 text-xs truncate">
+                              {token.name} · {token.address.slice(0, 4)}...{token.address.slice(-4)}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={async (e) => {
+                                e.stopPropagation();
+                                try {
+                                  await navigator.clipboard.writeText(token.address);
+                                  const btn = e.currentTarget;
+                                  const originalHTML = btn.innerHTML;
+                                  btn.innerHTML = '<svg class="w-3 h-3 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>';
+                                  setTimeout(() => {
+                                    btn.innerHTML = originalHTML;
+                                  }, 2000);
+                                } catch (err) {
+                                  console.error('Failed to copy:', err);
+                                }
+                              }}
+                              className="p-0.5 hover:bg-white/10 rounded transition-colors flex-shrink-0"
+                              title="Copy token address"
+                            >
+                              <svg className="w-3 h-3 text-gray-500 hover:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                              </svg>
+                            </button>
+                          </div>
                         </div>
-                        <div className="text-gray-400 text-xs truncate">
-                          {token.name} · {token.address.slice(0, 4)}...{token.address.slice(-4)}
-                        </div>
-                      </div>
 
-                      {/* Balance - use wallet balance, cached balance, or individual fetch */}
-                      <TokenBalanceDisplay 
-                        token={token} 
-                        balanceCache={balanceCache}
-                        walletTokenBalance={walletTokenBalances?.[token.address]}
-                      />
-                    </button>
-                  );
-                })}
+                        {/* Favorite Star */}
+                        <button
+                          type="button"
+                          onClick={(e) => toggleFavorite(token, e)}
+                          className="p-1 hover:bg-white/10 rounded transition-colors flex-shrink-0"
+                          title={tokenIsFavorite ? "Remove from favorites" : "Add to favorites"}
+                        >
+                          <svg 
+                            className={`w-4 h-4 transition-colors ${
+                              tokenIsFavorite ? 'text-yellow-400 fill-current' : 'text-gray-400'
+                            }`} 
+                            fill={tokenIsFavorite ? "currentColor" : "none"} 
+                            stroke="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                          </svg>
+                        </button>
+
+                        {/* Balance - use wallet balance, cached balance, or individual fetch */}
+                        <TokenBalanceDisplay 
+                          token={token} 
+                          balanceCache={balanceCache}
+                          walletTokenBalance={walletTokenBalances?.[token.address]}
+                        />
+                      </button>
+                    );
+                  })}
               </div>
             )}
           </div>

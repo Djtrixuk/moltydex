@@ -6,7 +6,6 @@ export default function MobileNav() {
   const [isOpen, setIsOpen] = useState(false);
 
   const navLinks = [
-    { href: '/x402-payments', label: 'x402 Payments', highlight: true },
     { href: '/for-traders', label: 'For Traders' },
     { href: '/developers', label: 'For Developers' },
     { href: '/api-providers', label: 'For API Providers' },
@@ -93,11 +92,7 @@ export default function MobileNav() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setIsOpen(false)}
-                className={`block px-4 py-3 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  link.highlight
-                    ? 'text-blue-400 hover:text-blue-300 hover:bg-blue-900/20 font-semibold'
-                    : 'text-gray-300 hover:text-white hover:bg-gray-800'
-                }`}
+                className="block px-4 py-3 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-300 hover:text-white hover:bg-gray-800"
               >
                 {link.label}
               </Link>

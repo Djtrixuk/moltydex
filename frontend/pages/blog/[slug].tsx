@@ -8,8 +8,9 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { getBlogPost, blogPosts } from '../../lib/blog-posts';
 import PageHeader from '../../components/PageHeader';
+import Breadcrumbs from '../../components/Breadcrumbs';
 import { BlogPostStructuredData } from '../../components/BlogPostStructuredData';
-import { BreadcrumbStructuredData } from '../../components/StructuredData';
+import { AuthorStructuredData } from '../../components/StructuredData';
 import { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -91,20 +92,16 @@ export default function BlogPost() {
         <meta name="twitter:image" content="https://moltydex.com/moltydex-logo-full.png" />
       </Head>
 
-      <BlogPostStructuredData
-        title={post.title}
-        description={post.description}
-        url={post.canonical}
-        datePublished={post.date}
-        author={post.author}
-        keywords={post.keywords}
-      />
-
-      <BreadcrumbStructuredData items={[
-        { name: 'Home', url: 'https://moltydex.com' },
-        { name: 'Blog', url: 'https://moltydex.com/blog' },
-        { name: post.title, url: post.canonical }
-      ]} />
+        <BlogPostStructuredData
+          title={post.title}
+          description={post.description}
+          url={post.canonical}
+          datePublished={post.date}
+          dateModified={post.dateModified || post.date}
+          author={post.author}
+          keywords={post.keywords}
+        />
+        <AuthorStructuredData name={post.author} />
 
       <PageHeader
         title={post.title}
@@ -113,6 +110,10 @@ export default function BlogPost() {
 
       <main className="min-h-screen bg-gray-950 text-white">
         <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <Breadcrumbs items={[
+            { name: 'Blog', href: '/blog' },
+            { name: post.title, href: `/blog/${post.slug}` }
+          ]} />
           {/* Post Meta */}
           <div className="mb-8 pb-8 border-b border-gray-800">
             <div className="flex flex-wrap items-center gap-4 text-sm text-gray-400">

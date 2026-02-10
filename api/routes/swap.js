@@ -104,15 +104,19 @@ router.post('/build', async (req, res) => {
         message: swapError.message,
       });
       
-      // Track failed swap
-      await trackEvent('swap', {
-        success: false,
-        input_mint,
-        output_mint,
-        wallet_address,
-        error: swapError.message,
-      });
-      await trackEvent('api_call', { endpoint: '/api/swap/build' });
+      // Track failed swap (don't let tracking errors break error handling)
+      try {
+        await trackEvent('swap', {
+          success: false,
+          input_mint,
+          output_mint,
+          wallet_address,
+          error: swapError.message,
+        });
+        await trackEvent('api_call', { endpoint: '/api/swap/build' });
+      } catch (trackErr) {
+        console.error('[SWAP] Tracking error (non-fatal):', trackErr.message);
+      }
       
       throw swapError;
     }
@@ -140,14 +144,18 @@ router.post('/build', async (req, res) => {
       serializedTransaction = transaction.serialize({ requireAllSignatures: false }).toString('base64');
     }
 
-    // Track successful swap build
-    await trackEvent('swap', {
-      success: true,
-      input_mint,
-      output_mint,
-      wallet_address,
-    });
-    await trackEvent('api_call', { endpoint: '/api/swap/build' });
+    // Track successful swap build (don't let tracking errors break swaps)
+    try {
+      await trackEvent('swap', {
+        success: true,
+        input_mint,
+        output_mint,
+        wallet_address,
+      });
+      await trackEvent('api_call', { endpoint: '/api/swap/build' });
+    } catch (trackErr) {
+      console.error('[SWAP] Tracking error (non-fatal):', trackErr.message);
+    }
     
     // Return unsigned transaction
     res.json({
@@ -167,15 +175,19 @@ router.post('/build', async (req, res) => {
       data: err.response?.data,
     });
     
-    // Track failed swap
-    await trackEvent('swap', {
-      success: false,
-      input_mint: req.body?.input_mint,
-      output_mint: req.body?.output_mint,
-      wallet_address: req.body?.wallet_address,
-      error: err.message,
-    });
-    await trackEvent('api_call', { endpoint: '/api/swap/build' });
+    // Track failed swap (don't let tracking errors break error handling)
+    try {
+      await trackEvent('swap', {
+        success: false,
+        input_mint: req.body?.input_mint,
+        output_mint: req.body?.output_mint,
+        wallet_address: req.body?.wallet_address,
+        error: err.message,
+      });
+      await trackEvent('api_call', { endpoint: '/api/swap/build' });
+    } catch (trackErr) {
+      console.error('[SWAP] Tracking error (non-fatal):', trackErr.message);
+    }
     
     res.status(500).json({
       error: err.response?.data?.error || err.message,

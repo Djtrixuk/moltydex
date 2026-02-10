@@ -10,6 +10,7 @@ export interface BlogPost {
   keywords: string[];
   author: string;
   date: string;
+  dateModified?: string; // Optional last modified date for SEO
   category: string;
   tags: string[];
   canonical: string;

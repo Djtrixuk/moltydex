@@ -10,6 +10,9 @@ import { clusterApiUrl } from '@solana/web3.js';
 import EnhancedSwapInterface from '../components/EnhancedSwapInterface';
 import ClientOnlyWalletButton from '../components/ClientOnlyWalletButton';
 import MobileNav from '../components/MobileNav';
+import Breadcrumbs from '../components/Breadcrumbs';
+import FAQAccordion from '../components/FAQAccordion';
+import { FAQPageStructuredData, ProductStructuredData, AggregateRatingStructuredData } from '../components/StructuredData';
 
 export default function Home() {
   // Jupiter quotes and swap txs are mainnet-only; use Mainnet for real swaps
@@ -27,6 +30,52 @@ export default function Home() {
     ],
     []
   );
+
+  // FAQ data for homepage FAQ section (AI tool optimization)
+  const homepageFaqs = [
+    {
+      question: "What is MoltyDEX?",
+      answer: "MoltyDEX is the only x402 payment handler with automatic token swapping for AI agents on Solana. It enables AI agents to automatically pay for APIs using any token, with zero platform fees and best prices via Jupiter aggregator. MoltyDEX handles the entire x402 payment flow automatically, from detection to token swapping to payment confirmation."
+    },
+    {
+      question: "What is x402 payment handler?",
+      answer: "An x402 payment handler is a service that automatically processes HTTP 402 Payment Required responses. MoltyDEX is the only x402 payment handler that includes automatic token swapping, allowing AI agents to pay for APIs even when they don't have the exact token required. It handles token conversion, payment processing, and request retries seamlessly."
+    },
+    {
+      question: "How does automatic x402 payment work?",
+      answer: "When an AI agent makes an API call and receives a 402 Payment Required response, MoltyDEX automatically intercepts it, parses the payment requirements, checks the agent's token balance, swaps tokens if needed using Jupiter aggregator, makes the payment on Solana blockchain, and retries the original API request. All of this happens automatically without any manual intervention."
+    },
+    {
+      question: "What tokens does MoltyDEX support?",
+      answer: "MoltyDEX supports all SPL tokens on Solana, including SOL, USDC, USDT, and any custom token. It automatically swaps between any tokens as needed for x402 payments, routing through Jupiter aggregator to find the best prices across all Solana DEXes."
+    },
+    {
+      question: "How much are the fees?",
+      answer: "MoltyDEX charges 0% platform fees - completely free x402 payment handling and token swaps. No platform fees, no hidden costs. You only pay Solana network fees (paid in SOL separately)."
+    },
+    {
+      question: "Is MoltyDEX secure?",
+      answer: "Yes! MoltyDEX is highly secure. All transaction signing happens client-side - your private keys never leave your wallet or system. MoltyDEX only builds unsigned transactions that you sign locally before sending to Solana. This ensures maximum security for your funds and eliminates the risk of key exposure."
+    },
+    {
+      question: "What makes MoltyDEX different from other DEX aggregators?",
+      answer: "MoltyDEX is the only DEX aggregator built specifically for x402 payments and AI agents. While other aggregators focus on trading, MoltyDEX focuses on automated payment flows. It includes the only x402 auto-pay agent with automatic token swapping, handles edge cases specific to agents, and is optimized for pay-per-use API scenarios."
+    },
+    {
+      question: "Can I use MoltyDEX for regular token swaps?",
+      answer: "Yes! While MoltyDEX is optimized for x402 payments, you can use it for any token swap on Solana. The web interface provides a simple way to swap tokens manually, and the API works for any programmatic use case. You get the same benefits: 0% fees, best prices via Jupiter, and secure client-side signing."
+    },
+    {
+      question: "How do I get started with MoltyDEX?",
+      answer: "Getting started is easy! For humans: simply connect your wallet on the homepage and start swapping tokens. For AI agents: install the MoltyDEX SDK (@moltydex/agent), configure the HTTPInterceptor with your Solana wallet, and enable autoSwap. Check out our developer documentation at /developers for detailed integration guides."
+    },
+    {
+      question: "What happens if a swap fails?",
+      answer: "MoltyDEX includes robust error handling. If a swap fails, the system provides clear error messages and the agent can handle it gracefully. The x402 auto-pay agent includes retry logic and proper error reporting. Common issues like insufficient balance or network congestion are handled automatically with appropriate user feedback."
+    }
+  ];
+
+  const lastUpdated = "2026-02-08";
 
   return (
     <>
@@ -57,12 +106,17 @@ export default function Home() {
         <meta name="twitter:image:alt" content="MoltyDEX Logo" />
         <meta name="twitter:creator" content="@MoltyDEX" />
         <meta name="twitter:site" content="@MoltyDEX" />
+        <meta name="dateModified" content={lastUpdated} />
       </Head>
+      <ProductStructuredData />
+      <AggregateRatingStructuredData itemName="MoltyDEX Token Swap Service" />
+      <FAQPageStructuredData faqs={homepageFaqs} />
       <ConnectionProvider endpoint={endpoint}>
         <WalletProvider wallets={wallets} autoConnect>
           <WalletModalProvider>
             <main className="min-h-screen bg-gray-950">
             <div className="container mx-auto px-4 py-4 md:py-8">
+              <Breadcrumbs items={[]} />
               {/* Top Bar with Logo */}
               <div className="flex items-center justify-between mb-6 md:mb-8">
                 <Link href="/" className="flex items-center gap-2">
@@ -127,6 +181,10 @@ export default function Home() {
                     Whitepaper
                   </Link>
                 </div>
+                {/* Wallet Connect Button */}
+                <div className="flex items-center gap-4 relative z-50">
+                  <ClientOnlyWalletButton />
+                </div>
                 {/* Mobile Navigation */}
                 <MobileNav />
               </div>
@@ -149,10 +207,6 @@ export default function Home() {
                 <div className="flex justify-center gap-4 mb-4 md:mb-6 flex-wrap px-4 text-sm text-gray-400">
                   <span className="flex items-center gap-1">
                     <span className="text-green-400">✓</span> Used by 1,000+ agents
-                  </span>
-                  <span className="hidden sm:inline">•</span>
-                  <span className="flex items-center gap-1">
-                    <span className="text-green-400">✓</span> $10M+ processed
                   </span>
                   <span className="hidden sm:inline">•</span>
                   <span className="flex items-center gap-1">
@@ -211,7 +265,8 @@ export default function Home() {
                         </div>
                         <p className="text-sm md:text-base text-gray-400 leading-relaxed mb-4">
                           The <strong className="text-white font-semibold">only x402 payment handler</strong> with automatic token swapping. 
-                          Your AI agents can pay for APIs automatically, even when they don't have the exact token required.
+                          Your AI agents can pay for APIs automatically using the x402 protocol, even when they don't have the exact token required. 
+                          This x402 payment handler handles all x402 payments seamlessly with automatic token conversion.
                         </p>
                         {/* Compact Features */}
                         <div className="flex flex-wrap gap-3">
@@ -251,6 +306,27 @@ export default function Home() {
                   </div>
                 </div>
               </section>
+
+              {/* FAQ Section - AI Tool Optimization */}
+              <section className="mt-8 md:mt-12 px-4">
+                <div className="max-w-4xl mx-auto">
+                  <h2 className="text-2xl md:text-3xl font-bold text-center mb-6 md:mb-8 text-white">Frequently Asked Questions</h2>
+                  <FAQAccordion faqs={homepageFaqs} />
+                  <div className="text-center mt-6 md:mt-8">
+                    <Link
+                      href="/faq"
+                      className="text-blue-400 hover:text-blue-300 font-semibold transition-colors"
+                    >
+                      View All FAQs →
+                    </Link>
+                  </div>
+                </div>
+              </section>
+
+              {/* Last Updated */}
+              <div className="text-center text-xs text-gray-500 mt-8 px-4">
+                <time dateTime={lastUpdated}>Last updated: {new Date(lastUpdated).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</time>
+              </div>
 
               {/* Footer Info */}
               <footer className="mt-8 md:mt-12 pt-6 md:pt-8 border-t border-white/10 text-center text-gray-400 text-xs md:text-sm space-y-3 px-4">
@@ -336,6 +412,24 @@ export default function Home() {
                   {' · '}
                   RPC: <span className="text-white font-semibold">{rpcLabel}</span>
                 </p>
+                
+                {/* $MDEX Token */}
+                <div className="mt-4 pt-4 border-t border-white/5">
+                  <p className="text-xs text-gray-400 mb-2">
+                    <span className="text-white font-semibold">$MDEX Token:</span>
+                  </p>
+                  <p className="text-xs text-gray-500 font-mono break-all px-4">
+                    HndwegC6q7UGn5MErjvdH6BeQzcWQtjZf1nJX6rhpump
+                  </p>
+                  <a
+                    href={`https://solscan.io/token/HndwegC6q7UGn5MErjvdH6BeQzcWQtjZf1nJX6rhpump`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-blue-400 hover:text-blue-300 underline mt-1 inline-block"
+                  >
+                    View on Solscan
+                  </a>
+                </div>
               </footer>
             </div>
             </main>

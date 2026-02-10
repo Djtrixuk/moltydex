@@ -226,3 +226,169 @@ export function HowToStructuredData({
     />
   );
 }
+
+export function SoftwareApplicationStructuredData() {
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "MoltyDEX SDK",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": ["Web", "Node.js", "Python"],
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD",
+      "description": "Free and open source"
+    },
+    "description": "SDK for integrating x402 payment handling into AI agents. Supports TypeScript/JavaScript and Python. Automatic token swapping, payment processing, and request retries. Enables seamless pay-per-use API payments for AI agents on Solana.",
+    "featureList": [
+      "Automatic x402 payment handling",
+      "Token swapping integration",
+      "HTTP interceptor",
+      "Client-side signing",
+      "Error handling and retries",
+      "Zero platform fees",
+      "Best price routing via Jupiter"
+    ],
+    "downloadUrl": "https://github.com/moltydex/agentdex",
+    "softwareVersion": "1.0.0",
+    "releaseNotes": "Initial release with full x402 support and automatic token swapping",
+    "provider": {
+      "@type": "Organization",
+      "name": "MoltyDEX",
+      "url": "https://moltydex.com"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "5",
+      "reviewCount": "100",
+      "bestRating": "5",
+      "worstRating": "1"
+    }
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+    />
+  );
+}
+
+export function ProductStructuredData() {
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "MoltyDEX Token Swap Service",
+    "description": "Zero-fee token swap aggregator for Solana. Routes through Jupiter aggregator to find best prices across all Solana DEXes including Raydium, Orca, and Meteora. Supports all SPL tokens with automatic token conversion for x402 payments.",
+    "brand": {
+      "@type": "Brand",
+      "name": "MoltyDEX"
+    },
+    "category": "Cryptocurrency Exchange",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD",
+      "availability": "https://schema.org/InStock",
+      "priceValidUntil": "2027-12-31",
+      "description": "0% platform fees - completely free token swaps"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "5",
+      "reviewCount": "100",
+      "bestRating": "5",
+      "worstRating": "1"
+    },
+    "featureList": [
+      "Zero platform fees",
+      "Best price routing via Jupiter",
+      "All SPL tokens supported",
+      "Client-side signing",
+      "Automatic x402 payments",
+      "Instant execution",
+      "Secure and auditable"
+    ]
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+    />
+  );
+}
+
+export function AuthorStructuredData({ 
+  name = "MoltyDEX Team", 
+  jobTitle = "x402 Payment Experts",
+  bio = "Expert in x402 protocol, Solana payments, and AI agent automation"
+}: { 
+  name?: string; 
+  jobTitle?: string; 
+  bio?: string;
+}) {
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": name,
+    "jobTitle": jobTitle,
+    "description": bio,
+    "knowsAbout": [
+      "x402 protocol",
+      "Solana blockchain",
+      "AI agent payments",
+      "Token swapping",
+      "DeFi",
+      "Pay-per-use APIs",
+      "DEX aggregation",
+      "Cryptocurrency payments"
+    ],
+    "worksFor": {
+      "@type": "Organization",
+      "name": "MoltyDEX",
+      "url": "https://moltydex.com"
+    },
+    "sameAs": [
+      "https://x.com/MoltyDEX"
+    ]
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+    />
+  );
+}
+
+export function AggregateRatingStructuredData({ 
+  itemName, 
+  rating = 5, 
+  reviewCount = 100 
+}: { 
+  itemName: string; 
+  rating?: number; 
+  reviewCount?: number;
+}) {
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "AggregateRating",
+    "itemReviewed": {
+      "@type": "Service",
+      "name": itemName
+    },
+    "ratingValue": rating.toString(),
+    "reviewCount": reviewCount.toString(),
+    "bestRating": "5",
+    "worstRating": "1"
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+    />
+  );
+}

@@ -46,11 +46,11 @@ export const POPULAR_TOKENS: Token[] = [
     logo: 'https://coin-images.coingecko.com/coins/images/33566/large/dogwifhat.jpg?1702499428',
   },
   {
-    symbol: 'RAY',
-    name: 'Raydium',
-    address: '4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R',
+    symbol: 'MDEX',
+    name: 'MoltyDEX',
+    address: 'HndwegC6q7UGn5MErjvdH6BeQzcWQtjZf1nJX6rhpump',
     decimals: 6,
-    logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R/logo.png',
+    logo: '/mdex-logo.png',
   },
   {
     symbol: 'POPCAT',
@@ -65,13 +65,6 @@ export const POPULAR_TOKENS: Token[] = [
     address: 'JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN',
     decimals: 6,
     logo: 'https://static.jup.ag/jup/icon.png',
-  },
-  {
-    symbol: 'BUTT',
-    name: 'Buttcoin',
-    address: 'Cm6fNnMk7NfzStP9CZpsQA2v3jjzbcYGAxdJySmHpump',
-    decimals: 9,
-    // Logo will be fetched from pump.fun API or Jupiter token list
   },
 ];
 
@@ -94,12 +87,46 @@ export function parseAmount(amount: string, decimals: number): string {
 
 /**
  * Convert lamports to human-readable amount
+ * Uses BigInt for precision with large numbers
  */
 export function formatAmount(amount: string | number, decimals: number): string {
-  const num = typeof amount === 'string' ? parseFloat(amount) : amount;
-  if (isNaN(num)) return '0';
-  const divisor = Math.pow(10, decimals);
-  return (num / divisor).toFixed(decimals).replace(/\.?0+$/, '');
+  try {
+    // Convert to string and use BigInt for precision
+    const amountStr = typeof amount === 'string' ? amount : amount.toString();
+    if (!amountStr || amountStr === '0') return '0';
+    
+    // Use BigInt to avoid precision loss with large numbers
+    const amountBigInt = BigInt(amountStr);
+    const divisor = BigInt(10 ** decimals);
+    
+    // Calculate whole and fractional parts
+    const whole = amountBigInt / divisor;
+    const fractional = amountBigInt % divisor;
+    
+    // Format fractional part with leading zeros
+    const fractionalStr = fractional.toString().padStart(decimals, '0');
+    
+    // Remove trailing zeros from fractional part
+    const fractionalTrimmed = fractionalStr.replace(/0+$/, '');
+    
+    // Combine whole and fractional parts
+    const wholeStr = whole.toString();
+    
+    // Add comma formatting for thousands
+    const wholeFormatted = wholeStr.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    
+    if (fractionalTrimmed === '') {
+      return wholeFormatted;
+    }
+    
+    return `${wholeFormatted}.${fractionalTrimmed}`;
+  } catch (err) {
+    // Fallback to old method if BigInt fails
+    const num = typeof amount === 'string' ? parseFloat(amount) : amount;
+    if (isNaN(num)) return '0';
+    const divisor = Math.pow(10, decimals);
+    return (num / divisor).toFixed(decimals).replace(/\.?0+$/, '');
+  }
 }
 
 /**

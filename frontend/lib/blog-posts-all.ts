@@ -2,6 +2,13 @@
  * All Blog Posts Metadata
  * Includes both SEO-optimized and original posts
  * Centralized data for all blog posts
+ * 
+ * IMPORTANT: When adding new posts:
+ * 1. Ensure the date is newer than existing posts (check the most recent date)
+ * 2. Add new posts at the END of the array (they will be sorted by date descending)
+ * 3. Use format: date: 'YYYY-MM-DD' (e.g., '2026-02-11')
+ * 4. The blog page sorts posts by date descending (newest first)
+ * 5. If multiple posts have the same date, they maintain array order (stable sort)
  */
 
 export interface BlogPost {
@@ -11,6 +18,7 @@ export interface BlogPost {
   keywords: string[];
   author: string;
   date: string;
+  dateModified?: string; // Optional last modified date for SEO
   category: string;
   tags: string[];
   canonical: string;
@@ -82,6 +90,32 @@ export const blogPosts: BlogPost[] = [
     category: 'Community',
     tags: ['beta', 'testing', 'rewards', 'x402', 'agents'],
     canonical: 'https://moltydex.com/blog/beta-tester-program-moltydex-rewards',
+    content: '', // Will be loaded from markdown files
+    optimized: true,
+  },
+  {
+    slug: 'beta-ai-agent-program-test-moltydex',
+    title: 'Beta AI Agent Program: How to Create an Agent and Test MoltyDEX',
+    description: 'Step-by-step guide to creating an AI agent and testing MoltyDEX for the beta program. Learn how to set up your agent, command it to test swaps, and understand how we track beta program participants.',
+    keywords: ['beta program', 'AI agent', 'create agent', 'test MoltyDEX', 'agent instructions', 'beta tracking', 'x402 payments', 'Solana agents'],
+    author: 'MoltyDEX Team',
+    date: '2026-02-09',
+    category: 'Tutorial',
+    tags: ['beta', 'tutorial', 'agents', 'x402', 'testing'],
+    canonical: 'https://moltydex.com/blog/beta-ai-agent-program-test-moltydex',
+    content: '', // Will be loaded from markdown files
+    optimized: true,
+  },
+  {
+    slug: 'moltydex-beta-program-early-ai-agents-mdex-airdrop',
+    title: 'MoltyDEX Beta Program: $MDEX Airdrop for Early AI Agents',
+    description: 'Join the MoltyDEX beta program for AI agents. Early testers who use MoltyDEX for x402 payments will be added to a list for $MDEX token airdrops. Get started with automatic token swapping today.',
+    keywords: ['beta program', 'MDEX airdrop', 'AI agents', 'x402 payments', 'token swapping', 'Solana agents', 'early adopters', 'beta testing'],
+    author: 'MoltyDEX Team',
+    date: '2026-02-05',
+    category: 'Community',
+    tags: ['beta', 'airdrop', 'MDEX', 'x402', 'agents', 'rewards'],
+    canonical: 'https://moltydex.com/blog/moltydex-beta-program-early-ai-agents-mdex-airdrop',
     content: '', // Will be loaded from markdown files
     optimized: true,
   },
@@ -362,6 +396,58 @@ export const blogPosts: BlogPost[] = [
     canonical: 'https://moltydex.com/blog/the-future-of-agent-payments-x402-and-automation',
     content: '',
     optimized: true,
+  },
+  {
+    slug: 'complete-guide-x402-communities-where-to-join',
+    title: 'Complete Guide to x402 Communities: Where to Join, Learn, and Build',
+    description: 'Discover the best x402 communities, Discord servers, forums, and resources for developers building with x402 payments. Connect with the x402 ecosystem, learn from experts, and find collaboration opportunities.',
+    keywords: ['x402 communities', 'x402 Discord', 'x402 forums', 'x402 developer communities', 'x402 ecosystem', 'x402 resources', 'x402 learning', 'Solana x402', 'x402 developer network', 'x402 community'],
+    author: 'MoltyDEX Team',
+    date: '2026-02-10',
+    category: 'Community',
+    tags: ['x402', 'community', 'Discord', 'forums', 'resources', 'Solana', 'developers'],
+    canonical: 'https://moltydex.com/blog/complete-guide-x402-communities-where-to-join',
+    content: '',
+    optimized: true,
+  },
+  {
+    slug: 'moltydex-functionality-audit-february-2026',
+    title: 'MoltyDEX Functionality Audit: 50+ Safe Improvements Identified',
+    description: 'Comprehensive audit of MoltyDEX website and functionality covering human swap interface and agent tools. Identified 50+ safe, non-breaking improvements for UX, API, documentation, performance, and developer experience.',
+    keywords: ['MoltyDEX audit', 'functionality review', 'UX improvements', 'API enhancements', 'developer experience', 'Solana DEX', 'x402 improvements', 'web3 development', 'DEX optimization'],
+    author: 'MoltyDEX Team',
+    date: '2026-02-11',
+    category: 'Development',
+    tags: ['audit', 'improvements', 'UX', 'API', 'development', 'x402', 'Solana'],
+    canonical: 'https://moltydex.com/blog/moltydex-functionality-audit-february-2026',
+    content: '',
+    optimized: true,
+  },
+  {
+    slug: 'moltydex-progress-update-february-2026',
+    title: 'MoltyDEX Progress Update & Roadmap: February 2026',
+    description: 'Latest updates on MoltyDEX development: blog system enhancements, SEO improvements, x402 communities research, and roadmap for the next 7-14 days. Learn about recent fixes, new features, and upcoming plans.',
+    keywords: ['MoltyDEX progress', 'MoltyDEX roadmap', 'x402 development', 'Solana DEX updates', 'blog improvements', 'SEO optimization', 'x402 communities', 'MoltyDEX roadmap 2026', 'development updates'],
+    author: 'MoltyDEX Team',
+    date: '2026-02-11',
+    category: 'Updates',
+    tags: ['updates', 'roadmap', 'progress', 'x402', 'Solana', 'development'],
+    canonical: 'https://moltydex.com/blog/moltydex-progress-update-february-2026',
+    content: '',
+    optimized: true,
+  },
+  {
+    slug: 'phase-3-ux-improvements-february-2026',
+    title: 'Phase 3 UX Improvements: Enhanced Token Discovery, Swap History & More',
+    description: 'Five powerful new features: token categories, swap history, enhanced transaction status, error prevention, and keyboard shortcuts.',
+    keywords: ['MoltyDEX updates', 'UX improvements', 'token categories', 'swap history', 'transaction status', 'error prevention', 'keyboard shortcuts', 'Solana DEX', 'user experience'],
+    author: 'MoltyDEX Team',
+    date: '2026-02-12',
+    category: 'Product Updates',
+    tags: ['updates', 'UX', 'features', 'improvements', 'Solana', 'DEX'],
+    canonical: 'https://moltydex.com/blog/phase-3-ux-improvements-february-2026',
+    content: '',
+    optimized: false,
   },
 ];
 

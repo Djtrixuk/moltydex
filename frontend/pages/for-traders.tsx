@@ -1,8 +1,56 @@
 import Head from 'next/head';
 import Link from 'next/link';
 import PageHeader from '../components/PageHeader';
+import Breadcrumbs from '../components/Breadcrumbs';
+import FAQAccordion from '../components/FAQAccordion';
+import { FAQPageStructuredData, ProductStructuredData, AggregateRatingStructuredData } from '../components/StructuredData';
 
 export default function ForTraders() {
+  const traderFaqs = [
+    {
+      question: "What is MoltyDEX for traders?",
+      answer: "MoltyDEX is a decentralized exchange aggregator for Solana that provides traders with the best prices across all Solana DEXes via Jupiter aggregator. It offers 0% platform fees, secure client-side signing, and instant token swaps for all SPL tokens."
+    },
+    {
+      question: "How much are the trading fees?",
+      answer: "MoltyDEX charges 0% platform fees - completely free token swaps. No platform fees, no hidden costs. You only pay Solana network fees (paid in SOL separately). This makes MoltyDEX one of the cheapest ways to swap tokens on Solana."
+    },
+    {
+      question: "How does MoltyDEX get the best prices?",
+      answer: "MoltyDEX routes trades through Jupiter aggregator, which searches across all major Solana DEXes including Raydium, Orca, Meteora, and others to find the best prices. This ensures you always get optimal rates for your token swaps."
+    },
+    {
+      question: "Is MoltyDEX secure for trading?",
+      answer: "Yes! MoltyDEX is highly secure. All transaction signing happens client-side - your private keys never leave your wallet. MoltyDEX only builds unsigned transactions that you sign locally before sending to Solana. This ensures maximum security for your funds."
+    },
+    {
+      question: "What tokens can I swap?",
+      answer: "MoltyDEX supports all SPL tokens on Solana, including SOL, USDC, USDT, and any custom token. You can swap between any SPL tokens instantly with best prices and zero platform fees."
+    },
+    {
+      question: "How fast are token swaps?",
+      answer: "Token swaps on MoltyDEX are instant. Once you sign the transaction, it's sent to Solana and typically confirms within seconds. The entire process from quote to confirmation takes less than a minute in most cases."
+    },
+    {
+      question: "What makes MoltyDEX better than other DEX aggregators?",
+      answer: "MoltyDEX offers several advantages: 0% platform fees (most aggregators charge 0.1-0.5%), best price routing via Jupiter, secure client-side signing, and support for all SPL tokens. Additionally, MoltyDEX is optimized for both human traders and AI agents, providing flexibility for various use cases."
+    },
+    {
+      question: "Do I need to create an account?",
+      answer: "No! MoltyDEX doesn't require account creation. Simply connect your Solana wallet (Phantom, Solflare, etc.) and start swapping. All transactions are on-chain and don't require any registration or KYC."
+    },
+    {
+      question: "What happens if a swap fails?",
+      answer: "If a swap fails, MoltyDEX provides clear error messages explaining the issue. Common causes include insufficient balance, network congestion, or slippage tolerance exceeded. You can adjust your swap parameters and try again. Failed transactions don't incur any fees."
+    },
+    {
+      question: "Can I use MoltyDEX on mobile?",
+      answer: "Yes! MoltyDEX is fully responsive and works on mobile devices. You can connect your mobile wallet (like Phantom mobile) and swap tokens directly from your phone. The interface is optimized for touch interactions and smaller screens."
+    }
+  ];
+
+  const lastUpdated = "2026-02-08";
+
   return (
     <>
       <Head>
@@ -10,10 +58,15 @@ export default function ForTraders() {
         <meta name="description" content="MoltyDEX for traders: Fast, cheap token swaps on Solana. 0% fees - completely free. Best prices via Jupiter aggregator. Swap any SPL token instantly with secure client-side signing." />
         <meta name="keywords" content="Solana DEX, token swap, best price swap, cheap swap fees, Solana trading, SPL token swap, decentralized exchange" />
         <link rel="canonical" href="https://www.moltydex.com/for-traders" />
+        <meta name="dateModified" content={lastUpdated} />
       </Head>
+      <ProductStructuredData />
+      <AggregateRatingStructuredData itemName="MoltyDEX Token Swap Service" />
+      <FAQPageStructuredData faqs={traderFaqs} />
       <PageHeader />
       <main className="min-h-screen bg-gray-950 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+          <Breadcrumbs items={[{ name: 'For Traders', href: '/for-traders' }]} />
           {/* Header */}
           <div className="text-center mb-10 md:mb-12">
             <h1 className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent">
@@ -23,6 +76,21 @@ export default function ForTraders() {
               Fast, cheap token swaps on Solana. Best prices, lowest fees, instant execution.
             </p>
           </div>
+
+          {/* What is MoltyDEX for Traders? Section - AI Tool Optimization */}
+          <section className="mb-8 md:mb-12">
+            <div className="bg-gray-900/60 rounded-lg p-6 md:p-8 border border-gray-800/50">
+              <h2 className="text-2xl md:text-3xl font-bold mb-4">What is MoltyDEX for Traders?</h2>
+              <p className="text-lg text-gray-300 mb-4">
+                MoltyDEX is a decentralized exchange aggregator for Solana that provides traders with the best prices across all Solana DEXes. 
+                It routes trades through Jupiter aggregator to find optimal prices from Raydium, Orca, Meteora, and other major Solana DEXes.
+              </p>
+              <p className="text-lg text-gray-300">
+                With 0% platform fees, secure client-side signing, and instant execution, MoltyDEX offers traders the cheapest and most secure way to swap tokens on Solana. 
+                All SPL tokens are supported, and swaps execute instantly with best prices guaranteed.
+              </p>
+            </div>
+          </section>
 
           {/* Key Features */}
           <div className="grid md:grid-cols-3 gap-6 mb-12">
@@ -144,6 +212,25 @@ export default function ForTraders() {
                 </table>
               </div>
             </div>
+          </div>
+
+          {/* FAQ Section - AI Tool Optimization */}
+          <section className="mb-8 md:mb-12">
+            <h2 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8 text-white">Frequently Asked Questions</h2>
+            <FAQAccordion faqs={traderFaqs} />
+            <div className="text-center mt-6 md:mt-8">
+              <Link
+                href="/faq"
+                className="text-blue-400 hover:text-blue-300 font-semibold transition-colors"
+              >
+                View All FAQs →
+              </Link>
+            </div>
+          </section>
+
+          {/* Last Updated */}
+          <div className="text-center text-sm text-gray-500 mb-6">
+            <time dateTime={lastUpdated}>Last updated: {new Date(lastUpdated).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</time>
           </div>
 
           {/* CTA */}
