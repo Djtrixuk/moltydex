@@ -73,6 +73,13 @@ export const POPULAR_TOKENS: Token[] = [
     decimals: 6,
     logo: 'https://cdn.dexscreener.com/cms/images/oEITILHKIYrx6M45?width=800&height=800&quality=90',
   },
+  {
+    symbol: 'COPPERINU',
+    name: 'copper inu',
+    address: '61Wj56QgGyyB966T7YsMzEAKRLcMvJpDbPzjkrCZc4Bi',
+    decimals: 6,
+    logo: 'https://cdn.dexscreener.com/cms/images/a47f7e68a57333159427d47315529b93b26bb5d353609aa9f4131364bbdf1b03?width=800&height=800&quality=90',
+  },
 ];
 
 export function getTokenByAddress(address: string): Token | undefined {
