@@ -37,6 +37,12 @@ Explore real-world scenarios where MoltyDEX enables AI agents to handle x402 pay
 
 Compare manual token swapping vs MoltyDEX for AI agents. Learn why automatic token swapping with Jupiter aggregation provides better prices, simpler code, and zero manual intervention.
 
+### Infrastructure & Roadmap
+
+**[MPC Wallet Support for AI Agents: Why MoltyDEX Is Building Agent-Managed Wallets](/blog/mpc-wallet-support-ai-agents-moltydex)**
+
+Deep dive into MPC wallet support for AI agents on Solana. Learn why MoltyDEX is building managed wallets with spending policies, how it benefits developers and enterprises, and our complete implementation roadmap.
+
 ### Community & Business
 
 **[Beta AI Agent Program: How to Create an Agent and Test MoltyDEX](/blog/beta-ai-agent-program-test-moltydex)**
