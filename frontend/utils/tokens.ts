@@ -66,6 +66,13 @@ export const POPULAR_TOKENS: Token[] = [
     decimals: 6,
     logo: 'https://static.jup.ag/jup/icon.png',
   },
+  {
+    symbol: 'GIRAFFES',
+    name: 'The Giraffes',
+    address: 'GbqbsRyBHVPHEv7xLEsikXmdpPPiApLTJesDBbL5pump',
+    decimals: 6,
+    logo: 'https://cdn.dexscreener.com/cms/images/oEITILHKIYrx6M45?width=800&height=800&quality=90',
+  },
 ];
 
 export function getTokenByAddress(address: string): Token | undefined {
