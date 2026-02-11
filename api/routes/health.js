@@ -42,6 +42,25 @@ router.get('/health', async (req, res) => {
   const JUPITER_API_KEY = process.env.JUPITER_API_KEY || '';
   const RPC_URL = process.env.SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com';
 
+  // Mask the RPC URL to avoid exposing API keys in public responses
+  const maskRpcUrl = (url) => {
+    try {
+      const parsed = new URL(url);
+      // If there's a path with an API key (e.g. /v2/xxxxx), mask it
+      const pathParts = parsed.pathname.split('/');
+      if (pathParts.length > 1) {
+        const lastPart = pathParts[pathParts.length - 1];
+        if (lastPart.length > 6) {
+          pathParts[pathParts.length - 1] = lastPart.slice(0, 3) + '***' + lastPart.slice(-3);
+        }
+      }
+      parsed.pathname = pathParts.join('/');
+      return parsed.origin + parsed.pathname;
+    } catch {
+      return 'configured';
+    }
+  };
+
   res.json({
     status: 'ok',
     fee_bps: FEE_BPS,
@@ -49,7 +68,7 @@ router.get('/health', async (req, res) => {
     fee_method: FEE_WALLET ? 'Jupiter native fees (platformFeeBps)' : 'No fees configured',
     jupiter_endpoints: JUPITER_ENDPOINTS,
     jupiter_api_key_set: !!JUPITER_API_KEY,
-    rpc: RPC_URL,
+    rpc: maskRpcUrl(RPC_URL),
     features: {
       secure_signing: true,
       fee_collection: !!FEE_WALLET,
