@@ -1579,7 +1579,7 @@ export default function EnhancedSwapInterface() {
                 <div className="flex items-center justify-between mb-1">
                   <div className="flex items-center gap-2">
                     <span className="text-white text-sm font-medium">
-                      {formatAmount(swap.amountIn, swap.tokenIn.decimals)} {swap.tokenIn.symbol}
+                      {formatDisplayNumber(swap.amountIn)} {swap.tokenIn.symbol}
                     </span>
                     <span className="text-gray-400">→</span>
                     <span className="text-white text-sm font-medium">
