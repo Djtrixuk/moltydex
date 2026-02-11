@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import MobileNav from './MobileNav';
+import NavLinks from './NavLinks';
 
 interface PageHeaderProps {
   title?: string;
@@ -25,56 +26,7 @@ export default function PageHeader({ title, subtitle }: PageHeaderProps = {}) {
         <span className="text-white font-semibold text-lg">MoltyDEX</span>
       </Link>
       {/* Desktop Navigation */}
-      <div className="hidden md:flex gap-4 lg:gap-6 flex-wrap">
-        <Link
-          href="/for-traders"
-          className="text-sm text-gray-300 hover:text-white transition-colors"
-        >
-          For Traders
-        </Link>
-        <Link
-          href="/developers"
-          className="text-sm text-gray-300 hover:text-white transition-colors"
-        >
-          For Developers
-        </Link>
-        <Link
-          href="/api-providers"
-          className="text-sm text-gray-300 hover:text-white transition-colors"
-        >
-          For API Providers
-        </Link>
-        <Link
-          href="/blog"
-          className="text-sm text-gray-300 hover:text-white transition-colors"
-        >
-          Blog
-        </Link>
-        <Link
-          href="/use-cases"
-          className="text-sm text-gray-300 hover:text-white transition-colors"
-        >
-          Use Cases
-        </Link>
-        <Link
-          href="/examples"
-          className="text-sm text-gray-300 hover:text-white transition-colors"
-        >
-          Examples
-        </Link>
-        <Link
-          href="/security"
-          className="text-sm text-gray-300 hover:text-white transition-colors"
-        >
-          Security
-        </Link>
-        <Link
-          href="/whitepaper"
-          className="text-sm text-gray-300 hover:text-white transition-colors"
-        >
-          Whitepaper
-        </Link>
-      </div>
+      <NavLinks />
       {/* Mobile Navigation */}
       <MobileNav />
           </div>

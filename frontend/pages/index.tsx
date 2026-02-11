@@ -10,6 +10,7 @@ import { clusterApiUrl } from '@solana/web3.js';
 import EnhancedSwapInterface from '../components/EnhancedSwapInterface';
 import ClientOnlyWalletButton from '../components/ClientOnlyWalletButton';
 import MobileNav from '../components/MobileNav';
+import NavLinks from '../components/NavLinks';
 import Breadcrumbs from '../components/Breadcrumbs';
 import FAQAccordion from '../components/FAQAccordion';
 import { FAQPageStructuredData, ProductStructuredData, AggregateRatingStructuredData } from '../components/StructuredData';
@@ -131,56 +132,7 @@ export default function Home() {
                   <span className="text-white font-semibold text-lg">MoltyDEX</span>
                 </Link>
                 {/* Desktop Navigation */}
-                <div className="hidden md:flex gap-4 lg:gap-6 flex-wrap">
-                  <Link
-                    href="/for-traders"
-                    className="text-sm text-gray-300 hover:text-white transition-colors"
-                  >
-                    For Traders
-                  </Link>
-                  <Link
-                    href="/developers"
-                    className="text-sm text-gray-300 hover:text-white transition-colors"
-                  >
-                    For Developers
-                  </Link>
-                  <Link
-                    href="/api-providers"
-                    className="text-sm text-gray-300 hover:text-white transition-colors"
-                  >
-                    For API Providers
-                  </Link>
-                  <Link
-                    href="/blog"
-                    className="text-sm text-gray-300 hover:text-white transition-colors"
-                  >
-                    Blog
-                  </Link>
-                  <Link
-                    href="/use-cases"
-                    className="text-sm text-gray-300 hover:text-white transition-colors"
-                  >
-                    Use Cases
-                  </Link>
-                  <Link
-                    href="/examples"
-                    className="text-sm text-gray-300 hover:text-white transition-colors"
-                  >
-                    Examples
-                  </Link>
-                  <Link
-                    href="/security"
-                    className="text-sm text-gray-300 hover:text-white transition-colors"
-                  >
-                    Security
-                  </Link>
-                  <Link
-                    href="/whitepaper"
-                    className="text-sm text-gray-300 hover:text-white transition-colors"
-                  >
-                    Whitepaper
-                  </Link>
-                </div>
+                <NavLinks />
                 {/* Wallet Connect Button */}
                 <div className="flex items-center gap-4 relative z-50">
                   <ClientOnlyWalletButton />
