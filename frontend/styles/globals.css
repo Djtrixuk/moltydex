@@ -77,12 +77,11 @@ code {
   animation: skeleton-loading 1.5s ease-in-out infinite;
 }
 
-/* Ensure wallet adapter modal appears above all other elements */
-.wallet-adapter-modal-wrapper,
-.wallet-adapter-modal-overlay,
-.wallet-adapter-modal-container,
+/* Ensure wallet adapter modal appears above all other elements.
+   Only set z-index on the root .wallet-adapter-modal so the internal
+   overlay / container / wrapper keep their relative stacking order. */
 .wallet-adapter-modal {
-  z-index: 9999 !important;
+  z-index: 10000 !important;
 }
 
 /* Ensure wallet button is clickable */
