@@ -12,6 +12,94 @@ export interface QuoteResponse {
   fee_amount: string;
   fee_bps: number;
   price_impact?: string;
+  /** Set to true when this quote came from Jupiter Ultra */
+  _ultra?: boolean;
+}
+
+// ─── Jupiter Ultra API types ───────────────────────────────────────────────
+
+export interface UltraOrderResponse {
+  mode: string;
+  inputMint: string;
+  outputMint: string;
+  inAmount: string;
+  outAmount: string;
+  otherAmountThreshold: string;
+  swapMode: string;
+  slippageBps: number;
+  priceImpactPct: string;
+  routePlan: any[];
+  feeBps: number;
+  platformFee?: { amount: string; feeBps: number };
+  signatureFeeLamports: number;
+  prioritizationFeeLamports: number;
+  rentFeeLamports: number;
+  swapType: string;
+  router: string;
+  transaction: string | null;
+  gasless: boolean;
+  requestId: string;
+  totalTime: number;
+  taker: string | null;
+  inUsdValue?: number;
+  outUsdValue?: number;
+  priceImpact?: number;
+  swapUsdValue?: number;
+  errorCode?: number;
+  errorMessage?: string;
+}
+
+export interface UltraExecuteResponse {
+  status: 'Success' | 'Failed';
+  code: number;
+  signature?: string;
+  slot?: string;
+  error?: string;
+  totalInputAmount?: string;
+  totalOutputAmount?: string;
+  inputAmountResult?: string;
+  outputAmountResult?: string;
+  swapEvents?: Array<{
+    inputMint: string;
+    inputAmount: string;
+    outputMint: string;
+    outputAmount: string;
+  }>;
+}
+
+export interface UltraHoldingsResponse {
+  /** Total SOL in lamports */
+  amount: string;
+  /** Total SOL in UI units */
+  uiAmount: number;
+  /** Total SOL as string in UI units */
+  uiAmountString: string;
+  /** Token holdings keyed by mint address */
+  tokens: {
+    [mint: string]: Array<{
+      address: string;
+      mint: string;
+      owner: string;
+      amount: string;
+      delegatedAmount: string;
+      frozen: boolean;
+      uiAmount: number;
+      uiAmountString: string;
+    }>;
+  };
+}
+
+export interface UltraSearchToken {
+  id: string;
+  name: string;
+  symbol: string;
+  icon: string | null;
+  decimals: number;
+  usdPrice?: number | null;
+  mcap?: number | null;
+  liquidity?: number | null;
+  isVerified?: boolean | null;
+  tags?: string[] | null;
 }
 
 export interface BalanceResponse {
@@ -373,4 +461,122 @@ export async function getTransactionStatus(signature: string): Promise<Transacti
   const url = `${API_URL}/api/transaction/status/${signature}`;
   const response = await fetch(url);
   return parseApiResponse<TransactionStatus>(response);
+}
+
+// ─── Jupiter Ultra API functions ───────────────────────────────────────────
+
+/**
+ * Get Ultra swap order (quote + optional transaction)
+ * If taker is provided, returns a signable transaction.
+ * If taker is omitted, returns a quote-only response.
+ */
+export async function getUltraOrder(
+  inputMint: string,
+  outputMint: string,
+  amount: string,
+  taker?: string,
+  slippageBps?: number
+): Promise<UltraOrderResponse> {
+  let url = `${API_URL}/api/ultra/order?inputMint=${inputMint}&outputMint=${outputMint}&amount=${amount}`;
+  if (taker) url += `&taker=${taker}`;
+  if (slippageBps !== undefined) url += `&slippageBps=${slippageBps}`;
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 20000);
+
+  try {
+    const response = await fetch(url, {
+      signal: controller.signal,
+      cache: 'no-store',
+    });
+    clearTimeout(timeoutId);
+    return parseApiResponse<UltraOrderResponse>(response);
+  } catch (err) {
+    clearTimeout(timeoutId);
+    if (err instanceof Error && err.name === 'AbortError') {
+      throw new Error('Ultra order request timed out after 20 seconds');
+    }
+    throw err;
+  }
+}
+
+/**
+ * Execute a signed Ultra swap transaction
+ */
+export async function executeUltraOrder(
+  signedTransaction: string,
+  requestId: string
+): Promise<UltraExecuteResponse> {
+  const url = `${API_URL}/api/ultra/execute`;
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ signedTransaction, requestId }),
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    return parseApiResponse<UltraExecuteResponse>(response);
+  } catch (err) {
+    clearTimeout(timeoutId);
+    if (err instanceof Error && err.name === 'AbortError') {
+      throw new Error('Ultra execute request timed out after 30 seconds');
+    }
+    throw err;
+  }
+}
+
+/**
+ * Get wallet holdings via Jupiter Ultra
+ * Returns SOL balance + all SPL token balances
+ */
+export async function getUltraHoldings(walletAddress: string): Promise<UltraHoldingsResponse> {
+  const url = `${API_URL}/api/ultra/holdings/${encodeURIComponent(walletAddress)}`;
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+  try {
+    const response = await fetch(url, {
+      signal: controller.signal,
+      cache: 'no-store',
+    });
+    clearTimeout(timeoutId);
+    return parseApiResponse<UltraHoldingsResponse>(response);
+  } catch (err) {
+    clearTimeout(timeoutId);
+    if (err instanceof Error && err.name === 'AbortError') {
+      throw new Error('Ultra holdings request timed out after 15 seconds');
+    }
+    throw err;
+  }
+}
+
+/**
+ * Search for tokens via Jupiter Ultra
+ */
+export async function getUltraSearch(query: string): Promise<UltraSearchToken[]> {
+  const url = `${API_URL}/api/ultra/search?query=${encodeURIComponent(query)}`;
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+  try {
+    const response = await fetch(url, {
+      signal: controller.signal,
+      cache: 'no-store',
+    });
+    clearTimeout(timeoutId);
+    return parseApiResponse<UltraSearchToken[]>(response);
+  } catch (err) {
+    clearTimeout(timeoutId);
+    if (err instanceof Error && err.name === 'AbortError') {
+      throw new Error('Ultra search request timed out after 10 seconds');
+    }
+    throw err;
+  }
 }

@@ -22,10 +22,14 @@ import {
   sendTransaction,
   getBatchBalances,
   getWalletTokens,
+  getUltraOrder,
+  executeUltraOrder,
+  getUltraHoldings,
   type QuoteResponse,
   type BatchBalanceResponse,
   type WalletToken,
   type TokenMetadata,
+  type UltraOrderResponse,
 } from '../services/api';
 import TokenSelector from './TokenSelector';
 import TokenLogo from './TokenLogo';
@@ -228,13 +232,71 @@ export default function EnhancedSwapInterface() {
       return;
     }
     
-    // Fetch wallet tokens
+    // Fetch wallet tokens - try Ultra holdings first, then legacy
     const fetchWalletTokens = async () => {
       setWalletTokensLoading(true);
       try {
+        // Try Ultra holdings first (faster, RPC-less)
+        try {
+          const holdings = await getUltraHoldings(publicKey.toString());
+          
+          const tokens: Token[] = [];
+          const balancesMap: { [key: string]: string } = {};
+          
+          // Add SOL
+          const SOL_MINT = 'So11111111111111111111111111111111111111112';
+          const solToken = getTokenByAddress(SOL_MINT);
+          if (solToken) {
+            tokens.push(solToken);
+            balancesMap[SOL_MINT.toLowerCase()] = holdings.uiAmountString || '0';
+          }
+          
+          // Add SPL tokens from holdings
+          if (holdings.tokens) {
+            for (const [mint, accounts] of Object.entries(holdings.tokens)) {
+              if (!Array.isArray(accounts) || accounts.length === 0) continue;
+              
+              // Sum all accounts for this mint
+              let totalUi = 0;
+              let decimals = 9;
+              for (const acct of accounts) {
+                totalUi += acct.uiAmount || 0;
+              }
+              
+              // Try to get metadata from known tokens
+              const knownToken = getTokenByAddress(mint);
+              if (knownToken) {
+                tokens.push(knownToken);
+              } else {
+                // Use minimal placeholder - metadata will be fetched on selection
+                tokens.push({
+                  address: mint,
+                  symbol: mint.slice(0, 4) + '...',
+                  name: mint.slice(0, 8) + '...',
+                  decimals,
+                });
+              }
+              
+              balancesMap[mint.toLowerCase()] = totalUi.toString();
+            }
+          }
+          
+          setWalletTokens(tokens);
+          setWalletTokenBalancesMap(balancesMap);
+          (window as any).__walletTokenBalances = balancesMap;
+          
+          console.log('[EnhancedSwapInterface] Ultra holdings loaded:', {
+            count: tokens.length,
+            solBalance: holdings.uiAmountString,
+          });
+          return; // Ultra succeeded, skip legacy
+        } catch (ultraErr) {
+          console.warn('[EnhancedSwapInterface] Ultra holdings failed, falling back to legacy:', ultraErr);
+        }
+        
+        // Legacy fallback
         const response = await getWalletTokens(publicKey.toString());
         
-        // Convert WalletToken[] to Token[]
         const tokens: Token[] = response.tokens.map(wt => ({
           address: wt.address,
           symbol: wt.symbol,
@@ -243,7 +305,6 @@ export default function EnhancedSwapInterface() {
           logo: wt.logo,
         }));
         
-        // Build balances map
         const balancesMap: { [key: string]: string } = {};
         response.tokens.forEach(wt => {
           balancesMap[wt.address.toLowerCase()] = wt.balance_formatted;
@@ -251,17 +312,13 @@ export default function EnhancedSwapInterface() {
         
         setWalletTokens(tokens);
         setWalletTokenBalancesMap(balancesMap);
-        
-        // Also store in window for useTokenBalance hook to access
         (window as any).__walletTokenBalances = balancesMap;
         
-        console.log('[EnhancedSwapInterface] ✅ Fetched wallet tokens:', {
+        console.log('[EnhancedSwapInterface] Legacy wallet tokens loaded:', {
           count: tokens.length,
-          tokens: tokens.map(t => ({ symbol: t.symbol, address: t.address, balance: balancesMap[t.address.toLowerCase()] })),
         });
       } catch (err) {
         console.error('[EnhancedSwapInterface] Failed to fetch wallet tokens:', err);
-        // Continue without wallet tokens - popular tokens will still be available
         setWalletTokens([]);
         setWalletTokenBalancesMap({});
       } finally {
@@ -283,10 +340,43 @@ export default function EnhancedSwapInterface() {
       return;
     }
     
-    // Fetch balances immediately (no delay) - batch endpoint is optimized and exempt from rate limits
+    // Fetch balances - try Ultra holdings first, then legacy batch
     const fetchBalances = async () => {
       setBalanceCacheLoading(true);
       try {
+        // Try Ultra holdings first (faster, RPC-less)
+        try {
+          const holdings = await getUltraHoldings(publicKey.toString());
+          const cache: { [key: string]: string | null } = {};
+          
+          // SOL balance
+          const SOL_MINT = 'So11111111111111111111111111111111111111112';
+          cache[SOL_MINT] = holdings.uiAmountString || '0';
+          
+          // SPL token balances
+          if (holdings.tokens) {
+            for (const [mint, accounts] of Object.entries(holdings.tokens)) {
+              if (Array.isArray(accounts) && accounts.length > 0) {
+                let totalUi = 0;
+                for (const acct of accounts) {
+                  totalUi += acct.uiAmount || 0;
+                }
+                cache[mint] = totalUi.toString();
+              }
+            }
+          }
+          
+          setBalanceCache(cache);
+          console.log('[EnhancedSwapInterface] Ultra balances cached:', {
+            tokenCount: Object.keys(cache).length,
+            solBalance: cache[SOL_MINT],
+          });
+          return; // Ultra succeeded
+        } catch (ultraErr) {
+          console.warn('[EnhancedSwapInterface] Ultra holdings failed for balances, falling back:', ultraErr);
+        }
+        
+        // Legacy fallback
         const tokenMints = allTokens.map(t => t.address);
         const batchResponse = await getBatchBalances(publicKey.toString(), tokenMints);
         
@@ -302,24 +392,20 @@ export default function EnhancedSwapInterface() {
         });
         
         setBalanceCache(cache);
-        console.log('[EnhancedSwapInterface] ✅ Batch balances cached:', {
+        console.log('[EnhancedSwapInterface] Legacy batch balances cached:', {
           successful: batchResponse.successful,
           failed: batchResponse.failed,
         });
       } catch (err) {
         const errorMsg = err instanceof Error ? err.message : 'Unknown error';
-        console.error('[EnhancedSwapInterface] ❌ Batch balance fetch failed:', {
+        console.error('[EnhancedSwapInterface] Balance fetch failed:', {
           error: errorMsg,
-          err,
         });
-        // Continue without cache - individual fetches will still work
-        // Don't show error to user - individual balance hooks will handle it
       } finally {
         setBalanceCacheLoading(false);
       }
     };
     
-    // Fetch immediately - no delay needed since batch endpoint is optimized
     fetchBalances();
   }, [publicKey, connected, allTokens]);
 
@@ -356,36 +442,146 @@ export default function EnhancedSwapInterface() {
     setQuoteLoading(true);
     setError(null);
     
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.moltydex.com';
-    const url = `${API_URL}/api/quote?input_mint=${tokenIn.address}&output_mint=${tokenOut.address}&amount=${amount}&slippage_bps=${slippageBps}`;
-    
     // Track request for developer mode
     if (developerMode) {
       setQuoteRequest({
-        url: `/api/quote?input_mint=${tokenIn.address}&output_mint=${tokenOut.address}&amount=${amount}&slippage_bps=${slippageBps}`,
+        url: `/api/ultra/order?inputMint=${tokenIn.address}&outputMint=${tokenOut.address}&amount=${amount}`,
         method: 'GET',
       });
     }
     
     try {
-      const data = await getQuote(tokenIn.address, tokenOut.address, amount, slippageBps);
+      // Try Jupiter Ultra first (quote-only, no taker)
+      const ultraOrder = await getUltraOrder(
+        tokenIn.address,
+        tokenOut.address,
+        amount
+      );
+      
+      // Map Ultra response to QuoteResponse interface
+      const data: QuoteResponse = {
+        output_amount: ultraOrder.outAmount,
+        output_after_fee: ultraOrder.outAmount,
+        fee_amount: ultraOrder.platformFee?.amount || '0',
+        fee_bps: ultraOrder.feeBps || 0,
+        price_impact: ultraOrder.priceImpactPct || String(ultraOrder.priceImpact || '0'),
+        _ultra: true,
+      };
+      
       setQuote(data);
       quoteFetchedAt.current = Date.now();
       setError(null);
       
-      // Track response for developer mode
       if (developerMode) {
-        setQuoteResponse(data);
+        setQuoteResponse({ ultra: true, ...ultraOrder });
       }
-    } catch (err) {
-      setError(formatErrorMessage(err));
-      setQuote(null);
-      if (developerMode) {
-        setQuoteResponse({ error: formatErrorMessage(err) });
+      
+      console.log('[fetchQuote] Ultra quote success:', {
+        inAmount: ultraOrder.inAmount,
+        outAmount: ultraOrder.outAmount,
+        router: ultraOrder.router,
+        slippageBps: ultraOrder.slippageBps,
+      });
+    } catch (ultraErr) {
+      console.warn('[fetchQuote] Ultra failed, falling back to legacy:', ultraErr);
+      
+      // Fallback to legacy quote API
+      try {
+        if (developerMode) {
+          setQuoteRequest({
+            url: `/api/quote?input_mint=${tokenIn.address}&output_mint=${tokenOut.address}&amount=${amount}&slippage_bps=${slippageBps}`,
+            method: 'GET',
+          });
+        }
+        
+        const data = await getQuote(tokenIn.address, tokenOut.address, amount, slippageBps);
+        setQuote(data);
+        quoteFetchedAt.current = Date.now();
+        setError(null);
+        
+        if (developerMode) {
+          setQuoteResponse({ ultra: false, ...data });
+        }
+      } catch (legacyErr) {
+        setError(formatErrorMessage(legacyErr));
+        setQuote(null);
+        if (developerMode) {
+          setQuoteResponse({ error: formatErrorMessage(legacyErr) });
+        }
       }
     } finally {
       setQuoteLoading(false);
     }
+  };
+
+  // Shared helper to refresh balances after a successful swap
+  const refreshBalancesAfterSwap = (attempt = 1, maxAttempts = 3) => {
+    if (!publicKey || !connected) return;
+    const delays = [2000, 5000, 10000];
+    const delay = delays[attempt - 1] || 10000;
+    
+    setTimeout(async () => {
+      try {
+        console.log(`[SWAP] Refreshing balances after swap (attempt ${attempt}/${maxAttempts})...`);
+        
+        // Try Ultra holdings first for faster balance refresh
+        try {
+          const holdings = await getUltraHoldings(publicKey.toString());
+          const cache: { [key: string]: string | null } = {};
+          
+          // SOL balance
+          const SOL_MINT = 'So11111111111111111111111111111111111111112';
+          cache[SOL_MINT] = holdings.uiAmountString || '0';
+          
+          // SPL token balances
+          if (holdings.tokens) {
+            for (const [mint, accounts] of Object.entries(holdings.tokens)) {
+              if (Array.isArray(accounts) && accounts.length > 0) {
+                // Sum all accounts for this mint
+                let totalUi = 0;
+                for (const acct of accounts) {
+                  totalUi += acct.uiAmount || 0;
+                }
+                cache[mint] = totalUi.toString();
+              }
+            }
+          }
+          
+          setBalanceCache(cache);
+          console.log('[SWAP] Balances refreshed via Ultra holdings');
+          
+          if (attempt < maxAttempts) {
+            refreshBalancesAfterSwap(attempt + 1, maxAttempts);
+          }
+          return;
+        } catch {
+          // Fall through to legacy batch balances
+        }
+        
+        const tokenMints = allTokens.map(t => t.address);
+        const batchResponse = await getBatchBalances(publicKey.toString(), tokenMints);
+        const cache: { [key: string]: string | null } = {};
+        batchResponse.results.forEach(result => {
+          if (result.success && result.data) {
+            const decimals = result.data.decimals ?? 9;
+            const rawBalance = result.data.balance || '0';
+            cache[result.token_mint] = formatAmount(rawBalance, decimals);
+          } else {
+            cache[result.token_mint] = null;
+          }
+        });
+        setBalanceCache(cache);
+        
+        if (attempt < maxAttempts) {
+          refreshBalancesAfterSwap(attempt + 1, maxAttempts);
+        }
+      } catch (err) {
+        console.warn(`[SWAP] Failed to refresh balances (attempt ${attempt}):`, err);
+        if (attempt < maxAttempts) {
+          refreshBalancesAfterSwap(attempt + 1, maxAttempts);
+        }
+      }
+    }, delay);
   };
 
   const handleSwap = async () => {
@@ -464,7 +660,153 @@ export default function EnhancedSwapInterface() {
 
     try {
       const amount = parseAmount(amountIn, tokenIn.decimals);
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.moltydex.com';
+      
+      // ─── Try Jupiter Ultra flow first ───────────────────────────────
+      const useUltra = quote?._ultra !== false; // Default to Ultra unless explicitly non-Ultra
+      
+      if (useUltra) {
+        try {
+          console.log('[SWAP] Using Jupiter Ultra flow');
+          
+          // Track request for developer mode
+          if (developerMode) {
+            setSwapRequest({
+              url: `/api/ultra/order?inputMint=${tokenIn.address}&outputMint=${tokenOut.address}&amount=${amount}&taker=${publicKey.toString()}`,
+              method: 'GET',
+            });
+          }
+          
+          // Step 1: Get Ultra order WITH taker to get a signable transaction
+          const ultraOrder = await getUltraOrder(
+            tokenIn.address,
+            tokenOut.address,
+            amount,
+            publicKey.toString()
+          );
+          
+          if (developerMode) {
+            setSwapResponse({ ultra: true, ...ultraOrder });
+          }
+          
+          // Check for Ultra error (e.g., insufficient funds)
+          if (ultraOrder.errorCode || !ultraOrder.transaction) {
+            throw new Error(ultraOrder.errorMessage || 'Ultra order returned no transaction');
+          }
+          
+          const txBase64 = ultraOrder.transaction;
+          const ultraRequestId = ultraOrder.requestId;
+          
+          console.log('[SWAP] Ultra order received:', {
+            requestId: ultraRequestId,
+            outAmount: ultraOrder.outAmount,
+            router: ultraOrder.router,
+            gasless: ultraOrder.gasless,
+          });
+          
+          setStatus('signing');
+          
+          // Step 2: Decode and sign the transaction
+          let txBytes: Uint8Array;
+          try {
+            txBytes = Uint8Array.from(atob(txBase64), (c) => c.charCodeAt(0));
+          } catch (decodeError) {
+            throw new Error(`Failed to decode Ultra transaction: ${decodeError instanceof Error ? decodeError.message : 'Invalid base64'}`);
+          }
+          
+          let signedSerialized: Uint8Array;
+          try {
+            const versioned = VersionedTransaction.deserialize(txBytes);
+            const signed = await signTransaction(versioned);
+            signedSerialized = signed.serialize();
+          } catch {
+            try {
+              const legacy = Transaction.from(txBytes);
+              const signed = await signTransaction(legacy);
+              signedSerialized = new Uint8Array(signed.serialize());
+            } catch (txError) {
+              throw new Error(`Failed to sign Ultra transaction: ${txError instanceof Error ? txError.message : 'Unknown error'}`);
+            }
+          }
+          
+          setStatus('sending');
+          
+          // Step 3: Execute via Ultra (handles landing + confirmation)
+          const signedB64 = btoa(String.fromCharCode(...Array.from(signedSerialized)));
+          const execResult = await executeUltraOrder(signedB64, ultraRequestId);
+          
+          console.log('[SWAP] Ultra execute result:', execResult);
+          
+          if (execResult.status === 'Success' && execResult.signature) {
+            // Ultra swap succeeded - no polling needed, Ultra confirms it
+            setTxSignature(execResult.signature);
+            
+            // Store swap details for receipt
+            if (amountIn && quote) {
+              setLastSwapDetails({ amountIn, tokenIn, tokenOut, quote });
+              
+              // Save to swap history
+              try {
+                const SWAP_HISTORY_KEY = 'moltydex_swap_history';
+                const MAX_HISTORY_ITEMS = 20;
+                const stored = localStorage.getItem(SWAP_HISTORY_KEY);
+                const history = stored ? JSON.parse(stored) : [];
+                const swapRecord = {
+                  timestamp: Date.now(),
+                  amountIn,
+                  tokenIn: { symbol: tokenIn.symbol, address: tokenIn.address, decimals: tokenIn.decimals },
+                  tokenOut: { symbol: tokenOut.symbol, address: tokenOut.address, decimals: tokenOut.decimals },
+                  amountOut: execResult.outputAmountResult || quote.output_after_fee,
+                  priceImpact: quote.price_impact || null,
+                  txSignature: execResult.signature,
+                };
+                const updated = [swapRecord, ...history].slice(0, MAX_HISTORY_ITEMS);
+                localStorage.setItem(SWAP_HISTORY_KEY, JSON.stringify(updated));
+              } catch (histErr) {
+                console.error('Failed to save swap history:', histErr);
+              }
+            }
+            
+            setStatus('success');
+            setAmountIn('');
+            setQuote(null);
+            setError(null);
+            trackEvent('swap_success', {
+              tokenIn: tokenIn.symbol,
+              tokenOut: tokenOut.symbol,
+              signature: execResult.signature,
+              via: 'ultra',
+            });
+            
+            // Refresh balances after successful Ultra swap
+            refreshBalancesAfterSwap();
+            
+            // Reset to idle after 5 seconds
+            setTimeout(() => {
+              setStatus('idle');
+              setTxSignature(null);
+              setTxStatus(null);
+              setLastSwapDetails(null);
+            }, 5000);
+            
+            return; // Ultra flow complete, exit handleSwap
+          } else {
+            // Ultra execute failed
+            throw new Error(execResult.error || `Ultra swap failed: ${execResult.status}`);
+          }
+        } catch (ultraSwapErr) {
+          // If user rejected the signing, don't fall back to legacy
+          const errMsg = ultraSwapErr instanceof Error ? ultraSwapErr.message : String(ultraSwapErr);
+          if (errMsg.toLowerCase().includes('reject') || errMsg.toLowerCase().includes('user') || errMsg.toLowerCase().includes('cancel')) {
+            throw ultraSwapErr;
+          }
+          
+          console.warn('[SWAP] Ultra swap failed, falling back to legacy:', ultraSwapErr);
+          // Fall through to legacy flow below
+        }
+      }
+      
+      // ─── Legacy swap flow (fallback) ────────────────────────────────
+      console.log('[SWAP] Using legacy swap flow');
       
       // Track request for developer mode
       if (developerMode) {
@@ -490,9 +832,8 @@ export default function EnhancedSwapInterface() {
         slippageBps
       );
       
-      // Track response for developer mode
       if (developerMode) {
-        setSwapResponse(buildResult);
+        setSwapResponse({ ultra: false, ...buildResult });
       }
 
       const txBase64 = buildResult.transaction;
@@ -501,14 +842,12 @@ export default function EnhancedSwapInterface() {
         throw new Error('Invalid response from API: missing transaction');
       }
 
-      // Validate base64 encoding
       if (!/^[A-Za-z0-9+/=]+$/.test(txBase64)) {
         throw new Error('Invalid transaction format: not valid base64');
       }
 
       setStatus('signing');
 
-      // Sign transaction (fees are included directly in the transaction)
       let txBytes: Uint8Array;
       try {
         txBytes = Uint8Array.from(atob(txBase64), (c) => c.charCodeAt(0));
@@ -536,7 +875,6 @@ export default function EnhancedSwapInterface() {
 
       setStatus('sending');
 
-      // Send transaction (fees are included if there was room)
       const signedB64 = btoa(String.fromCharCode(...Array.from(signedSerialized)));
       const sendResult = await sendTransaction(signedB64);
 
@@ -544,18 +882,16 @@ export default function EnhancedSwapInterface() {
       setStatus('confirming');
       txPollCount.current = 0;
       
-      // Clear any existing polling timeout
       if (pollTimeoutRef.current) {
         clearTimeout(pollTimeoutRef.current);
         pollTimeoutRef.current = null;
       }
       
-      // Track the signature we're polling for using a ref to avoid stale closures
       const pollingSignature = sendResult.signature;
       currentPollingSignatureRef.current = pollingSignature;
-      txPollCount.current = 0; // Reset poll count for new transaction
+      txPollCount.current = 0;
       
-      // Start polling transaction status
+      // Start polling transaction status (legacy flow)
       const pollTransactionStatus = async () => {
         // Check if we should stop polling (max attempts reached)
         if (txPollCount.current >= TX_STATUS_MAX_POLLS) {

@@ -66,6 +66,7 @@ app.use('/api', balanceRoutes);
 app.use('/api', tokenRoutes);
 app.use('/api/transaction', transactionRoutes);
 app.use('/api/x402', x402Routes);
+app.use('/api/ultra', require('./routes/ultra'));
 app.use('/api/batch', require('./routes/batch'));
 app.use('/api/wallet', require('./routes/wallet'));
 app.use('/api/rate-limit', require('./routes/rateLimit'));
