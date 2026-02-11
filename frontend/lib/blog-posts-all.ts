@@ -462,6 +462,19 @@ export const blogPosts: BlogPost[] = [
     content: '',
     optimized: false,
   },
+  {
+    slug: 'jupiter-ultra-api-migration-live-swaps',
+    title: 'Jupiter Ultra API Migration: Live Swaps Are Here',
+    description: 'MoltyDEX completes full migration to Jupiter Ultra API with live end-to-end token swaps. Covers the new RPC-less swap architecture, robust fallback system, production UI fixes for wallet connection and token selectors, and comma-formatted number display.',
+    keywords: ['Jupiter Ultra API', 'Solana swap', 'live swaps', 'Jupiter aggregator', 'token swap', 'MoltyDEX', 'Solana DEX', 'wallet connection', 'number formatting', 'x402'],
+    author: 'MoltyDEX Team',
+    date: '2026-02-11',
+    category: 'Engineering',
+    tags: ['jupiter', 'ultra-api', 'swaps', 'engineering', 'Solana', 'production'],
+    canonical: 'https://moltydex.com/blog/jupiter-ultra-api-migration-live-swaps',
+    content: '',
+    optimized: true,
+  },
 ];
 
 export function getBlogPost(slug: string): BlogPost | undefined {
