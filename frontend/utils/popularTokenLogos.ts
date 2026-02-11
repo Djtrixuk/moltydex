@@ -16,6 +16,8 @@ const POPULAR_TOKEN_LOGOS: Record<string, string> = {
   'HZ1JovNiVvGrGNiiYvEozEVgZ58xaU3RKwX8eACQBCt3': 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/HZ1JovNiVvGrGNiiYvEozEVgZ58xaU3RKwX8eACQBCt3/logo.png', // PYTH
   'JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN': 'https://static.jup.ag/jup/icon.png', // JUP
   'jupyiwryjfskupiha7hker8vutaefosybkedznsdvcn': 'https://static.jup.ag/jup/icon.png', // JUP (lowercase)
+  'HndwegC6q7UGn5MErjvdH6BeQzcWQtjZf1nJX6rhpump': '/mdex-logo.png', // MDEX (MoltyDEX)
+  'hndwegc6q7ugn5merjvdh6beqzcwqtjzf1njx6rhpump': '/mdex-logo.png', // MDEX (lowercase)
   
   // Pump.fun tokens (these APIs are more reliable for pump tokens)
   'a3W4qutoEJA4232T2gwZUfgYJTetr96pU4SJMwppump': 'https://pumpapi.fun/api/token/a3W4qutoEJA4232T2gwZUfgYJTetr96pU4SJMwppump/image', // WhiteWhale

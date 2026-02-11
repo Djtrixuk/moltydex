@@ -104,13 +104,16 @@ export default function SlippageSettings({ slippageBps, onSlippageChange }: Slip
                 <label className="text-xs text-gray-400 mb-1 block">Custom</label>
                 <div className="flex gap-2">
                   <input
-                    type="number"
+                    type="text"
+                    inputMode="decimal"
+                    pattern="[0-9]*\.?[0-9]*"
+                    autoComplete="off"
                     value={customSlippage}
-                    onChange={(e) => setCustomSlippage(e.target.value)}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      if (v === '' || /^\d*\.?\d*$/.test(v)) setCustomSlippage(v);
+                    }}
                     placeholder="0.5"
-                    step="0.1"
-                    min="0.01"
-                    max="50"
                     className="flex-1 px-3 py-2 bg-white/10 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-white/30"
                   />
                   <span className="text-gray-400 text-sm py-2">%</span>

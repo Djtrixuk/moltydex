@@ -1390,10 +1390,15 @@ export default function EnhancedSwapInterface() {
             <div className="flex-1 min-w-0">
               <input
                 ref={amountInInputRef}
-                type="number"
+                type="text"
+                inputMode="decimal"
+                pattern="[0-9]*\.?[0-9]*"
+                autoComplete="off"
                 value={amountIn}
                 onChange={(e) => {
                   const value = e.target.value;
+                  // Only allow valid decimal number characters (digits and at most one dot)
+                  if (value !== '' && !/^\d*\.?\d*$/.test(value)) return;
                   // Validate input doesn't exceed balance
                   const numValue = parseFloat(value);
                   const balance = parseFloat(tokenInBalance.balance || '0');

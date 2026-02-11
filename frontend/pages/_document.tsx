@@ -10,8 +10,8 @@ export default function Document() {
         <link rel="dns-prefetch" href="https://api.moltydex.com" />
         <link rel="dns-prefetch" href="https://api.jup.ag" />
         
-        {/* Font optimization - preload system fonts for faster rendering */}
-        <link rel="preload" href="/moltydex-icon.png" as="image" />
+        {/* Preload site logo used in header/nav for faster LCP */}
+        <link rel="preload" href="/moltydex-icon.png" as="image" type="image/png" />
         
         {/* Additional meta tags that should be in document */}
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
