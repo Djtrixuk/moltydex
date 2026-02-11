@@ -169,13 +169,13 @@ export default function Home() {
                 </div>
               </header>
 
-              {/* Main Swap Interface */}
-              <section aria-label="Token Swap Interface">
+              {/* Main Swap Interface - z-10 so token selector dropdowns layer above sections below */}
+              <section aria-label="Token Swap Interface" className="relative z-10">
                 <EnhancedSwapInterface />
               </section>
 
               {/* x402 Payment Handler Section - Compact & Sleek */}
-              <section className="mt-8 md:mt-12 px-4">
+              <section className="relative z-0 mt-8 md:mt-12 px-4">
                 <div className="max-w-5xl mx-auto">
                   <div className="bg-gradient-to-br from-gray-900/60 to-gray-800/60 rounded-xl p-6 md:p-8 border border-gray-700/50 backdrop-blur-sm">
                     <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
@@ -236,7 +236,7 @@ export default function Home() {
               </section>
 
               {/* FAQ Section - AI Tool Optimization */}
-              <section className="mt-8 md:mt-12 px-4">
+              <section className="relative z-0 mt-8 md:mt-12 px-4">
                 <div className="max-w-4xl mx-auto">
                   <h2 className="text-2xl md:text-3xl font-bold text-center mb-6 md:mb-8 text-white">Frequently Asked Questions</h2>
                   <FAQAccordion faqs={homepageFaqs} />
