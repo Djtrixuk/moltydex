@@ -194,50 +194,26 @@ export default function Home() {
                 <h1 className="text-3xl md:text-5xl font-bold text-white mb-2">
                   Automatic x402 Payment Handler
                 </h1>
-                <h2 className="text-lg md:text-xl text-cyan-400 font-semibold mb-3 md:mb-4 px-4">
+                <h2 className="text-lg md:text-xl text-cyan-400 font-semibold mb-4 md:mb-5 px-4">
                   Zero-Friction Token Swaps & x402 Payments for AI Agents
                 </h2>
-                <p className="text-sm md:text-base text-gray-400 max-w-2xl mx-auto mb-4 px-4">
-                  The <strong className="text-white">only x402 payment handler</strong> with automatic token swapping. 
-                  Handle x402 payments automatically, swap tokens seamlessly, <strong className="text-white">0% fees</strong>. 
-                  Works for both <strong className="text-white">humans</strong> (web interface) and 
-                  <strong className="text-white"> AI agents</strong> (automatic x402 payments).
-                </p>
-                {/* Trust Signals */}
-                <div className="flex justify-center gap-4 mb-4 md:mb-6 flex-wrap px-4 text-sm text-gray-400">
+                {/* Trust Signals + Feature Pills - single compact row */}
+                <div className="flex justify-center items-center gap-3 mb-5 md:mb-6 flex-wrap px-4 text-sm text-gray-400">
                   <span className="flex items-center gap-1">
-                    <span className="text-green-400">✓</span> Used by 1,000+ agents
+                    <span className="text-green-400">✓</span> 1,000+ agents
                   </span>
-                  <span className="hidden sm:inline">•</span>
+                  <span className="text-gray-600">·</span>
+                  <span className="flex items-center gap-1">
+                    <span className="text-green-400">✓</span> 0% fees
+                  </span>
+                  <span className="text-gray-600">·</span>
+                  <span className="flex items-center gap-1">
+                    <span className="text-green-400">✓</span> Best prices
+                  </span>
+                  <span className="text-gray-600">·</span>
                   <span className="flex items-center gap-1">
                     <span className="text-green-400">✓</span> 99.9% uptime
                   </span>
-                </div>
-                {/* Key Features - Simplified */}
-                <div className="flex justify-center gap-2 mb-4 md:mb-6 flex-wrap px-4">
-                  <span className="px-3 py-1.5 bg-blue-600/20 text-blue-400 rounded-full text-xs border border-blue-500/30 font-semibold">
-                    Automatic x402 Payments
-                  </span>
-                  <span className="px-3 py-1.5 bg-green-600/20 text-green-400 rounded-full text-xs border border-green-500/30 font-semibold">
-                    Zero Fees (0%)
-                  </span>
-                  <span className="px-3 py-1.5 bg-purple-600/20 text-purple-400 rounded-full text-xs border border-purple-500/30 font-semibold">
-                    Best Prices
-                  </span>
-                </div>
-                <div className="flex flex-col sm:flex-row gap-3 justify-center mt-4 px-4">
-                  <Link
-                    href="/developers"
-                    className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 text-center min-h-[48px] flex items-center justify-center"
-                  >
-                    Start Handling x402 Payments
-                  </Link>
-                  <Link
-                    href="/x402-payments"
-                    className="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-lg font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 text-center min-h-[48px] flex items-center justify-center"
-                  >
-                    Learn About x402
-                  </Link>
                 </div>
               </header>
 
