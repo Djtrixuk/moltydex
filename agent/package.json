@@ -1,27 +1,58 @@
 {
-  "name": "moltydex-x402-agent",
+  "name": "moltydex",
   "version": "1.0.0",
-  "description": "x402 Auto-Pay Agent for MoltyDEX - Automatically handles 402 Payment Required responses",
+  "description": "MoltyDEX SDK — x402 auto-pay agent and API client for Solana token swaps. Zero fees, best prices via Jupiter.",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc",
+    "prepublishOnly": "npm run build",
     "start": "node dist/index.js",
     "dev": "tsx src/index.ts",
     "example": "tsx src/examples/basic.ts",
-    "example:wallet": "tsx src/examples/with-wallet.ts",
-    "example:built": "node --loader ts-node/esm dist/examples/basic.js || node dist/examples/basic.js",
-    "demo:video": "tsx src/examples/demo-video.ts"
+    "example:wallet": "tsx src/examples/with-wallet.ts"
   },
   "keywords": [
-    "x402",
     "solana",
+    "x402",
     "payment",
     "agent",
-    "moltydex"
+    "ai-agent",
+    "moltydex",
+    "token-swap",
+    "jupiter",
+    "defi",
+    "dex",
+    "spl-token",
+    "mpc-wallet",
+    "auto-pay"
   ],
-  "author": "MoltyDEX",
+  "author": "MoltyDEX <hello@moltydex.com> (https://moltydex.com)",
   "license": "MIT",
+  "homepage": "https://moltydex.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Djtrixuk/moltydex.git",
+    "directory": "agent"
+  },
+  "bugs": {
+    "url": "https://github.com/Djtrixuk/moltydex/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
     "@solana/spl-token": "^0.3.11",
     "@solana/web3.js": "^1.87.6",

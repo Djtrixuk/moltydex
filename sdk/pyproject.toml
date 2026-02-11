@@ -1,0 +1,44 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "moltydex"
+version = "1.0.0"
+description = "MoltyDEX SDK - x402 token aggregator for AI agents on Solana. Zero fees, best prices via Jupiter."
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.8"
+authors = [
+    {name = "MoltyDEX", email = "hello@moltydex.com"},
+]
+keywords = [
+    "solana", "x402", "defi", "dex", "token-swap", "jupiter",
+    "ai-agent", "mpc-wallet", "spl-token", "moltydex", "auto-pay",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Office/Business :: Financial",
+]
+dependencies = [
+    "requests>=2.28.0",
+    "solana>=0.30.0",
+]
+
+[project.urls]
+Homepage = "https://moltydex.com"
+Documentation = "https://moltydex.com/developers"
+Repository = "https://github.com/Djtrixuk/moltydex"
+Issues = "https://github.com/Djtrixuk/moltydex/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["moltydex"]
