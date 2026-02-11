@@ -334,10 +334,10 @@ export default function TokenSelector({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="h-16 px-3 pr-8 bg-white/10 hover:bg-white/15 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-white/30 text-base font-semibold transition-colors cursor-pointer min-w-[120px] max-w-[140px] flex items-center gap-2"
+        className="h-16 px-3 pr-8 bg-white/10 hover:bg-white/15 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-white/30 text-base font-semibold transition-colors cursor-pointer min-w-[130px] max-w-[160px] flex items-center gap-2"
       >
         <TokenLogo token={selectedToken} size={32} />
-        <span className="flex-1 text-left">{selectedToken.symbol}</span>
+        <span className={`flex-1 text-left truncate ${selectedToken.symbol.length > 7 ? 'text-xs' : selectedToken.symbol.length > 5 ? 'text-sm' : ''}`}>{selectedToken.symbol}</span>
         <svg
           className="w-4 h-4 text-gray-400 flex-shrink-0"
           fill="none"
