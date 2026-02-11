@@ -10,6 +10,8 @@ import {
   POPULAR_TOKENS,
   parseAmount,
   formatAmount,
+  formatDisplayNumber,
+  safeParseFloat,
   formatErrorMessage,
   getTokenByAddress,
   type Token,
@@ -620,7 +622,7 @@ export default function EnhancedSwapInterface() {
 
     // Error Prevention: Pre-validate balance and quote freshness
     const swapAmount = parseFloat(amountIn);
-    const availableBalance = parseFloat(tokenInBalance.balance || '0');
+    const availableBalance = safeParseFloat(tokenInBalance.balance || '0');
     
     // Check balance
     const reservedForNetworkFees = tokenIn.address.toLowerCase() === 'so11111111111111111111111111111111111111112' 
@@ -631,8 +633,8 @@ export default function EnhancedSwapInterface() {
     if (swapAmount > maxSwappable) {
       const shortfall = swapAmount - availableBalance;
       setError(
-        `Insufficient balance. You have ${availableBalance.toFixed(9)} ${tokenIn.symbol}, but trying to swap ${swapAmount} ${tokenIn.symbol}. ` +
-        (shortfall > 0 ? `You need ${shortfall.toFixed(9)} more ${tokenIn.symbol}.` : '') +
+        `Insufficient balance. You have ${formatDisplayNumber(availableBalance.toFixed(9))} ${tokenIn.symbol}, but trying to swap ${formatDisplayNumber(swapAmount.toString())} ${tokenIn.symbol}. ` +
+        (shortfall > 0 ? `You need ${formatDisplayNumber(shortfall.toFixed(9))} more ${tokenIn.symbol}.` : '') +
         (reservedForNetworkFees > 0 ? ` Reserve ${reservedForNetworkFees.toFixed(9)} ${tokenIn.symbol} for network fees.` : '')
       );
       setStatus('error');
@@ -1626,7 +1628,7 @@ export default function EnhancedSwapInterface() {
                   </span>
                 ) : (
                   <span className="text-[10px] md:text-xs text-gray-400">
-                    {tokenInBalance.balance} {tokenIn.symbol}
+                    {formatDisplayNumber(tokenInBalance.balance)} {tokenIn.symbol}
                   </span>
                 )}
                 {connected && (
@@ -1672,12 +1674,12 @@ export default function EnhancedSwapInterface() {
                     ↻
                   </button>
                 )}
-                {tokenInBalance.balance !== null && parseFloat(tokenInBalance.balance || '0') > 0 && (
+                {tokenInBalance.balance !== null && safeParseFloat(tokenInBalance.balance || '0') > 0 && (
                   <>
                     <button
                       type="button"
                       onClick={() => {
-                        const balance = parseFloat(tokenInBalance.balance || '0') || 0;
+                        const balance = safeParseFloat(tokenInBalance.balance || '0');
                         const half = (balance / 2).toString();
                         setAmountIn(half);
                       }}
@@ -1688,7 +1690,7 @@ export default function EnhancedSwapInterface() {
                     <button
                       type="button"
                       onClick={() => {
-                        const balance = parseFloat(tokenInBalance.balance || '0') || 0;
+                        const balance = safeParseFloat(tokenInBalance.balance || '0');
                         // Reserve small buffer only for SOL network fees (not platform fees - we removed those)
                         // For SOL: reserve ~0.000005 SOL for transaction fees
                         // For SPL tokens: no reservation needed (network fees paid in SOL separately)
@@ -1728,19 +1730,19 @@ export default function EnhancedSwapInterface() {
                 ref={amountInInputRef}
                 type="text"
                 inputMode="decimal"
-                pattern="[0-9]*\.?[0-9]*"
+                pattern="[0-9,]*\.?[0-9]*"
                 autoComplete="off"
-                value={amountIn}
+                value={formatDisplayNumber(amountIn)}
                 onChange={(e) => {
-                  const value = e.target.value;
+                  const value = e.target.value.replace(/,/g, ''); // strip commas for internal value
                   // Only allow valid decimal number characters (digits and at most one dot)
                   if (value !== '' && !/^\d*\.?\d*$/.test(value)) return;
                   // Validate input doesn't exceed balance
                   const numValue = parseFloat(value);
-                  const balance = parseFloat(tokenInBalance.balance || '0');
+                  const balance = safeParseFloat(tokenInBalance.balance || '0');
                   if (!isNaN(numValue) && numValue > balance && value !== '') {
                     // Don't update if exceeds balance - show error instead
-                    setError(`Amount exceeds balance. Maximum: ${balance.toFixed(9)} ${tokenIn.symbol}`);
+                    setError(`Amount exceeds balance. Maximum: ${formatDisplayNumber(balance.toFixed(9))} ${tokenIn.symbol}`);
                     return;
                   }
                   setAmountIn(value);
@@ -1760,7 +1762,7 @@ export default function EnhancedSwapInterface() {
                 placeholder="0.0"
                 step="any"
                 min="0"
-                max={tokenInBalance.balance ? parseFloat(tokenInBalance.balance) : undefined}
+                max={tokenInBalance.balance ? safeParseFloat(tokenInBalance.balance) : undefined}
                 disabled={status === 'loading' || status === 'signing' || status === 'sending' || status === 'confirming'}
                 className="w-full h-12 md:h-16 px-2 md:px-4 bg-transparent text-white placeholder-gray-500 focus:outline-none text-right text-lg md:text-2xl font-bold [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none disabled:opacity-50 disabled:cursor-not-allowed"
                 title="Press Ctrl/Cmd+K to focus, Enter to swap"
@@ -1791,7 +1793,7 @@ export default function EnhancedSwapInterface() {
                   <BalanceSkeleton />
                 ) : (
                   <span className="text-[10px] md:text-xs text-gray-400">
-                    {tokenOutBalance.balance ?? '0'} {tokenOut.symbol}
+                    {formatDisplayNumber(tokenOutBalance.balance ?? '0')} {tokenOut.symbol}
                   </span>
                 )}
                 <button

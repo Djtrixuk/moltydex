@@ -130,6 +130,30 @@ export function formatAmount(amount: string | number, decimals: number): string 
 }
 
 /**
+ * Add thousand-separator commas to a numeric string for display.
+ * Works with decimals: "8081632.755627" -> "8,081,632.755627"
+ * Handles negative numbers and strings that are already comma-formatted.
+ */
+export function formatDisplayNumber(value: string | number | null | undefined): string {
+  if (value === null || value === undefined || value === '') return '0';
+  const str = String(value).replace(/,/g, ''); // strip existing commas
+  if (str === '' || str === '0') return '0';
+  const parts = str.split('.');
+  const whole = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return parts.length > 1 ? `${whole}.${parts[1]}` : whole;
+}
+
+/**
+ * Safely parse a numeric string that may contain commas.
+ * "16,163,265.511255" -> 16163265.511255
+ */
+export function safeParseFloat(value: string | number | null | undefined): number {
+  if (value === null || value === undefined || value === '') return 0;
+  const num = parseFloat(String(value).replace(/,/g, ''));
+  return isNaN(num) ? 0 : num;
+}
+
+/**
  * Format error messages for display
  */
 export function formatErrorMessage(error: unknown): string {

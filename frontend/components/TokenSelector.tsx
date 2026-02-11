@@ -5,7 +5,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { type Token, POPULAR_TOKENS } from '../utils/tokens';
+import { type Token, POPULAR_TOKENS, formatDisplayNumber } from '../utils/tokens';
 import { useTokenBalance } from '../hooks/useTokenBalance';
 import TokenLogo from './TokenLogo';
 
@@ -31,7 +31,7 @@ function TokenBalanceDisplay({
     return (
       <div className="text-right flex-shrink-0">
         <div className="text-white text-sm font-medium">
-          {walletTokenBalance || '0'}
+          {formatDisplayNumber(walletTokenBalance) || '0'}
         </div>
       </div>
     );
@@ -44,7 +44,7 @@ function TokenBalanceDisplay({
     return (
       <div className="text-right flex-shrink-0">
         <div className="text-white text-sm font-medium">
-          {cachedBalance || '0'}
+          {formatDisplayNumber(cachedBalance) || '0'}
         </div>
       </div>
     );
@@ -65,7 +65,7 @@ function TokenBalanceDisplay({
   return (
     <div className="text-right flex-shrink-0">
       <div className="text-white text-sm font-medium">
-        {tokenBalance.loading ? '…' : tokenBalance.balance || '0'}
+        {tokenBalance.loading ? '…' : formatDisplayNumber(tokenBalance.balance) || '0'}
       </div>
     </div>
   );
