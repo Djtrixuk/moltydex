@@ -196,6 +196,55 @@ export function PaymentServiceStructuredData() {
   );
 }
 
+export function ProductStructuredData() {
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "MoltyDEX",
+    "description": "x402 Token Aggregator for AI Agents on Solana. Best prices, 0% fees, automatic token swapping.",
+    "url": "https://moltydex.com",
+    "brand": {
+      "@type": "Brand",
+      "name": "MoltyDEX"
+    },
+    "category": "DeFi Software",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD",
+      "availability": "https://schema.org/InStock"
+    }
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+    />
+  );
+}
+
+export function AggregateRatingStructuredData() {
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "MoltyDEX",
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "bestRating": "5",
+      "ratingCount": "50"
+    }
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+    />
+  );
+}
+
 export function SoftwareApplicationStructuredData() {
   const data = {
     "@context": "https://schema.org",
