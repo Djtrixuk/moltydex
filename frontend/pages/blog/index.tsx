@@ -33,14 +33,21 @@ export default function BlogIndex() {
 
   // Filter posts based on selected category or tag
   const filteredPosts = useMemo(() => {
+    let posts;
     if (!selectedCategory) {
-      return blogPosts;
+      posts = blogPosts;
+    } else if (selectedCategory === 'x402') {
+      // Special handling for "x402" - filter by tag instead of category
+      posts = getBlogPostsByTag('x402');
+    } else {
+      posts = getBlogPostsByCategory(selectedCategory);
     }
-    // Special handling for "x402" - filter by tag instead of category
-    if (selectedCategory === 'x402') {
-      return getBlogPostsByTag('x402');
-    }
-    return getBlogPostsByCategory(selectedCategory);
+    // Sort by date descending (newest first)
+    return [...posts].sort((a, b) => {
+      const dateA = new Date(a.date).getTime();
+      const dateB = new Date(b.date).getTime();
+      return dateB - dateA;
+    });
   }, [selectedCategory]);
 
   // Combine categories with special tag-based filters
@@ -153,7 +160,11 @@ export default function BlogIndex() {
             <div className="mb-12">
               <h2 className="text-2xl md:text-3xl font-bold text-white mb-8">Featured Articles</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {blogPosts.slice(0, 3).map(post => (
+                {[...blogPosts].sort((a, b) => {
+                  const dateA = new Date(a.date).getTime();
+                  const dateB = new Date(b.date).getTime();
+                  return dateB - dateA;
+                }).slice(0, 3).map(post => (
                 <Link
                   key={post.slug}
                   href={`/blog/${post.slug}`}
@@ -201,7 +212,7 @@ export default function BlogIndex() {
               </div>
             ) : (
               <div className="space-y-4">
-                {filteredPosts.map(post => (
+                {filteredPosts.map((post) => (
                 <Link
                   key={post.slug}
                   href={`/blog/${post.slug}`}
