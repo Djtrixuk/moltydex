@@ -350,7 +350,7 @@ export default function TokenSelector({
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute bottom-full left-0 mb-3 w-[448px] bg-gray-900 rounded-2xl border border-white/20 shadow-2xl z-[9999] max-h-[600px] flex flex-col">
+        <div className="absolute top-full left-0 mt-3 w-[448px] bg-gray-900 rounded-2xl border border-white/20 shadow-2xl z-[9999] max-h-[min(600px,calc(100vh-200px))] flex flex-col">
           {/* Search Bar */}
           <div className="p-4 border-b border-white/10">
             <div className="relative">
