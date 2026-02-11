@@ -196,6 +196,57 @@ export function PaymentServiceStructuredData() {
   );
 }
 
+export function SoftwareApplicationStructuredData() {
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "MoltyDEX SDK",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Cross-platform",
+    "description": "TypeScript and Python SDK for building AI agents with automatic x402 payment handling and token swapping on Solana.",
+    "url": "https://moltydex.com/developers",
+    "downloadUrl": "https://www.npmjs.com/package/moltydex",
+    "softwareVersion": "1.1.0",
+    "author": {
+      "@type": "Organization",
+      "name": "MoltyDEX"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "programmingLanguage": ["TypeScript", "Python"]
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+    />
+  );
+}
+
+export function AuthorStructuredData({ name = "MoltyDEX Team" }: { name?: string } = {}) {
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": name,
+    "url": "https://moltydex.com",
+    "worksFor": {
+      "@type": "Organization",
+      "name": "MoltyDEX"
+    }
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+    />
+  );
+}
+
 export function HowToStructuredData({ 
   name, 
   description, 
