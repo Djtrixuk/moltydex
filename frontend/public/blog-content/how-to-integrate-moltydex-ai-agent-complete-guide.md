@@ -60,7 +60,7 @@ The HTTP Interceptor method automatically intercepts all HTTP responses and hand
 **TypeScript/JavaScript:**
 
 ```typescript
-import { HTTPInterceptor } from '@moltydex/agent';
+import { HTTPInterceptor } from 'moltydex';
 
 // Initialize once - handles all 402 responses automatically
 const interceptor = new HTTPInterceptor({
@@ -114,7 +114,7 @@ data = make_request('https://premium-api.com/data').json()
 For more control, you can handle 402 responses manually:
 
 ```typescript
-import { MoltyDEX } from '@moltydex/agent';
+import { MoltyDEX } from 'moltydex';
 
 const moltydex = new MoltyDEX({
   apiUrl: 'https://api.moltydex.com',
@@ -251,7 +251,7 @@ register_plugin(MoltyDEXPlugin())
 For custom agent frameworks, integrate MoltyDEX at the HTTP client level:
 
 ```typescript
-import { HTTPInterceptor } from '@moltydex/agent';
+import { HTTPInterceptor } from 'moltydex';
 
 class CustomAgent {
   private interceptor: HTTPInterceptor;
@@ -351,7 +351,7 @@ class RateLimitedAgent {
 ### Unit Tests
 
 ```typescript
-import { HTTPInterceptor } from '@moltydex/agent';
+import { HTTPInterceptor } from 'moltydex';
 
 describe('MoltyDEX Integration', () => {
   let interceptor: HTTPInterceptor;

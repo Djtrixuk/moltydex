@@ -188,7 +188,7 @@ const paidResponse = await fetch(apiUrl, {
 Here's how to integrate MoltyDEX with your agent:
 
 ```typescript
-import { HTTPInterceptor } from '@moltydex/agent';
+import { HTTPInterceptor } from 'moltydex';
 
 const interceptor = new HTTPInterceptor({
   apiUrl: 'https://api.moltydex.com',

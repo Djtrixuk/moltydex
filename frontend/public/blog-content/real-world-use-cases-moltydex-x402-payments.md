@@ -62,7 +62,7 @@ A data collection agent needs to aggregate information from 5 different premium 
 ### Implementation Example
 
 ```typescript
-import { HTTPInterceptor } from '@moltydex/agent';
+import { HTTPInterceptor } from 'moltydex';
 
 const interceptor = new HTTPInterceptor({
   apiUrl: 'https://api.moltydex.com',
@@ -327,7 +327,7 @@ Ready to implement automatic token swapping in your agent?
 
 **1. Install MoltyDEX**
 ```bash
-npm install @moltydex/agent
+npm install moltydex
 # or
 pip install moltydex
 ```

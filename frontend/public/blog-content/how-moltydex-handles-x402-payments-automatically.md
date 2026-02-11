@@ -494,7 +494,7 @@ For multiple payments:
 Here's a complete example of using MoltyDEX:
 
 ```typescript
-import { HTTPInterceptor } from '@moltydex/agent';
+import { HTTPInterceptor } from 'moltydex';
 
 // Initialize MoltyDEX
 const interceptor = new HTTPInterceptor({

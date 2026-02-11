@@ -241,7 +241,7 @@ class X402PaymentHandler:
 **TypeScript/JavaScript:**
 
 ```typescript
-import { HTTPInterceptor } from '@moltydex/agent';
+import { HTTPInterceptor } from 'moltydex';
 
 // Setup once - handles all x402 payments automatically
 const interceptor = new HTTPInterceptor({
@@ -479,7 +479,7 @@ test('end-to-end x402 payment flow', async () => {
 ### Example 1: Data Collection Agent
 
 ```typescript
-import { HTTPInterceptor } from '@moltydex/agent';
+import { HTTPInterceptor } from 'moltydex';
 
 const interceptor = new HTTPInterceptor({
   apiUrl: 'https://api.moltydex.com',

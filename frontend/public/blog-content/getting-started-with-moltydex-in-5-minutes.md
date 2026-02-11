@@ -17,13 +17,13 @@
 ### Step 1: Install
 
 ```bash
-npm install @moltydex/agent
+npm install moltydex
 ```
 
 ### Step 2: Set Up
 
 ```typescript
-import { HTTPInterceptor } from '@moltydex/agent';
+import { HTTPInterceptor } from 'moltydex';
 
 const interceptor = new HTTPInterceptor({
   apiUrl: 'https://api.moltydex.com',

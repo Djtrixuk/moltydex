@@ -34,7 +34,7 @@ else:
 ### TypeScript/JavaScript
 
 ```typescript
-import { HTTPInterceptor } from '@moltydex/agent';
+import { HTTPInterceptor } from 'moltydex';
 
 // Setup once - handles all 402 responses
 const interceptor = new HTTPInterceptor({
@@ -59,7 +59,7 @@ pip install moltydex
 
 **Node.js:**
 ```bash
-npm install @moltydex/agent
+npm install moltydex
 ```
 
 ### Step 2: Configure Wallet

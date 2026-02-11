@@ -111,7 +111,7 @@ MoltyDEX is built specifically for AI agents making x402 payments. To make it th
 
 **Quick Start:**
 ```typescript
-import { HTTPInterceptor } from '@moltydex/agent';
+import { HTTPInterceptor } from 'moltydex';
 
 const interceptor = new HTTPInterceptor({
   apiUrl: 'https://api.moltydex.com',
@@ -212,7 +212,7 @@ Actual: Generic error, no helpful message
 
 Environment:
 - Node.js 18.0.0
-- @moltydex/agent 1.0.0
+- moltydex 1.0.0
 - Solana mainnet
 ```
 

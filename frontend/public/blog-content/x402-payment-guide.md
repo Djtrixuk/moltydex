@@ -53,7 +53,7 @@ Agent → ✅ Gets data automatically
 ### Option 1: HTTP Interceptor (Easiest)
 
 ```typescript
-import { HTTPInterceptor } from '@moltydex/agent';
+import { HTTPInterceptor } from 'moltydex';
 
 // Setup once
 const interceptor = new HTTPInterceptor({
@@ -72,7 +72,7 @@ const data = await response.json();
 ### Option 2: Manual Handling
 
 ```typescript
-import { X402AutoPayAgent } from '@moltydex/agent';
+import { X402AutoPayAgent } from 'moltydex';
 
 const agent = new X402AutoPayAgent({
   apiUrl: 'https://api.moltydex.com',

@@ -31,7 +31,7 @@ export default function Examples() {
                 Automatically handles all 402 responses. Just set it up once and forget about it.
               </p>
               <pre className="bg-gray-950 rounded p-3 md:p-4 overflow-x-auto text-xs md:text-sm">
-                <code>{`import { HTTPInterceptor } from '@moltydex/agent';
+                <code>{`import { HTTPInterceptor } from 'moltydex';
 
 // Setup once
 const interceptor = new HTTPInterceptor({
@@ -53,7 +53,7 @@ const data = await response.json(); // Works seamlessly!`}</code>
                 More control over the payment flow. Handle 402 responses manually.
               </p>
               <pre className="bg-gray-950 rounded p-3 md:p-4 overflow-x-auto text-xs md:text-sm">
-                <code>{`import { X402AutoPayAgent } from '@moltydex/agent';
+                <code>{`import { X402AutoPayAgent } from 'moltydex';
 
 const agent = new X402AutoPayAgent({
   apiUrl: 'https://api.moltydex.com',

@@ -40,7 +40,7 @@ Agent → ✅ Gets data automatically
 ### 1. Install the Agent
 
 ```bash
-npm install @moltydex/agent
+npm install moltydex
 # or
 pip install moltydex
 ```
@@ -49,7 +49,7 @@ pip install moltydex
 
 ```typescript
 // TypeScript/JavaScript
-import { X402AutoPayAgent } from '@moltydex/agent';
+import { X402AutoPayAgent } from 'moltydex';
 
 const agent = new X402AutoPayAgent({
   apiUrl: 'https://api.moltydex.com',
@@ -85,7 +85,7 @@ That's it! The agent handles everything automatically.
 ### TypeScript/JavaScript
 
 ```typescript
-import { HTTPInterceptor } from '@moltydex/agent';
+import { HTTPInterceptor } from 'moltydex';
 
 // Setup once
 const interceptor = new HTTPInterceptor({

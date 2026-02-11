@@ -87,7 +87,7 @@ export default function Integrations() {
               <div>
                 <h3 className="text-lg md:text-xl font-bold mb-2">TypeScript/JavaScript (Easiest)</h3>
                 <pre className="bg-gray-950 rounded p-3 md:p-4 overflow-x-auto text-xs md:text-sm">
-                  <code>{`import { HTTPInterceptor } from '@moltydex/agent';
+                  <code>{`import { HTTPInterceptor } from 'moltydex';
 
 const interceptor = new HTTPInterceptor({
   apiUrl: 'https://api.moltydex.com',

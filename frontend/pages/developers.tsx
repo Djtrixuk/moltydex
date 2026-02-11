@@ -6,8 +6,56 @@
 import Head from 'next/head';
 import Link from 'next/link';
 import PageHeader from '../components/PageHeader';
+import Breadcrumbs from '../components/Breadcrumbs';
+import FAQAccordion from '../components/FAQAccordion';
+import { FAQPageStructuredData, SoftwareApplicationStructuredData, AuthorStructuredData } from '../components/StructuredData';
 
 export default function Developers() {
+  const developerFaqs = [
+    {
+      question: "What is x402 auto-pay agent?",
+      answer: "The x402 auto-pay agent is a fully automated payment handler that intercepts HTTP 402 Payment Required responses, automatically swaps tokens if needed, makes payments on Solana, and retries API calls. MoltyDEX provides the only x402 auto-pay agent with automatic token swapping, eliminating the need for manual token management."
+    },
+    {
+      question: "How do I integrate x402 payments in my AI agent?",
+      answer: "To integrate x402 payments, install the MoltyDEX SDK (moltydex), configure the HTTPInterceptor with your Solana wallet, and enable autoSwap. Once configured, all API calls automatically handle 402 responses. The integration takes less than 5 minutes and requires zero manual payment handling code."
+    },
+    {
+      question: "What programming languages are supported?",
+      answer: "MoltyDEX provides SDKs for TypeScript/JavaScript (Node.js and browser) and Python. Both SDKs support the same features: automatic x402 payment handling, token swapping, and request retries. Choose the SDK that matches your agent's language."
+    },
+    {
+      question: "Do I need to handle token swapping manually?",
+      answer: "No! MoltyDEX automatically handles token swapping. When your agent receives a 402 Payment Required response, MoltyDEX checks your balance, swaps tokens if needed using Jupiter aggregator, makes the payment, and retries the request. All automatically."
+    },
+    {
+      question: "How secure is the x402 auto-pay agent?",
+      answer: "The x402 auto-pay agent is highly secure. All transaction signing happens client-side - your private keys never leave your system. MoltyDEX only builds unsigned transactions that you sign locally before sending to Solana. This ensures maximum security for your agent's funds."
+    },
+    {
+      question: "What makes MoltyDEX different from other payment solutions?",
+      answer: "MoltyDEX is the only x402 payment handler with automatic token swapping. Unlike other solutions that require manual token management, MoltyDEX automatically handles token conversion, payment processing, and request retries. This eliminates friction and enables true automation for AI agents."
+    },
+    {
+      question: "How do I get support if I encounter issues?",
+      answer: "MoltyDEX offers comprehensive support through multiple channels. Check our documentation at /api-docs, review code examples at /examples, or reach out on X (@MoltyDEX). We also maintain an active GitHub repository with issue tracking and community discussions."
+    },
+    {
+      question: "Is MoltyDEX SDK open source?",
+      answer: "Yes! MoltyDEX SDK is open source and available on GitHub. You can review the code, contribute improvements, and verify security. The open-source nature ensures transparency and allows the community to audit and improve the codebase."
+    },
+    {
+      question: "What are the system requirements for using MoltyDEX SDK?",
+      answer: "MoltyDEX SDK has minimal requirements. For TypeScript/JavaScript: Node.js 16+ or modern browser. For Python: Python 3.8+. You'll need a Solana wallet with SOL for network fees. The SDK works on any platform that supports these runtime environments."
+    },
+    {
+      question: "Can I use MoltyDEX for non-x402 payment use cases?",
+      answer: "While MoltyDEX is optimized for x402 payments, the token swap functionality can be used independently. You can use MoltyDEX for any token swap on Solana, whether for x402 payments or general trading. The web interface is available for manual swaps, and the API works for any programmatic use case."
+    }
+  ];
+
+  const lastUpdated = "2026-02-08";
+
   return (
     <>
       <Head>
@@ -15,6 +63,7 @@ export default function Developers() {
         <meta name="description" content="Build AI agents that automatically handle x402 payments. MoltyDEX auto-pay agent handles token swapping, payment processing, and request retries automatically. Zero integration effort, full automation. Get started in minutes." />
         <meta name="keywords" content="x402 auto-pay agent, AI agent payments, automatic x402 payments, token swap agent, Solana agent payments, x402 integration, AI agent development, pay-per-use API, micropayments AI" />
         <link rel="canonical" href="https://moltydex.com/developers" />
+        <meta name="dateModified" content={lastUpdated} />
         
         {/* Open Graph */}
         <meta property="og:title" content="For Developers - MoltyDEX | x402 Auto-Pay Agent" />
@@ -30,9 +79,13 @@ export default function Developers() {
         <meta name="twitter:description" content="Build AI agents that automatically handle x402 payments. Zero integration effort, full automation." />
         <meta name="twitter:image" content="https://moltydex.com/moltydex-logo-full.png" />
       </Head>
+      <SoftwareApplicationStructuredData />
+      <FAQPageStructuredData faqs={developerFaqs} />
+      <AuthorStructuredData />
       <PageHeader />
       <main className="min-h-screen bg-gray-950 text-white">
         <div className="container mx-auto px-4 py-6 md:py-12 max-w-4xl">
+          <Breadcrumbs items={[{ name: 'For Developers', href: '/developers' }]} />
           {/* Header */}
           <div className="text-center mb-8 md:mb-12">
             <h1 className="text-3xl md:text-5xl font-bold mb-3 md:mb-4">For Developers</h1>
@@ -40,6 +93,22 @@ export default function Developers() {
               Build AI agents that automatically handle x402 payments. The only fully automated solution that handles token swapping, payment processing, and request retries—all without manual intervention.
             </p>
           </div>
+
+          {/* What is x402 Auto-Pay Agent? Section - AI Tool Optimization */}
+          <section className="mb-8 md:mb-12">
+            <div className="bg-gray-900/60 rounded-lg p-6 md:p-8 border border-gray-800/50">
+              <h2 className="text-2xl md:text-3xl font-bold mb-4">What is x402 Auto-Pay Agent?</h2>
+              <p className="text-lg text-gray-300 mb-4">
+                The x402 auto-pay agent is a fully automated payment handler that enables AI agents to seamlessly pay for APIs using the x402 protocol on Solana. 
+                When an API requires payment, it returns HTTP 402 Payment Required. The x402 auto-pay agent automatically intercepts this response, 
+                swaps tokens if needed using Jupiter aggregator, makes the payment on Solana blockchain, and retries the original API request.
+              </p>
+              <p className="text-lg text-gray-300">
+                MoltyDEX provides the only x402 auto-pay agent with automatic token swapping, eliminating the need for manual token management or payment handling code. 
+                Your agents can pay for APIs automatically using any token, with zero platform fees and best prices.
+              </p>
+            </div>
+          </section>
 
           {/* x402 Auto-Pay Agent */}
           <section className="mb-8 md:mb-12">
@@ -64,7 +133,7 @@ export default function Developers() {
             <div className="bg-gray-900 rounded-lg p-6 border border-gray-800 mb-6">
               <h3 className="text-xl font-semibold mb-4">Quick Start</h3>
               <pre className="bg-black/30 p-4 rounded-lg overflow-x-auto text-sm">
-{`import { HTTPInterceptor } from '@moltydex/agent';
+{`import { HTTPInterceptor } from 'moltydex';
 
 // Setup once
 const interceptor = new HTTPInterceptor({
@@ -206,6 +275,25 @@ const results = await Promise.all(
               </Link>
             </div>
           </section>
+
+          {/* FAQ Section - AI Tool Optimization */}
+          <section className="mb-8 md:mb-12">
+            <h2 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8 text-white">Frequently Asked Questions</h2>
+            <FAQAccordion faqs={developerFaqs} />
+            <div className="text-center mt-6 md:mt-8">
+              <Link
+                href="/faq"
+                className="text-blue-400 hover:text-blue-300 font-semibold transition-colors"
+              >
+                View All FAQs →
+              </Link>
+            </div>
+          </section>
+
+          {/* Last Updated */}
+          <div className="text-center text-sm text-gray-500 mb-6">
+            <time dateTime={lastUpdated}>Last updated: {new Date(lastUpdated).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</time>
+          </div>
 
           {/* Get Started */}
           <section className="bg-gray-900 rounded-lg p-8 border border-gray-800 text-center">

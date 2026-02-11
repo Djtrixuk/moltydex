@@ -110,7 +110,7 @@ app.post('/analyze', async (req, res) => {
 **Client Agent (Agent A):**
 ```javascript
 // Agent A: Data Collection Agent
-import { HTTPInterceptor } from '@moltydex/agent';
+import { HTTPInterceptor } from 'moltydex';
 
 const interceptor = new HTTPInterceptor({
   apiUrl: 'https://api.moltydex.com',

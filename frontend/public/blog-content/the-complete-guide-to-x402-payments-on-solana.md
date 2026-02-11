@@ -180,7 +180,7 @@ const data = await retryResponse.json();
 ### TypeScript/JavaScript
 
 ```typescript
-import { HTTPInterceptor } from '@moltydex/agent';
+import { HTTPInterceptor } from 'moltydex';
 
 const interceptor = new HTTPInterceptor({
   apiUrl: 'https://api.moltydex.com',

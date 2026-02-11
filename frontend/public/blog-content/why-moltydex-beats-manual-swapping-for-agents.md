@@ -110,7 +110,7 @@ With MoltyDEX, the same process becomes:
 
 ```typescript
 // MoltyDEX approach: 3 lines of code
-import { HTTPInterceptor } from '@moltydex/agent';
+import { HTTPInterceptor } from 'moltydex';
 
 const interceptor = new HTTPInterceptor({
   apiUrl: 'https://api.moltydex.com',
@@ -381,7 +381,7 @@ MoltyDEX optimizes:
 
 **Step 2: Add MoltyDEX**
 ```typescript
-import { HTTPInterceptor } from '@moltydex/agent';
+import { HTTPInterceptor } from 'moltydex';
 
 const interceptor = new HTTPInterceptor({
   apiUrl: 'https://api.moltydex.com',

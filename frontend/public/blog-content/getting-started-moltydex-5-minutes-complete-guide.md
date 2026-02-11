@@ -70,7 +70,7 @@ MoltyDEX works on:
 ### Step 1: Install MoltyDEX SDK
 
 ```bash
-npm install @moltydex/agent
+npm install moltydex
 ```
 
 **What this installs:**
@@ -94,7 +94,7 @@ MOLTYDEX_API_URL=https://api.moltydex.com
 ### Step 3: Initialize HTTP Interceptor
 
 ```typescript
-import { HTTPInterceptor } from '@moltydex/agent';
+import { HTTPInterceptor } from 'moltydex';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -517,7 +517,7 @@ const interceptor = new HTTPInterceptor({
 ### Example 1: Data Collection Agent
 
 ```typescript
-import { HTTPInterceptor } from '@moltydex/agent';
+import { HTTPInterceptor } from 'moltydex';
 
 const interceptor = new HTTPInterceptor({
   apiUrl: 'https://api.moltydex.com',
