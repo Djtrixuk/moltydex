@@ -10,13 +10,14 @@ import type {
   PaymentResponse,
   AutoPayResult,
   PaymentRequirement,
+  TransactionSigner,
 } from './types.js';
 
 const SOL_MINT = 'So11111111111111111111111111111111111111112';
 
 export class X402AutoPayAgent {
   private moltydex: MoltyDEXClient;
-  public wallet: WalletManager; // Made public for balance checking in examples
+  public wallet: TransactionSigner; // Accepts any TransactionSigner (WalletManager, MPC, etc.)
   private config: AgentConfig;
   private pendingTransactions: Map<string, Promise<AutoPayResult>> = new Map();
 
@@ -30,7 +31,17 @@ export class X402AutoPayAgent {
     };
 
     this.moltydex = new MoltyDEXClient(this.config.apiUrl);
-    this.wallet = new WalletManager(this.config);
+
+    // Use provided signer, or create a WalletManager from key material
+    if (config.signer) {
+      this.wallet = config.signer;
+    } else if (config.walletPath || config.walletSecretKey) {
+      this.wallet = new WalletManager(this.config);
+    } else {
+      throw new Error(
+        'Must provide either a signer (TransactionSigner) or walletPath/walletSecretKey in config'
+      );
+    }
   }
 
   /**
@@ -244,7 +255,13 @@ export class X402AutoPayAgent {
     try {
       console.log(`[Payment] Building transaction for ${requirement.amount} of token ${requirement.asset}`);
       
-      // WalletManager now handles both SOL and SPL token payments
+      if (!this.wallet.buildPaymentTransaction) {
+        throw new Error(
+          'Payment requires buildPaymentTransaction(). Your TransactionSigner does not implement it. ' +
+          'Use WalletManager or implement buildPaymentTransaction on your custom signer.'
+        );
+      }
+
       const paymentTx = await this.wallet.buildPaymentTransaction(
         recipientAddress,
         requirement.asset,

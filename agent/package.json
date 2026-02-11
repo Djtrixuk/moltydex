@@ -1,8 +1,9 @@
 {
-  "name": "moltydex-x402-agent",
-  "version": "1.0.0",
-  "description": "x402 Auto-Pay Agent for MoltyDEX - Automatically handles 402 Payment Required responses",
+  "name": "moltydex",
+  "version": "1.1.0",
+  "description": "MoltyDEX SDK — x402 auto-pay agent and API client for Solana token swaps. Pluggable wallet architecture supports local keys, MPC, and custom signers.",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "type": "module",
   "scripts": {
     "build": "tsc",

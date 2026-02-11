@@ -11,6 +11,7 @@ export interface BlogPost {
   keywords: string[];
   author: string;
   date: string;
+  dateModified?: string; // Optional last modified date for SEO
   category: string;
   tags: string[];
   canonical: string;
@@ -82,6 +83,32 @@ export const blogPosts: BlogPost[] = [
     category: 'Community',
     tags: ['beta', 'testing', 'rewards', 'x402', 'agents'],
     canonical: 'https://moltydex.com/blog/beta-tester-program-moltydex-rewards',
+    content: '', // Will be loaded from markdown files
+    optimized: true,
+  },
+  {
+    slug: 'beta-ai-agent-program-test-moltydex',
+    title: 'Beta AI Agent Program: How to Create an Agent and Test MoltyDEX',
+    description: 'Step-by-step guide to creating an AI agent and testing MoltyDEX for the beta program. Learn how to set up your agent, command it to test swaps, and understand how we track beta program participants.',
+    keywords: ['beta program', 'AI agent', 'create agent', 'test MoltyDEX', 'agent instructions', 'beta tracking', 'x402 payments', 'Solana agents'],
+    author: 'MoltyDEX Team',
+    date: '2026-02-09',
+    category: 'Tutorial',
+    tags: ['beta', 'tutorial', 'agents', 'x402', 'testing'],
+    canonical: 'https://moltydex.com/blog/beta-ai-agent-program-test-moltydex',
+    content: '', // Will be loaded from markdown files
+    optimized: true,
+  },
+  {
+    slug: 'moltydex-beta-program-early-ai-agents-mdex-airdrop',
+    title: 'MoltyDEX Beta Program: $MDEX Airdrop for Early AI Agents',
+    description: 'Join the MoltyDEX beta program for AI agents. Early testers who use MoltyDEX for x402 payments will be added to a list for $MDEX token airdrops. Get started with automatic token swapping today.',
+    keywords: ['beta program', 'MDEX airdrop', 'AI agents', 'x402 payments', 'token swapping', 'Solana agents', 'early adopters', 'beta testing'],
+    author: 'MoltyDEX Team',
+    date: '2026-02-05',
+    category: 'Community',
+    tags: ['beta', 'airdrop', 'MDEX', 'x402', 'agents', 'rewards'],
+    canonical: 'https://moltydex.com/blog/moltydex-beta-program-early-ai-agents-mdex-airdrop',
     content: '', // Will be loaded from markdown files
     optimized: true,
   },
@@ -360,6 +387,33 @@ export const blogPosts: BlogPost[] = [
     category: 'Future Trends',
     tags: ['x402', 'agents', 'automation', 'future', 'AI', 'Solana'],
     canonical: 'https://moltydex.com/blog/the-future-of-agent-payments-x402-and-automation',
+    content: '',
+    optimized: true,
+  },
+  {
+    slug: 'complete-guide-x402-communities-where-to-join',
+    title: 'Complete Guide to x402 Communities: Where to Join, Learn, and Build',
+    description: 'Discover all x402 protocol communities including Telegram, GitHub, Discord servers, and developer resources. Join 5,464+ members in the x402 ecosystem and connect with builders working on the payment layer for the autonomous internet.',
+    keywords: ['x402 communities', 'x402 protocol', 'x402 Telegram', 'x402 Discord', 'x402 GitHub', 'x402 ecosystem', 'x402 developers', 'x402 protocol community', 'Solana payments', 'agent payments'],
+    author: 'MoltyDEX Team',
+    date: '2026-02-10',
+    category: 'Community',
+    tags: ['x402', 'community', 'ecosystem', 'developers', 'Solana'],
+    canonical: 'https://moltydex.com/blog/complete-guide-x402-communities-where-to-join',
+    content: '',
+    optimized: true,
+  },
+  // TransactionSigner / Pluggable Wallet Architecture
+  {
+    slug: 'pluggable-wallet-architecture-transaction-signer',
+    title: 'Pluggable Wallet Architecture: TransactionSigner Interface — MoltyDEX SDK v1.1',
+    description: 'MoltyDEX SDK v1.1 introduces the TransactionSigner interface, enabling MPC wallets, hardware wallets, and custom signing backends for AI agents on Solana.',
+    keywords: ['TransactionSigner', 'pluggable wallet', 'MPC wallet', 'Solana SDK', 'wallet architecture', 'MoltyDEX SDK', 'x402', 'AI agent wallet', 'custom signer', 'Turnkey'],
+    author: 'MoltyDEX Team',
+    date: '2026-02-11',
+    category: 'Engineering',
+    tags: ['sdk', 'architecture', 'mpc-wallet', 'typescript', 'x402'],
+    canonical: 'https://moltydex.com/blog/pluggable-wallet-architecture-transaction-signer',
     content: '',
     optimized: true,
   },

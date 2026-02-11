@@ -56,7 +56,7 @@ async function main() {
   
   // Check SOL balance
   try {
-    const balance = await agent['wallet'].getSOLBalance();
+    const balance = await (agent.wallet as import('../WalletManager.js').WalletManager).getSOLBalance();
     const solBalance = Number(balance) / 1e9;
     console.log(`   Balance: ${solBalance.toFixed(4)} SOL`);
     

@@ -306,4 +306,11 @@
     <priority>0.7</priority>
   </url>
   
+  <url>
+    <loc>https://moltydex.com/blog/pluggable-wallet-architecture-transaction-signer</loc>
+    <lastmod>2026-02-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
 </urlset>

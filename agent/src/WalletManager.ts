@@ -22,9 +22,9 @@ import {
 } from '@solana/spl-token';
 import * as fs from 'fs';
 import bs58 from 'bs58';
-import type { AgentConfig } from './types.js';
+import type { AgentConfig, TransactionSigner } from './types.js';
 
-export class WalletManager {
+export class WalletManager implements TransactionSigner {
   private keypair: Keypair;
   private connection: Connection;
   public readonly publicKey: PublicKey;
