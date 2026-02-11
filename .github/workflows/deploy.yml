@@ -1,13 +1,9 @@
 name: Deploy to Production
 
+# Disabled: API deploys via Vercel's GitHub integration, not this workflow.
+# To re-enable, uncomment the triggers below and add VERCEL_TOKEN,
+# VERCEL_ORG_ID, and VERCEL_PROJECT_ID secrets to the GitHub repo.
 on:
-  push:
-    branches:
-      - main
-      - master
-    paths:
-      - 'api/**'
-      - '.github/workflows/deploy.yml'
   workflow_dispatch:
 
 jobs:
