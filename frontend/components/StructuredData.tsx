@@ -224,11 +224,11 @@ export function ProductStructuredData() {
   );
 }
 
-export function AggregateRatingStructuredData() {
+export function AggregateRatingStructuredData({ itemName = "MoltyDEX" }: { itemName?: string } = {}) {
   const data = {
     "@context": "https://schema.org",
     "@type": "Product",
-    "name": "MoltyDEX",
+    "name": itemName,
     "aggregateRating": {
       "@type": "AggregateRating",
       "ratingValue": "4.8",
