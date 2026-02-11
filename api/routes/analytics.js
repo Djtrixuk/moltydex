@@ -38,6 +38,15 @@ const usageStats = {
     failed: 0,
     byTokenPair: {},
     byDate: {},
+    volumeUsd: 0,
+    volumeUsdByDate: {},
+  },
+  x402Payments: {
+    total: 0,
+    successful: 0,
+    failed: 0,
+    byAction: {},
+    byDate: {},
   },
   quotes: {
     total: 0,
@@ -127,6 +136,13 @@ async function trackEvent(type, data = {}) {
       stats.uniqueWallets = new Set(stats.uniqueWallets);
     }
     
+    // Ensure x402Payments object exists (for backwards compat with old Redis data)
+    if (!stats.x402Payments) {
+      stats.x402Payments = { total: 0, successful: 0, failed: 0, byAction: {}, byDate: {} };
+    }
+    if (!stats.swaps.volumeUsd) stats.swaps.volumeUsd = 0;
+    if (!stats.swaps.volumeUsdByDate) stats.swaps.volumeUsdByDate = {};
+
     switch (type) {
       case 'swap':
         stats.swaps.total++;
@@ -144,6 +160,13 @@ async function trackEvent(type, data = {}) {
         if (data.wallet_address) {
           stats.uniqueWallets.add(data.wallet_address);
         }
+
+        // Track USD volume if provided
+        if (data.volume_usd && !isNaN(parseFloat(data.volume_usd))) {
+          const usdAmount = parseFloat(data.volume_usd);
+          stats.swaps.volumeUsd = (stats.swaps.volumeUsd || 0) + usdAmount;
+          stats.swaps.volumeUsdByDate[date] = (stats.swaps.volumeUsdByDate[date] || 0) + usdAmount;
+        }
         
         // Log swap for debugging with more details
         const logDetails = {
@@ -153,8 +176,33 @@ async function trackEvent(type, data = {}) {
           error: data.error || 'none',
           hasInputMint: !!data.input_mint,
           hasOutputMint: !!data.output_mint,
+          volumeUsd: data.volume_usd || 'not tracked',
         };
         console.log(`[analytics] Swap tracked:`, logDetails);
+        break;
+
+      case 'x402_payment':
+        stats.x402Payments.total++;
+        if (data.success) {
+          stats.x402Payments.successful++;
+        } else {
+          stats.x402Payments.failed++;
+        }
+        
+        const action = data.action || 'unknown';
+        stats.x402Payments.byAction[action] = (stats.x402Payments.byAction[action] || 0) + 1;
+        stats.x402Payments.byDate[date] = (stats.x402Payments.byDate[date] || 0) + 1;
+        
+        if (data.wallet_address) {
+          stats.uniqueWallets.add(data.wallet_address);
+        }
+        
+        console.log(`[analytics] x402 payment tracked:`, {
+          action,
+          success: data.success ? 'SUCCESS' : 'FAILED',
+          wallet: data.wallet_address?.substring(0, 8) || 'no wallet',
+          swap_needed: data.swap_needed || false,
+        });
         break;
         
       case 'quote':
@@ -242,6 +290,8 @@ router.get('/stats', async (req, res) => {
       ? stats.uniqueWallets 
       : new Set(stats.uniqueWallets || []);
     
+    const x402Stats = stats.x402Payments || { total: 0, successful: 0, failed: 0, byAction: {}, byDate: {} };
+
     const response = {
       overview: {
         totalSwaps: stats.swaps?.total || 0,
@@ -250,15 +300,28 @@ router.get('/stats', async (req, res) => {
         totalQuotes: stats.quotes?.total || 0,
         totalBalanceChecks: stats.balances?.total || 0,
         totalApiCalls: stats.apiCalls?.total || 0,
+        totalX402Payments: x402Stats.total,
         uniqueWallets: uniqueWalletsSet.size,
+        totalVolumeUsd: stats.swaps?.volumeUsd || 0,
         uptimeSince: stats.startTime || new Date().toISOString(),
         storage: useRedis ? 'redis' : 'memory',
       },
       swaps: {
         byTokenPair: stats.swaps?.byTokenPair || {},
         byDate: stats.swaps?.byDate || {},
+        volumeUsdByDate: stats.swaps?.volumeUsdByDate || {},
         successRate: stats.swaps?.total > 0 
           ? ((stats.swaps.successful / stats.swaps.total) * 100).toFixed(2) + '%'
+          : '0%',
+      },
+      x402Payments: {
+        total: x402Stats.total,
+        successful: x402Stats.successful,
+        failed: x402Stats.failed,
+        byAction: x402Stats.byAction,
+        byDate: x402Stats.byDate,
+        successRate: x402Stats.total > 0
+          ? ((x402Stats.successful / x402Stats.total) * 100).toFixed(2) + '%'
           : '0%',
       },
       apiUsage: {

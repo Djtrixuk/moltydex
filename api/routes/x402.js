@@ -11,6 +11,8 @@ const { getBalance } = require('../utils/balance');
 const { fetchJupiterQuote } = require('../utils/jupiter');
 const { executeWithRetry, isRateLimitError } = require('../utils/rpc');
 const { ERROR_CODES, sendErrorResponse } = require('../utils/errors');
+const analyticsRouter = require('./analytics');
+const trackEvent = analyticsRouter.trackEvent;
 
 /**
  * POST /api/x402/parse-payment
@@ -51,6 +53,14 @@ router.post('/parse-payment', async (req, res) => {
       }, 400);
     }
 
+    // Track x402 parse event
+    try {
+      await trackEvent('x402_payment', { action: 'parse', success: true, options: solanaPayments.length });
+      await trackEvent('api_call', { endpoint: '/api/x402/parse-payment' });
+    } catch (trackErr) {
+      console.error('[x402] Tracking error (non-fatal):', trackErr.message);
+    }
+
     res.json({
       payment_requirements: solanaPayments,
       recommended: solanaPayments[0],
@@ -58,6 +68,7 @@ router.post('/parse-payment', async (req, res) => {
     });
   } catch (err) {
     console.error('Parse payment error:', err.message);
+    try { await trackEvent('x402_payment', { action: 'parse', success: false, error: err.message }); } catch (_) {}
     res.status(500).json({ error: err.message });
   }
 });
@@ -87,6 +98,10 @@ router.post('/prepare-payment', async (req, res) => {
     const hasEnough = currentBalance >= requiredAmount;
 
     if (hasEnough) {
+      try {
+        await trackEvent('x402_payment', { action: 'prepare', success: true, swap_needed: false, wallet_address, token: requiredToken });
+        await trackEvent('api_call', { endpoint: '/api/x402/prepare-payment' });
+      } catch (_) {}
       return res.json({
         ready: true,
         has_sufficient_balance: true,
@@ -108,6 +123,11 @@ router.post('/prepare-payment', async (req, res) => {
       },
     });
 
+    try {
+      await trackEvent('x402_payment', { action: 'prepare', success: true, swap_needed: true, wallet_address, token: requiredToken, shortfall: swapAmount.toString() });
+      await trackEvent('api_call', { endpoint: '/api/x402/prepare-payment' });
+    } catch (_) {}
+
     res.json({
       ready: false,
       has_sufficient_balance: false,
@@ -126,6 +146,7 @@ router.post('/prepare-payment', async (req, res) => {
     });
   } catch (err) {
     console.error('Prepare payment error:', err.message);
+    try { await trackEvent('x402_payment', { action: 'prepare', success: false, error: err.message }); } catch (_) {}
     res.status(500).json({ error: err.message });
   }
 });
@@ -177,6 +198,10 @@ router.post('/simulate-payment', async (req, res) => {
 
     // If sufficient balance, return simulation result
     if (hasEnough) {
+      try {
+        await trackEvent('x402_payment', { action: 'simulate', success: true, swap_needed: false, wallet_address });
+        await trackEvent('api_call', { endpoint: '/api/x402/simulate-payment' });
+      } catch (_) {}
       return res.json({
         simulation: true,
         ready: true,
@@ -222,6 +247,11 @@ router.post('/simulate-payment', async (req, res) => {
 
     const quote = quoteResponse.data;
 
+    try {
+      await trackEvent('x402_payment', { action: 'simulate', success: true, swap_needed: true, wallet_address, shortfall: swapAmount.toString() });
+      await trackEvent('api_call', { endpoint: '/api/x402/simulate-payment' });
+    } catch (_) {}
+
     // Return complete simulation breakdown
     res.json({
       simulation: true,
@@ -260,6 +290,7 @@ router.post('/simulate-payment', async (req, res) => {
     });
   } catch (err) {
     console.error('Simulate payment error:', err.message);
+    try { await trackEvent('x402_payment', { action: 'simulate', success: false, error: err.message }); } catch (_) {}
     return sendErrorResponse(res, ERROR_CODES.SIMULATION_FAILED, err.message, {
       message: err.message,
     }, 500);
@@ -282,6 +313,8 @@ router.get('/recommended-tokens', async (req, res) => {
         decimals: t.decimals,
         logo: t.logoURI,
       }));
+
+    try { await trackEvent('api_call', { endpoint: '/api/x402/recommended-tokens' }); } catch (_) {}
 
     res.json({
       recommended: tokens,
@@ -380,6 +413,10 @@ router.post('/auto-pay', async (req, res) => {
 
     // Step 3: If sufficient balance, return ready status
     if (hasEnough) {
+      try {
+        await trackEvent('x402_payment', { action: 'auto-pay', success: true, swap_needed: false, wallet_address, token: requiredToken, amount: requiredAmount.toString() });
+        await trackEvent('api_call', { endpoint: '/api/x402/auto-pay' });
+      } catch (_) {}
       return res.json({
         ready: true,
         payment_ready: true,
@@ -592,6 +629,11 @@ router.post('/auto-pay', async (req, res) => {
       }
     }
 
+    try {
+      await trackEvent('x402_payment', { action: 'auto-pay', success: true, swap_needed: true, auto_swap, wallet_address, token: requiredToken, amount: requiredAmount.toString(), shortfall: shortfall.toString() });
+      await trackEvent('api_call', { endpoint: '/api/x402/auto-pay' });
+    } catch (_) {}
+
     res.json({
       ready: false,
       payment_ready: false,
@@ -618,6 +660,7 @@ router.post('/auto-pay', async (req, res) => {
     });
   } catch (err) {
     console.error('Auto-pay error:', err.message);
+    try { await trackEvent('x402_payment', { action: 'auto-pay', success: false, wallet_address: req.body?.wallet_address, error: err.message }); } catch (_) {}
     res.status(500).json({
       error: 'Failed to process auto-pay request',
       message: err.message,

@@ -81,4 +81,13 @@ router.get('/health', async (req, res) => {
   });
 });
 
+/**
+ * GET /api/health/ping
+ * Lightweight ping endpoint for uptime monitoring (UptimeRobot, etc.)
+ * Returns minimal response for fast health checks
+ */
+router.get('/ping', (req, res) => {
+  res.status(200).json({ status: 'ok', timestamp: Date.now() });
+});
+
 module.exports = router;

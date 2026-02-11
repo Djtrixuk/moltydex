@@ -6,7 +6,7 @@ const express = require('express');
 const router = express.Router();
 const { Transaction, VersionedTransaction } = require('@solana/web3.js');
 const { fetchJupiterQuote } = require('../utils/jupiter');
-const { DEFAULTS } = require('../config/constants');
+const { DEFAULTS, TOKENS } = require('../config/constants');
 const { jupiterUnavailableError, invalidInputError } = require('../utils/errorHandler');
 const analyticsRouter = require('./analytics');
 const trackEvent = analyticsRouter.trackEvent;
@@ -144,6 +144,14 @@ router.post('/build', async (req, res) => {
       serializedTransaction = transaction.serialize({ requireAllSignatures: false }).toString('base64');
     }
 
+    // Estimate USD volume for stablecoin swaps (USDC/USDT have 6 decimals)
+    let volumeUsd = null;
+    if (input_mint === TOKENS.USDC || input_mint === TOKENS.USDT) {
+      volumeUsd = (parseFloat(amount) / 1e6).toFixed(2);
+    } else if (output_mint === TOKENS.USDC || output_mint === TOKENS.USDT) {
+      volumeUsd = (parseFloat(outAmount) / 1e6).toFixed(2);
+    }
+
     // Track successful swap build (don't let tracking errors break swaps)
     try {
       await trackEvent('swap', {
@@ -151,6 +159,7 @@ router.post('/build', async (req, res) => {
         input_mint,
         output_mint,
         wallet_address,
+        volume_usd: volumeUsd,
       });
       await trackEvent('api_call', { endpoint: '/api/swap/build' });
     } catch (trackErr) {
