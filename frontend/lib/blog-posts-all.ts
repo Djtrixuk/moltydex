@@ -475,6 +475,19 @@ export const blogPosts: BlogPost[] = [
     content: '',
     optimized: true,
   },
+  {
+    slug: 'meet-molty-mascot-and-token-launch',
+    title: 'Meet Molty: The Cosmic Lobster Behind MoltyDEX',
+    description: 'Introducing Molty, the official MoltyDEX mascot — a cosmic lobster who molts so you can grow. Plus the first look at $MOLTY token, the community utility token for governance, staking, and rewards.',
+    keywords: ['Molty', '$MOLTY', 'MoltyDEX mascot', 'Solana token', 'community token', 'DeFi mascot', 'lobster', 'token launch', 'airdrop', 'governance token'],
+    author: 'MoltyDEX Team',
+    date: '2026-02-11',
+    category: 'Community',
+    tags: ['molty', 'mascot', 'token', 'community', 'airdrop', 'Solana'],
+    canonical: 'https://moltydex.com/blog/meet-molty-mascot-and-token-launch',
+    content: '',
+    optimized: true,
+  },
 ];
 
 export function getBlogPost(slug: string): BlogPost | undefined {
