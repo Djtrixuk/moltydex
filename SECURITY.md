@@ -15,7 +15,7 @@ We release patches for security vulnerabilities. Which versions are eligible for
 
 Instead, please report them via one of the following methods:
 
-- **Email**: [INSERT SECURITY EMAIL]
+- **Email**: security@moltydex.com
 - **GitHub Security Advisory**: Use the "Report a vulnerability" button on the Security tab of this repository
 
 ### What to Include

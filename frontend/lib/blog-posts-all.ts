@@ -514,32 +514,10 @@ export const blogPosts: BlogPost[] = [
     content: '',
     optimized: true,
   },
-  {
-    slug: 'moltcook-ai-paper-trading-launch',
-    title: 'MoltCook: AI Paper Trading for Solana Memes',
-    description: 'Introducing MoltCook -- an AI-powered paper trading bot for Solana meme coins. Practice trading with zero risk, get AI buy/sell signals, and earn $COOK tokens. Part of the MoltyDEX ecosystem.',
-    keywords: ['MoltCook', '$COOK', 'paper trading', 'AI trading bot', 'Solana memes', 'meme coin trading', 'trading simulator', 'MoltyDEX ecosystem', 'Pump.fun'],
-    author: 'MoltyDEX Team',
-    date: '2026-02-12',
-    category: 'Product Launch',
-    tags: ['MoltCook', 'COOK', 'paper-trading', 'AI', 'launch', 'ecosystem', 'Solana'],
-    canonical: 'https://moltydex.com/blog/moltcook-ai-paper-trading-launch',
-    content: '',
-    optimized: true,
-  },
-  {
-    slug: 'deploymolty-live-ai-trading-launch',
-    title: 'DeployMolty: Live AI Trading for Solana Memes',
-    description: 'Introducing DeployMolty -- a live AI trading bot for Solana meme coins. Real money, real trades, powered by MoltyDEX SDK and Jupiter. Every swap gets the best price. Zero platform fees.',
-    keywords: ['DeployMolty', '$DEPLOY', 'AI trading bot', 'live trading', 'Solana memes', 'MoltyDEX SDK', 'Jupiter aggregator', 'MoltyDEX ecosystem', 'Pump.fun'],
-    author: 'MoltyDEX Team',
-    date: '2026-02-16',
-    category: 'Product Launch',
-    tags: ['DeployMolty', 'DEPLOY', 'live-trading', 'AI', 'launch', 'ecosystem', 'Solana', 'SDK'],
-    canonical: 'https://moltydex.com/blog/deploymolty-live-ai-trading-launch',
-    content: '',
-    optimized: true,
-  },
+  // MoltCook and DeployMolty posts are pre-written for launch day.
+  // Uncomment and add back when each product launches.
+  // See: frontend/public/blog-content/moltcook-ai-paper-trading-launch.md
+  // See: frontend/public/blog-content/deploymolty-live-ai-trading-launch.md
 ];
 
 export function getBlogPost(slug: string): BlogPost | undefined {
