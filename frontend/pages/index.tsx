@@ -18,18 +18,15 @@ import { FAQPageStructuredData, ProductStructuredData } from '../components/Stru
 export default function Home() {
   // Jupiter quotes and swap txs are mainnet-only; use Mainnet for real swaps
   const network = WalletAdapterNetwork.Mainnet;
-  // Use our RPC proxy (/api/rpc) to keep Alchemy/Helius keys server-side.
-  // During SSR/SSG build, use public RPC as placeholder (Connection needs a valid URL).
-  // On the client, use the proxy endpoint which forwards to the real RPC with API keys.
+  // RPC endpoint for Solana Connection.
+  // NEXT_PUBLIC_SOLANA_RPC takes priority if set (e.g. Alchemy/Helius with key).
+  // Otherwise fall back to public mainnet RPC which works for all read operations.
+  // Note: Connection requires a full http(s) URL — relative paths like /api/rpc are rejected.
   const endpoint = useMemo(
-    () => {
-      if (process.env.NEXT_PUBLIC_SOLANA_RPC) return process.env.NEXT_PUBLIC_SOLANA_RPC;
-      if (typeof window === 'undefined') return clusterApiUrl(network); // SSR/SSG fallback
-      return '/api/rpc'; // Client-side proxy
-    },
+    () => process.env.NEXT_PUBLIC_SOLANA_RPC || clusterApiUrl(network),
     [network]
   );
-  const rpcLabel = endpoint.includes('helius') ? 'Helius' : endpoint === '/api/rpc' ? 'Proxy' : endpoint.includes('mainnet-beta.solana.com') ? 'Public' : 'Custom';
+  const rpcLabel = endpoint.includes('helius') ? 'Helius' : endpoint.includes('alchemy') ? 'Alchemy' : endpoint.includes('mainnet-beta.solana.com') ? 'Public' : 'Custom';
 
   const wallets = useMemo(
     () => [
