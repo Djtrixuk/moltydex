@@ -8,13 +8,14 @@ const router = express.Router();
 const { Connection, PublicKey } = require('@solana/web3.js');
 const { registerWebhook, notifyWebhooks, getWebhookStatus } = require('../utils/webhooks');
 const { transactionFailedError } = require('../utils/errorHandler');
+const { validate } = require('../middleware/validation');
 
 /**
  * POST /api/transaction/send
  * Send signed transaction via API RPC (avoids browser 403 from RPC providers)
  * Accepts both 'signedTransaction' (frontend) and 'transaction' (SDK) for compatibility
  */
-router.post('/send', async (req, res) => {
+router.post('/send', validate('transactionSend'), async (req, res) => {
   try {
     const signedB64 = req.body.signedTransaction || req.body.transaction;
 
@@ -249,7 +250,7 @@ router.get('/history/:wallet_address', async (req, res) => {
  * POST /api/transaction/webhook
  * Register a webhook to receive transaction status notifications
  */
-router.post('/webhook', async (req, res) => {
+router.post('/webhook', validate('transactionWebhook'), async (req, res) => {
   try {
     const { signature, callback_url, metadata } = req.body;
 
@@ -264,31 +265,21 @@ router.post('/webhook', async (req, res) => {
       });
     }
 
-    // Validate callback URL
-    let callbackUrl;
-    try {
-      callbackUrl = new URL(callback_url);
-      if (callbackUrl.protocol !== 'https:') {
-        return res.status(400).json({
-          error: 'Callback URL must use HTTPS',
-          code: 'INVALID_INPUT',
-          suggestions: ['Use an HTTPS URL for the callback'],
-        });
-      }
-    } catch (err) {
+    // registerWebhook validates the URL (SSRF protection + HTTPS enforcement)
+    const result = registerWebhook(signature, callback_url, metadata || {});
+
+    if (result.error) {
       return res.status(400).json({
-        error: 'Invalid callback URL format',
+        error: result.error,
         code: 'INVALID_INPUT',
-        suggestions: ['Provide a valid URL (e.g., https://your-agent.com/webhook)'],
+        suggestions: ['Provide a valid HTTPS URL that is not a private/internal address'],
       });
     }
 
-    const webhookId = registerWebhook(signature, callbackUrl.toString(), metadata || {});
-
     res.json({
-      webhook_id: webhookId,
+      webhook_id: result.webhookId,
       signature,
-      callback_url: callbackUrl.toString(),
+      callback_url,
       message: 'Webhook registered successfully. You will receive a notification when the transaction status changes.',
       registered_at: new Date().toISOString(),
     });

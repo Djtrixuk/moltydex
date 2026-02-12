@@ -32,16 +32,6 @@ async function getTokenBalance(connection, walletPubkey, tokenMintPubkey) {
   const tokenMintStr = tokenMintPubkey.toString();
   let lastError = null;
 
-  // Debug logging for USDC and JUP
-  const isUSDC = tokenMintStr === 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
-  const isJUP = tokenMintStr.toLowerCase() === 'jupyiwryjfskupiha7hker8vutaefosybkedznsdvcn';
-  if (isUSDC || isJUP) {
-    console.log(`[balance.js] getTokenBalance - ${isUSDC ? 'USDC' : 'JUP'} lookup:`, {
-      wallet: walletPubkey.toString(),
-      tokenMint: tokenMintStr,
-    });
-  }
-
   for (let attempt = 0; attempt < DEFAULTS.MAX_RETRIES; attempt++) {
     try {
       // For pump.fun tokens, we need to check both TOKEN_PROGRAM_ID and potentially Token2022
@@ -65,38 +55,14 @@ async function getTokenBalance(connection, walletPubkey, tokenMintPubkey) {
       });
 
       const allTokenAccounts = response.value || [];
-      
-      if (isUSDC || isJUP) {
-        console.log(`[balance.js] getTokenBalance - Found token accounts for ${isUSDC ? 'USDC' : 'JUP'}:`, {
-          totalAccounts: allTokenAccounts.length,
-          accountMints: allTokenAccounts.map(acc => {
-            const parsedInfo = acc.account?.data?.parsed?.info;
-            return parsedInfo?.mint || 'unknown';
-          }),
-        });
-      }
-      
+
       const matchingAccounts = allTokenAccounts.filter((account) => {
         const parsedInfo = account.account?.data?.parsed?.info;
         if (!parsedInfo) return false;
-        // Use case-insensitive comparison for mint addresses
-        const matches = parsedInfo.mint.toLowerCase() === tokenMintStr.toLowerCase();
-        
-        if (isUSDC || isJUP) {
-          console.log(`[balance.js] getTokenBalance - Comparing for ${isUSDC ? 'USDC' : 'JUP'}:`, {
-            accountMint: parsedInfo.mint,
-            targetMint: tokenMintStr,
-            matches,
-          });
-        }
-        
-        return matches;
+        return parsedInfo.mint.toLowerCase() === tokenMintStr.toLowerCase();
       });
 
       if (matchingAccounts.length === 0) {
-        if (isUSDC || isJUP) {
-          console.log(`[balance.js] getTokenBalance - No matching ${isUSDC ? 'USDC' : 'JUP'} accounts found`);
-        }
         return {
           balance: '0',
           decimals: 9,
@@ -114,28 +80,13 @@ async function getTokenBalance(connection, walletPubkey, tokenMintPubkey) {
         const amount = BigInt(tokenAmount.amount);
         totalBalance += amount;
         decimals = tokenAmount.decimals || decimals;
-        
-        if (isUSDC || isJUP) {
-          console.log(`[balance.js] getTokenBalance - ${isUSDC ? 'USDC' : 'JUP'} account details:`, {
-            amount: tokenAmount.amount,
-            decimals: tokenAmount.decimals,
-            uiAmount: tokenAmount.uiAmount,
-            uiAmountString: tokenAmount.uiAmountString,
-          });
-        }
       }
 
-      const result = {
+      return {
         balance: totalBalance.toString(),
         decimals,
         has_balance: totalBalance > 0n,
       };
-      
-      if (isUSDC || isJUP) {
-        console.log(`[balance.js] getTokenBalance - ${isUSDC ? 'USDC' : 'JUP'} result:`, result);
-      }
-      
-      return result;
     } catch (err) {
       lastError = err;
       const errorMsg = err.message || String(err);

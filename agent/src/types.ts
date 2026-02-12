@@ -72,6 +72,50 @@ export interface AutoPayResult {
   message?: string;
 }
 
+export interface TokenMetadata {
+  mint: string;
+  symbol: string;
+  name: string;
+  decimals: number;
+  logo?: string;
+}
+
+export interface BatchBalanceResult {
+  token_mint: string;
+  success: boolean;
+  data?: BalanceResponse;
+  error?: string;
+}
+
+export interface BatchQuoteResult {
+  request: { input_mint: string; output_mint: string; amount: string };
+  success: boolean;
+  data?: QuoteResponse;
+  error?: string;
+}
+
+export interface SimulationResult {
+  simulation: boolean;
+  ready: boolean;
+  has_sufficient_balance: boolean;
+  current_balance: string;
+  required_amount: string;
+  swap_needed: boolean;
+  swap_details?: {
+    input_token: string;
+    output_token: string;
+    input_amount: string;
+    output_amount: string;
+    fee_amount: string;
+    price_impact: string;
+  };
+  validation?: {
+    balance_sufficient_after_swap?: boolean;
+    price_impact_acceptable?: boolean;
+    quote_fresh?: boolean;
+  };
+}
+
 export interface AgentConfig {
   apiUrl: string;
   walletPath?: string;
@@ -83,4 +127,5 @@ export interface AgentConfig {
   maxRetries?: number;
   retryDelay?: number; // milliseconds
   rpcUrl?: string; // Optional: override RPC URL
+  maxPaymentAmount?: string; // Max payment in lamports (default: 1 SOL = 1_000_000_000)
 }

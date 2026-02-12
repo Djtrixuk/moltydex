@@ -3,6 +3,7 @@
  * Caches responses for specified duration
  */
 
+const MAX_CACHE_ENTRIES = 1000; // Prevent unbounded memory growth
 const cache = new Map();
 
 /**
@@ -34,8 +35,13 @@ function createCacheMiddleware(ttl = 60, keyGenerator = null) {
 
     // Override json method to cache response
     res.json = function(data) {
-      // Cache successful responses
+      // Cache successful responses (with size bound)
       if (res.statusCode === 200) {
+        // Evict oldest entries if cache is full
+        if (cache.size >= MAX_CACHE_ENTRIES) {
+          const firstKey = cache.keys().next().value;
+          cache.delete(firstKey);
+        }
         cache.set(key, {
           data,
           expires: Date.now() + (ttl * 1000),
@@ -68,8 +74,9 @@ function cleanCache() {
   }
 }
 
-// Clean cache every 5 minutes
-setInterval(cleanCache, 5 * 60 * 1000);
+// NOTE: No setInterval — incompatible with serverless (Vercel).
+// Expired entries are evicted lazily on cache-hit check (line 28) and
+// oldest entries are evicted on write when the cache is full (line 41).
 
 module.exports = {
   createCacheMiddleware,

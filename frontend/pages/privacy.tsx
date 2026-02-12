@@ -9,7 +9,7 @@ export default function Privacy() {
         <title>Privacy Policy - MoltyDEX | Your Privacy Matters</title>
         <meta name="description" content="MoltyDEX Privacy Policy. We respect your privacy. Client-side signing means your private keys never leave your device. No personal data collection, no tracking of wallet addresses." />
         <meta name="keywords" content="moltydex privacy policy, data protection, client-side signing, blockchain privacy" />
-        <link rel="canonical" href="https://www.moltydex.com/privacy" />
+        <link rel="canonical" href="https://moltydex.com/privacy" />
         
         {/* Open Graph */}
         <meta property="og:type" content="website" />

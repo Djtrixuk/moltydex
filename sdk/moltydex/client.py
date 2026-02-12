@@ -1,16 +1,26 @@
 """
 MoltyDEX Python SDK — x402 Token Aggregator for AI Agents
 Routes through Jupiter + small fee. Secure client-side signing.
-pip install requests solana
+pip install requests solana solders
 """
 import json
 import base64
+import os
 import time
 from typing import Optional, Dict, Any, List
 from solana.keypair import Keypair
 from solana.rpc.api import Client
 from solana.transaction import Transaction
 import requests
+
+# Try to import solders types for VersionedTransaction support
+try:
+    from solders.transaction import VersionedTransaction
+    from solders.keypair import Keypair as SoldersKeypair
+    HAS_VERSIONED_TX = True
+except ImportError:
+    HAS_VERSIONED_TX = False
+    SoldersKeypair = None
 
 
 class MoltyDEX:
@@ -26,18 +36,29 @@ class MoltyDEX:
     ):
         self.api_url = api_url.rstrip('/')
         
+        # Resolve the secret key bytes from whichever source was provided
         if wallet_keypair:
             self.wallet = wallet_keypair
+            secret_bytes = bytes(wallet_keypair.secret_key)
         elif wallet_secret_key:
-            self.wallet = Keypair.from_secret_key(bytes(wallet_secret_key))
+            secret_bytes = bytes(wallet_secret_key)
+            self.wallet = Keypair.from_secret_key(secret_bytes)
         elif wallet_path:
-            with open(wallet_path) as f:
+            resolved_path = os.path.expanduser(wallet_path)
+            with open(resolved_path) as f:
                 key_data = json.load(f)
-                self.wallet = Keypair.from_secret_key(bytes(key_data))
+                secret_bytes = bytes(key_data)
+                self.wallet = Keypair.from_secret_key(secret_bytes)
         else:
             raise ValueError("Must provide wallet_path, wallet_keypair, or wallet_secret_key")
 
-        self.rpc_url = rpc_url or "https://api.devnet.solana.com"
+        # Build a solders Keypair for VersionedTransaction signing (different type)
+        if HAS_VERSIONED_TX and SoldersKeypair is not None:
+            self._solders_keypair = SoldersKeypair.from_bytes(secret_bytes)
+        else:
+            self._solders_keypair = None
+
+        self.rpc_url = rpc_url or "https://api.mainnet-beta.solana.com"
         self.rpc_client = Client(self.rpc_url)
 
     def _request_with_retry(
@@ -200,18 +221,39 @@ class MoltyDEX:
                     continue
                 raise
         
-        # Deserialize transaction
+        # Deserialize transaction — try VersionedTransaction first, fall back to legacy
         tx_bytes = base64.b64decode(build_result['transaction'])
-        transaction = Transaction.deserialize(tx_bytes)
-        
-        # Sign transaction
-        transaction.sign(self.wallet)
+        is_versioned = False
+
+        if HAS_VERSIONED_TX and self._solders_keypair is not None:
+            try:
+                # Deserialize to extract the message, then re-create with signer
+                # solders VersionedTransaction has no .sign() method —
+                # signing is done by passing keypairs to the constructor
+                unsigned_tx = VersionedTransaction.from_bytes(tx_bytes)
+                transaction = VersionedTransaction(unsigned_tx.message, [self._solders_keypair])
+                is_versioned = True
+            except Exception:
+                # Fall back to legacy Transaction if versioned parsing fails
+                transaction = Transaction.deserialize(tx_bytes)
+        else:
+            transaction = Transaction.deserialize(tx_bytes)
+
+        # Sign legacy transaction (versioned was already signed during construction)
+        if not is_versioned:
+            transaction.sign(self.wallet)
         
         # Send transaction with retry
         signature = None
         for attempt in range(3):
             try:
-                signature = self.rpc_client.send_transaction(transaction).value
+                if is_versioned:
+                    # VersionedTransaction must be sent as raw bytes
+                    raw_tx = bytes(transaction)
+                    sig = self.rpc_client.send_raw_transaction(raw_tx).value
+                else:
+                    sig = self.rpc_client.send_transaction(transaction).value
+                signature = str(sig)  # Ensure signature is a string, not a Signature object
                 break
             except Exception as e:
                 if attempt < 2:
@@ -254,6 +296,7 @@ class MoltyDEX:
             Transaction status
         """
         start_time = time.time()
+        last_error = None
         while time.time() - start_time < timeout:
             try:
                 status = self.get_transaction_status(signature)
@@ -261,12 +304,20 @@ class MoltyDEX:
                     return status
                 time.sleep(poll_interval)
             except Exception as e:
-                # If status check fails, wait and retry
+                last_error = e
                 time.sleep(poll_interval)
                 continue
         
-        # Timeout - return last known status
-        return self.get_transaction_status(signature)
+        # Timeout — try one final status check, propagate errors
+        try:
+            return self.get_transaction_status(signature)
+        except Exception as e:
+            return {
+                'signature': signature,
+                'status': 'timeout',
+                'confirmed': False,
+                'error': f'Polling timed out after {timeout}s. Last error: {last_error or e}',
+            }
 
     def get_balance(
         self,

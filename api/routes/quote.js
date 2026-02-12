@@ -6,6 +6,8 @@ const express = require('express');
 const router = express.Router();
 const { fetchJupiterQuote } = require('../utils/jupiter');
 const { TOKENS, DEFAULTS } = require('../config/constants');
+const { validateQuery } = require('../middleware/validation');
+const { quoteLimiter } = require('../middleware/rateLimit');
 const analyticsRouter = require('./analytics');
 const trackEvent = analyticsRouter.trackEvent;
 
@@ -61,7 +63,7 @@ const trackEvent = analyticsRouter.trackEvent;
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/quote', async (req, res) => {
+router.get('/quote', quoteLimiter, validateQuery('quote'), async (req, res) => {
   try {
     const { input_mint, output_mint, amount, slippage_bps = DEFAULTS.SLIPPAGE_BPS } = req.query;
 
@@ -191,9 +193,9 @@ router.get('/quote', async (req, res) => {
     const networkFeeAmount = isSolOutput ? estimatedNetworkFeeLamports : 0n; // Only relevant if output is SOL
     
     // Calculate minimum output with slippage
+    // Must do multiplication before division to avoid BigInt truncation to zero
     const slippageBps = Number(slippage_bps) || DEFAULTS.SLIPPAGE_BPS;
-    const slippageMultiplier = (10000n - BigInt(slippageBps)) / 10000n;
-    const minimumOutput = (outputAfterFee * slippageMultiplier) / 1n;
+    const minimumOutput = (outputAfterFee * (10000n - BigInt(slippageBps))) / 10000n;
 
     // Track quote request
     await trackEvent('quote', { input_mint, output_mint });

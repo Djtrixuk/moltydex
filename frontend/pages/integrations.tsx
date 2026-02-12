@@ -47,7 +47,7 @@ export default function Integrations() {
         <title>Integrations - MoltyDEX | Framework Integration Examples</title>
         <meta name="description" content="Integrate MoltyDEX into your favorite agent framework: LangChain, AutoGPT, TypeScript, Python, and more. Ready-to-use examples and code snippets." />
         <meta name="keywords" content="moltydex integrations, langchain integration, autogpt plugin, typescript x402, python x402, agent framework integration" />
-        <link rel="canonical" href="https://www.moltydex.com/integrations" />
+        <link rel="canonical" href="https://moltydex.com/integrations" />
       </Head>
       <PageHeader />
       <main className="min-h-screen bg-gray-950 text-white">

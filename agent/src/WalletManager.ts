@@ -114,6 +114,18 @@ export class WalletManager {
     // SOL transfers
     if (tokenMint === 'So11111111111111111111111111111111111111112') {
       const lamports = BigInt(amount);
+
+      // Safety check: prevent transfers above a sane limit (100 SOL = 100_000_000_000 lamports)
+      const MAX_SOL_LAMPORTS = BigInt(100) * BigInt(LAMPORTS_PER_SOL);
+      if (lamports > MAX_SOL_LAMPORTS) {
+        throw new Error(
+          `SOL transfer amount exceeds safety limit: ${lamports} lamports (${Number(lamports) / LAMPORTS_PER_SOL} SOL). ` +
+          `Max allowed: ${Number(MAX_SOL_LAMPORTS) / LAMPORTS_PER_SOL} SOL. ` +
+          `Set a higher maxPaymentAmount in config to override.`
+        );
+      }
+
+      // Use Number() only after the safety check — safe because lamports <= 100 SOL fits in Number
       transaction.add(
         SystemProgram.transfer({
           fromPubkey: this.publicKey,

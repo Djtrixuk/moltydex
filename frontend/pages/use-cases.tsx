@@ -12,7 +12,7 @@ export default function UseCases() {
         <title>Use Cases - MoltyDEX | x402 Payment Solutions for AI Agents</title>
         <meta name="description" content="Real-world use cases for MoltyDEX: Premium API access, automated data collection, pay-per-use AI services, and x402 protocol integration. See how AI agents use MoltyDEX for automatic token swapping." />
         <meta name="keywords" content="x402 use cases, AI agent payments, automated token swap, premium API access, pay-per-use API, x402 protocol integration, Solana agent payments" />
-        <link rel="canonical" href="https://www.moltydex.com/use-cases" />
+        <link rel="canonical" href="https://moltydex.com/use-cases" />
         <meta name="dateModified" content={lastUpdated} />
       </Head>
       <PageHeader />

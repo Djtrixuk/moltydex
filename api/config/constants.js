@@ -54,7 +54,7 @@ const EXTERNAL_APIS = {
 
 // Default values
 const DEFAULTS = {
-  FEE_BPS: 10, // 0.1%
+  FEE_BPS: 0, // 0% — fees are currently disabled (set via FEE_BPS env var to enable)
   SLIPPAGE_BPS: 50, // 0.5%
   QUOTE_TIMEOUT: 8000, // 8 seconds - reduced for Vercel function limits
   METADATA_TIMEOUT: 2000, // 2 seconds - reduced for faster responses

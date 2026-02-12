@@ -29,7 +29,7 @@ export default function ApiDocs() {
         <title>API Documentation - MoltyDEX | Complete API Reference</title>
         <meta name="description" content="Complete MoltyDEX API documentation. All endpoints, parameters, responses, and integration guides for the x402 payment aggregator." />
         <meta name="keywords" content="moltydex API, API documentation, x402 API, Solana DEX API, token swap API" />
-        <link rel="canonical" href="https://www.moltydex.com/api-docs" />
+        <link rel="canonical" href="https://moltydex.com/api-docs" />
         <meta name="dateModified" content={lastUpdated} />
       </Head>
       <SoftwareApplicationStructuredData />

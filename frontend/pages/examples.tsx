@@ -9,7 +9,7 @@ export default function Examples() {
         <title>Code Examples - MoltyDEX | x402 Agent Integration Examples</title>
         <meta name="description" content="Code examples for integrating MoltyDEX into your AI agent. TypeScript, JavaScript, Python, and REST API examples for x402 payment handling." />
         <meta name="keywords" content="moltydex examples, x402 code examples, AI agent integration, TypeScript x402, Python x402, REST API x402" />
-        <link rel="canonical" href="https://www.moltydex.com/examples" />
+        <link rel="canonical" href="https://moltydex.com/examples" />
       </Head>
       <PageHeader />
       <main className="min-h-screen bg-gray-950 text-white">

@@ -37,31 +37,21 @@ export class HTTPInterceptor {
         const clonedResponse = response.clone();
         const paymentBody = await clonedResponse.json();
 
-        // Handle payment automatically
-        const result = await self.agent.handle402(paymentBody, async () => {
-          // Retry original request with payment proof
-          const retryInit: RequestInit = {
-            ...init,
-            headers: {
-              ...init?.headers,
-              'X-Payment': result.payment_proof || '',
-            },
-          };
-          return self.originalFetch(input, retryInit);
-        });
+        // Handle payment (no retry callback — we retry once below with the proof)
+        const result = await self.agent.handle402(paymentBody);
 
-        if (result.success) {
-          // Retry original request
+        if (result.success && result.payment_proof) {
+          // Retry original request exactly once with payment proof header
           const retryInit: RequestInit = {
             ...init,
             headers: {
               ...init?.headers,
-              'X-Payment': result.payment_proof || '',
+              'X-Payment': result.payment_proof,
             },
           };
           return self.originalFetch(input, retryInit);
         } else {
-          throw new Error(`Auto-pay failed: ${result.error}`);
+          throw new Error(`Auto-pay failed: ${result.error || 'Unknown error'}`);
         }
       }
 

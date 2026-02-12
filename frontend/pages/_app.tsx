@@ -1,32 +1,22 @@
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
+import Script from 'next/script';
 import { Analytics } from '@vercel/analytics/react';
 import '../styles/globals.css';
 import '@solana/wallet-adapter-react-ui/styles.css';
 import { OrganizationStructuredData, WebSiteStructuredData, ServiceStructuredData, PaymentServiceStructuredData } from '../components/StructuredData';
+import ErrorBoundary from '../components/ErrorBoundary';
+
+// Sanitize GA ID at module level — only allow valid GA4/UA format (G-XXXXX or UA-XXXXX-X)
+const GA_ID = (() => {
+  const raw = process.env.NEXT_PUBLIC_GA_ID || '';
+  return /^(G-[A-Z0-9]+|UA-\d+-\d+)$/i.test(raw) ? raw : '';
+})();
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <>
+    <ErrorBoundary>
       <Head>
-        {/* Google Analytics */}
-        {process.env.NEXT_PUBLIC_GA_ID && (
-          <>
-            <script async src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`} />
-            <script
-              dangerouslySetInnerHTML={{
-                __html: `
-                  window.dataLayer = window.dataLayer || [];
-                  function gtag(){dataLayer.push(arguments);}
-                  gtag('js', new Date());
-                  gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}', {
-                    page_path: window.location.pathname,
-                  });
-                `,
-              }}
-            />
-          </>
-        )}
         
         {/* Primary Meta Tags */}
         <title>MoltyDEX - x402 Token Aggregator for AI Agents | Solana DEX</title>
@@ -79,8 +69,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <link rel="apple-touch-icon" href="/favicon.png" />
         <link rel="manifest" href="/manifest.json" />
         
-        {/* Canonical URL */}
-        <link rel="canonical" href="https://moltydex.com/" />
+        {/* Canonical URL — set per-page, not globally */}
         
         {/* Preconnect for performance */}
         <link rel="preconnect" href="https://api.moltydex.com" />
@@ -94,8 +83,22 @@ export default function App({ Component, pageProps }: AppProps) {
         <ServiceStructuredData />
         <PaymentServiceStructuredData />
       </Head>
+
+      {/* Google Analytics — loaded via next/script (no dangerouslySetInnerHTML) */}
+      {GA_ID && (
+        <>
+          <Script
+            src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+            strategy="afterInteractive"
+          />
+          <Script id="ga-init" strategy="afterInteractive">
+            {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_ID}',{page_path:window.location.pathname});`}
+          </Script>
+        </>
+      )}
+
       <Component {...pageProps} />
       <Analytics />
-    </>
+    </ErrorBoundary>
   );
 }

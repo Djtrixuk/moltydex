@@ -96,12 +96,13 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://*.vercel.app",
+              // unsafe-inline needed for Next.js runtime; unsafe-eval removed
+              "script-src 'self' 'unsafe-inline' https://*.vercel.app https://www.googletagmanager.com https://www.google-analytics.com",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "img-src 'self' data: https: blob:",
               "font-src 'self' data: https://fonts.gstatic.com",
-              "connect-src 'self' https://api.moltydex.com https://api.jup.ag https://*.jup.ag https://token.jup.ag https://*.solana.com https://mainnet.helius-rpc.com wss://*.solana.com",
+              "connect-src 'self' https://api.moltydex.com https://api.jup.ag https://*.jup.ag https://token.jup.ag https://*.solana.com https://mainnet.helius-rpc.com https://*.alchemy.com https://www.google-analytics.com wss://*.solana.com",
               "frame-src 'self'",
               "object-src 'none'",
               "base-uri 'self'",

@@ -5,6 +5,7 @@
 const express = require('express');
 const router = express.Router();
 const { JUPITER_ENDPOINTS } = require('../config/constants');
+const swapTracker = require('../utils/swapTracker');
 
 /**
  * @swagger
@@ -75,8 +76,9 @@ router.get('/health', async (req, res) => {
       fee_collection_method: FEE_WALLET ? 'Jupiter native fees' : 'None',
       x402_integration: true,
       balance_checking: true,
-      swap_tracking: false, // Temporarily disabled - needs database
-      points_program: false, // Temporarily disabled - needs database
+      swap_tracking: true,
+      points_program: true,
+      swap_storage: swapTracker.getStorageInfo(),
     },
   });
 });

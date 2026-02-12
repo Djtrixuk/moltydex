@@ -4,9 +4,14 @@
 
 const { Connection } = require('@solana/web3.js');
 
-// RPC configuration
-const PRIMARY_RPC = process.env.SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com';
-const FALLBACK_RPC = process.env.SOLANA_RPC_FALLBACK || 'https://api.mainnet-beta.solana.com';
+// RPC configuration — never fall back to public RPC in production
+const PUBLIC_RPC = 'https://api.mainnet-beta.solana.com';
+const PRIMARY_RPC = process.env.SOLANA_RPC_URL || PUBLIC_RPC;
+const FALLBACK_RPC = process.env.SOLANA_RPC_FALLBACK || process.env.SOLANA_RPC_URL || PUBLIC_RPC;
+
+if (PRIMARY_RPC === PUBLIC_RPC && process.env.NODE_ENV === 'production') {
+  console.warn('[RPC] WARNING: Using public Solana RPC in production. Set SOLANA_RPC_URL to a dedicated provider (Helius, Alchemy, etc.)');
+}
 const MAX_RETRIES = 3;
 const RETRY_DELAY_BASE = 1000; // 1 second base delay
 
@@ -143,8 +148,25 @@ function getFallbackRpcUrl() {
   return FALLBACK_RPC;
 }
 
+/**
+ * Get a shared Connection instance (lazy singleton per RPC URL).
+ * Avoids creating a new Connection object on every request.
+ */
+let _sharedConnection = null;
+let _sharedRpcUrl = null;
+
+function getConnection() {
+  const rpcUrl = getCurrentRpcUrl();
+  if (!_sharedConnection || _sharedRpcUrl !== rpcUrl) {
+    _sharedConnection = createConnection(rpcUrl);
+    _sharedRpcUrl = rpcUrl;
+  }
+  return _sharedConnection;
+}
+
 module.exports = {
   createConnection,
+  getConnection,
   executeWithRetry,
   isRateLimitError,
   isRetryableError,

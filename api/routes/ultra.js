@@ -13,6 +13,7 @@
 const express = require('express');
 const router = express.Router();
 const axios = require('axios');
+const { validate, validateQuery } = require('../middleware/validation');
 
 const ULTRA_BASE = 'https://api.jup.ag/ultra/v1';
 
@@ -39,7 +40,7 @@ function getHeaders() {
  *   - taker (optional): Wallet address - if provided, returns a signable transaction
  *   - slippageBps (optional): Slippage tolerance in basis points
  */
-router.get('/order', async (req, res) => {
+router.get('/order', validateQuery('ultraOrder'), async (req, res) => {
   try {
     const { inputMint, outputMint, amount, taker, slippageBps } = req.query;
 
@@ -80,7 +81,7 @@ router.get('/order', async (req, res) => {
  *   - signedTransaction (required): Base64-encoded signed transaction
  *   - requestId (required): Request ID from /order response
  */
-router.post('/execute', async (req, res) => {
+router.post('/execute', validate('ultraExecute'), async (req, res) => {
   try {
     const { signedTransaction, requestId } = req.body;
 

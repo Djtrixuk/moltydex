@@ -29,7 +29,10 @@ export class X402AutoPayAgent {
       ...config,
     };
 
-    this.moltydex = new MoltyDEXClient(this.config.apiUrl);
+    this.moltydex = new MoltyDEXClient(this.config.apiUrl, {
+      maxRetries: this.config.maxRetries,
+      retryDelay: this.config.retryDelay,
+    });
     this.wallet = new WalletManager(this.config);
   }
 
@@ -47,6 +50,16 @@ export class X402AutoPayAgent {
       const requirement = parsed.recommended;
 
       console.log(`[x402] Payment required: ${requirement.amount} of token ${requirement.asset}`);
+
+      // Safety guard: reject payments above the configured maximum
+      const maxPayment = BigInt(this.config.maxPaymentAmount || '1000000000'); // Default: 1 SOL
+      const requestedAmount = BigInt(requirement.amount);
+      if (requestedAmount > maxPayment) {
+        throw new Error(
+          `Payment amount ${requestedAmount} exceeds maxPaymentAmount (${maxPayment}). ` +
+          `Increase config.maxPaymentAmount to allow larger payments.`
+        );
+      }
 
       // Step 2: Check balance
       const balance = await this.moltydex.getBalance(

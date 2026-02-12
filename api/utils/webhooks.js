@@ -4,17 +4,76 @@
 
 const axios = require('axios');
 
-// In-memory webhook registry (in production, use Redis or database)
+// In-memory webhook registry (bounded to prevent memory leaks)
+const MAX_WEBHOOKS = 500;
 const webhookRegistry = new Map();
+
+// SSRF protection: block private/internal IPs and non-HTTPS in production
+const BLOCKED_HOSTS = [
+  /^localhost$/i,
+  /^127\.\d+\.\d+\.\d+$/,
+  /^10\.\d+\.\d+\.\d+$/,
+  /^172\.(1[6-9]|2\d|3[01])\.\d+\.\d+$/,
+  /^192\.168\.\d+\.\d+$/,
+  /^0\.0\.0\.0$/,
+  /^\[::1?\]$/,
+  /^169\.254\.\d+\.\d+$/, // link-local
+  /^fc00:/i, /^fd00:/i, /^fe80:/i, // IPv6 private
+];
+
+/**
+ * Validate a callback URL to prevent SSRF attacks
+ * @param {string} callbackUrl - The URL to validate
+ * @returns {{ valid: boolean, reason?: string }}
+ */
+function validateCallbackUrl(callbackUrl) {
+  try {
+    const url = new URL(callbackUrl);
+
+    // Must be HTTPS in production
+    if (process.env.NODE_ENV === 'production' && url.protocol !== 'https:') {
+      return { valid: false, reason: 'Webhook callback must use HTTPS in production' };
+    }
+
+    // Must be HTTP or HTTPS
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+      return { valid: false, reason: 'Webhook callback must use HTTP or HTTPS' };
+    }
+
+    // Block private/internal hostnames
+    const hostname = url.hostname;
+    for (const pattern of BLOCKED_HOSTS) {
+      if (pattern.test(hostname)) {
+        return { valid: false, reason: 'Webhook callback cannot target private/internal addresses' };
+      }
+    }
+
+    return { valid: true };
+  } catch {
+    return { valid: false, reason: 'Invalid URL' };
+  }
+}
 
 /**
  * Register a webhook for transaction status updates
  * @param {string} signature - Transaction signature
  * @param {string} callbackUrl - Webhook callback URL
  * @param {Object} metadata - Optional metadata to include in webhook payload
- * @returns {string} Webhook ID
+ * @returns {{ webhookId?: string, error?: string }} Webhook ID or error
  */
 function registerWebhook(signature, callbackUrl, metadata = {}) {
+  // Validate callback URL to prevent SSRF
+  const urlCheck = validateCallbackUrl(callbackUrl);
+  if (!urlCheck.valid) {
+    return { error: urlCheck.reason };
+  }
+
+  // Evict oldest webhook if at capacity
+  if (webhookRegistry.size >= MAX_WEBHOOKS) {
+    const oldestKey = webhookRegistry.keys().next().value;
+    webhookRegistry.delete(oldestKey);
+  }
+
   const webhookId = `${signature}-${Date.now()}`;
   webhookRegistry.set(webhookId, {
     signature,
@@ -23,7 +82,7 @@ function registerWebhook(signature, callbackUrl, metadata = {}) {
     registeredAt: new Date().toISOString(),
     notified: false,
   });
-  return webhookId;
+  return { webhookId };
 }
 
 /**
@@ -135,13 +194,14 @@ function getWebhookStatus(webhookId) {
   };
 }
 
-// Cleanup old webhooks every hour
-setInterval(() => {
-  cleanupWebhooks(24);
-}, 60 * 60 * 1000);
+// NOTE: No setInterval — incompatible with serverless (Vercel).
+// Old webhooks are evicted lazily: the MAX_WEBHOOKS bound in registerWebhook
+// evicts the oldest entry on every new registration, and cleanupWebhooks()
+// can be called explicitly if needed.
 
 module.exports = {
   registerWebhook,
+  validateCallbackUrl,
   getWebhooksBySignature,
   notifyWebhooks,
   cleanupWebhooks,

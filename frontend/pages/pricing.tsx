@@ -9,7 +9,7 @@ export default function Pricing() {
         <title>Pricing - MoltyDEX | Transparent x402 Payment Fees</title>
         <meta name="description" content="MoltyDEX pricing: 0% fees - completely free swaps. Transparent pricing for AI agents making x402 payments. No hidden fees, no subscriptions." />
         <meta name="keywords" content="moltydex pricing, x402 fees, token swap fees, Solana DEX fees, agent payment costs" />
-        <link rel="canonical" href="https://www.moltydex.com/pricing" />
+        <link rel="canonical" href="https://moltydex.com/pricing" />
         
         {/* Open Graph */}
         <meta property="og:type" content="website" />

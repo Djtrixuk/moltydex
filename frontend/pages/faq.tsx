@@ -89,7 +89,7 @@ export default function FAQ() {
         <title>FAQ - MoltyDEX | Frequently Asked Questions</title>
         <meta name="description" content="Frequently asked questions about MoltyDEX, x402 payments, automatic token swapping, fees, security, and integration. Get answers to common questions." />
         <meta name="keywords" content="moltydex FAQ, x402 FAQ, token swap FAQ, Solana DEX FAQ, AI agent payments FAQ" />
-        <link rel="canonical" href="https://www.moltydex.com/faq" />
+        <link rel="canonical" href="https://moltydex.com/faq" />
         <meta name="dateModified" content={lastUpdated} />
       </Head>
 
