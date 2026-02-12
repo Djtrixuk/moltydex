@@ -12,7 +12,7 @@ export default function Security() {
         <title>Security - MoltyDEX | Client-Side Signing & Security Best Practices</title>
         <meta name="description" content="MoltyDEX security: Client-side signing, private keys never leave your system, open source, auditable code. Learn about our security practices and how we protect your funds." />
         <meta name="keywords" content="moltydex security, Solana DEX security, client-side signing, secure token swap, private key security, x402 security" />
-        <link rel="canonical" href="https://moltydex.com/security" />
+        <link rel="canonical" href="https://www.moltydex.com/security" />
         <meta name="dateModified" content={lastUpdated} />
       </Head>
       <PageHeader />

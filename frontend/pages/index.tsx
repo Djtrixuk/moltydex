@@ -13,20 +13,16 @@ import MobileNav from '../components/MobileNav';
 import NavLinks from '../components/NavLinks';
 import Breadcrumbs from '../components/Breadcrumbs';
 import FAQAccordion from '../components/FAQAccordion';
-import { FAQPageStructuredData, ProductStructuredData } from '../components/StructuredData';
+import { FAQPageStructuredData, ProductStructuredData, AggregateRatingStructuredData } from '../components/StructuredData';
 
 export default function Home() {
   // Jupiter quotes and swap txs are mainnet-only; use Mainnet for real swaps
   const network = WalletAdapterNetwork.Mainnet;
-  // RPC endpoint for Solana Connection.
-  // NEXT_PUBLIC_SOLANA_RPC takes priority if set (e.g. Alchemy/Helius with key).
-  // Otherwise fall back to public mainnet RPC which works for all read operations.
-  // Note: Connection requires a full http(s) URL — relative paths like /api/rpc are rejected.
   const endpoint = useMemo(
     () => process.env.NEXT_PUBLIC_SOLANA_RPC || clusterApiUrl(network),
     [network]
   );
-  const rpcLabel = endpoint.includes('helius') ? 'Helius' : endpoint.includes('alchemy') ? 'Alchemy' : endpoint.includes('mainnet-beta.solana.com') ? 'Public' : 'Custom';
+  const rpcLabel = endpoint.includes('helius') ? 'Helius' : endpoint.includes('mainnet-beta.solana.com') ? 'Public' : 'Custom';
 
   const wallets = useMemo(
     () => [
@@ -114,6 +110,7 @@ export default function Home() {
         <meta name="dateModified" content={lastUpdated} />
       </Head>
       <ProductStructuredData />
+      <AggregateRatingStructuredData itemName="MoltyDEX Token Swap Service" />
       <FAQPageStructuredData faqs={homepageFaqs} />
       <ConnectionProvider endpoint={endpoint}>
         <WalletProvider wallets={wallets} autoConnect>

@@ -3,7 +3,7 @@ import Link from 'next/link';
 import PageHeader from '../components/PageHeader';
 import Breadcrumbs from '../components/Breadcrumbs';
 import FAQAccordion from '../components/FAQAccordion';
-import { FAQPageStructuredData, ProductStructuredData } from '../components/StructuredData';
+import { FAQPageStructuredData, ProductStructuredData, AggregateRatingStructuredData } from '../components/StructuredData';
 
 export default function ForTraders() {
   const traderFaqs = [
@@ -57,10 +57,11 @@ export default function ForTraders() {
         <title>For Traders - MoltyDEX | Fast, Cheap Token Swaps on Solana</title>
         <meta name="description" content="MoltyDEX for traders: Fast, cheap token swaps on Solana. 0% fees - completely free. Best prices via Jupiter aggregator. Swap any SPL token instantly with secure client-side signing." />
         <meta name="keywords" content="Solana DEX, token swap, best price swap, cheap swap fees, Solana trading, SPL token swap, decentralized exchange" />
-        <link rel="canonical" href="https://moltydex.com/for-traders" />
+        <link rel="canonical" href="https://www.moltydex.com/for-traders" />
         <meta name="dateModified" content={lastUpdated} />
       </Head>
       <ProductStructuredData />
+      <AggregateRatingStructuredData itemName="MoltyDEX Token Swap Service" />
       <FAQPageStructuredData faqs={traderFaqs} />
       <PageHeader />
       <main className="min-h-screen bg-gray-950 text-white">

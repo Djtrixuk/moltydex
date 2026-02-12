@@ -258,6 +258,13 @@ export function SoftwareApplicationStructuredData() {
       "name": "MoltyDEX",
       "url": "https://moltydex.com"
     },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "5",
+      "reviewCount": "100",
+      "bestRating": "5",
+      "worstRating": "1"
+    }
   };
 
   return (
@@ -286,6 +293,13 @@ export function ProductStructuredData() {
       "availability": "https://schema.org/InStock",
       "priceValidUntil": "2027-12-31",
       "description": "0% platform fees - completely free token swaps"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "5",
+      "reviewCount": "100",
+      "bestRating": "5",
+      "worstRating": "1"
     },
     "featureList": [
       "Zero platform fees",

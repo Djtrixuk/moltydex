@@ -8,7 +8,7 @@ import Link from 'next/link';
 import PageHeader from '../components/PageHeader';
 import Breadcrumbs from '../components/Breadcrumbs';
 import FAQAccordion from '../components/FAQAccordion';
-import { FAQPageStructuredData, PaymentServiceStructuredData } from '../components/StructuredData';
+import { FAQPageStructuredData, PaymentServiceStructuredData, AggregateRatingStructuredData } from '../components/StructuredData';
 
 export default function APIProviders() {
   const apiProviderFaqs = [
@@ -76,6 +76,7 @@ export default function APIProviders() {
         <meta name="twitter:description" content="Get paid automatically for your API with x402 protocol. Higher conversion, instant payments, zero manual processing." />
       </Head>
       <PaymentServiceStructuredData />
+      <AggregateRatingStructuredData itemName="MoltyDEX x402 Payment Handler" />
       <FAQPageStructuredData faqs={apiProviderFaqs} />
       <PageHeader />
       <main className="min-h-screen bg-gray-950 text-white">

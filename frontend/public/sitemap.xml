@@ -98,14 +98,6 @@
     <priority>0.9</priority>
   </url>
   
-  <!-- x402 Payments Page -->
-  <url>
-    <loc>https://moltydex.com/x402-payments</loc>
-    <lastmod>2026-02-12</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  
   <!-- For Traders Page -->
   <url>
     <loc>https://moltydex.com/for-traders</loc>
@@ -375,14 +367,6 @@
     <loc>https://moltydex.com/blog/moltydex-beta-program-mdex-airdrop</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <!-- Changelog -->
-  <url>
-    <loc>https://moltydex.com/changelog</loc>
-    <lastmod>2026-02-12</lastmod>
-    <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
