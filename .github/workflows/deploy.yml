@@ -1,13 +1,6 @@
 name: Deploy to Production
 
 on:
-  push:
-    branches:
-      - main
-      - master
-    paths:
-      - 'api/**'
-      - '.github/workflows/deploy.yml'
   workflow_dispatch:
 
 jobs:
