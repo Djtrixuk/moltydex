@@ -1,0 +1,12 @@
+✨ Just shipped 5 UX improvements!
+
+🔍 Exchange rate (1 SOL = X USDC)
+📋 Copy transaction signatures
+🔄 Manual balance refresh
+⭐ Recent tokens quick access
+
+Why? We audited MoltyDEX and prioritized quick wins that improve usability.
+
+moltydex.com
+
+#Web3 #Solana #UX

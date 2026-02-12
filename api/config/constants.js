@@ -27,6 +27,7 @@ const AGENT_FRIENDLY_TOKENS = [
   '8Jx8AAHj86wbQgUTjGuj6GTTL5Ps3cqxKRTvpaJApump', // PENGUIN (Nietzschean Penguin)
   'BwTu5zJqEyLYawwYoGTWT7UxC85eLYQWRcta1GiEbonk', // URA (Uranus)
   'Cm6fNnMk7NfzStP9CZpsQA2v3jjzbcYGAxdJySmHpump', // BUTT (Buttcoin)
+  '6KmwvVo8gDUVAnoAftMuyUTojfx6xtgm2xkHp2ixpump', // DELUSIONAL
 ];
 
 // Commonly accepted tokens for x402 payments
@@ -54,7 +55,7 @@ const EXTERNAL_APIS = {
 
 // Default values
 const DEFAULTS = {
-  FEE_BPS: 10, // 0.1%
+  FEE_BPS: 0, // 0% — fees are currently disabled (set via FEE_BPS env var to enable)
   SLIPPAGE_BPS: 50, // 0.5%
   QUOTE_TIMEOUT: 8000, // 8 seconds - reduced for Vercel function limits
   METADATA_TIMEOUT: 2000, // 2 seconds - reduced for faster responses

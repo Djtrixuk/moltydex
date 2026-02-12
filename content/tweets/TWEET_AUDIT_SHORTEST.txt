@@ -1,0 +1,9 @@
+🔍 Just audited MoltyDEX - found 50+ safe improvements!
+
+✅ Core works great
+🔧 UX/API/docs enhancements ready
+All additive, zero risk.
+
+Full audit: moltydex.com/blog/moltydex-functionality-audit-february-2026
+
+#WebDev #Solana #x402

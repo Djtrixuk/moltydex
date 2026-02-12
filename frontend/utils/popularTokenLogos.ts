@@ -19,12 +19,12 @@ const POPULAR_TOKEN_LOGOS: Record<string, string> = {
   'HndwegC6q7UGn5MErjvdH6BeQzcWQtjZf1nJX6rhpump': '/mdex-logo.png', // MDEX (MoltyDEX)
   'hndwegc6q7ugn5merjvdh6beqzcwqtjzf1njx6rhpump': '/mdex-logo.png', // MDEX (lowercase)
   
-  // Pump.fun tokens (these APIs are more reliable for pump tokens)
-  'a3W4qutoEJA4232T2gwZUfgYJTetr96pU4SJMwppump': 'https://pumpapi.fun/api/token/a3W4qutoEJA4232T2gwZUfgYJTetr96pU4SJMwppump/image', // WhiteWhale
+  // Pump.fun tokens (using DexScreener CDN for reliable logos)
+  'a3W4qutoEJA4232T2gwZUfgYJTetr96pU4SJMwppump': 'https://cdn.dexscreener.com/cms/images/46023f12cc0f15eb355d1c2432714fc6cb52e2215695af82a1fcc8a503a265aa?width=800&height=800&quality=90', // WhiteWhale
   '8Jx8AAHj86wbQgUTjGuj6GTTL5Ps3cqxKRTvpaJApump': 'https://pumpapi.fun/api/token/8Jx8AAHj86wbQgUTjGuj6GTTL5Ps3cqxKRTvpaJApump/image', // PENGUIN
   'BwTu5zJqEyLYawwYoGTWT7UxC85eLYQWRcta1GiEbonk': 'https://pumpapi.fun/api/token/BwTu5zJqEyLYawwYoGTWT7UxC85eLYQWRcta1GiEbonk/image', // URA (Uranus)
-  'Cm6fNnMk7NfzStP9CZpsQA2v3jjzbcYGAxdJySmHpump': 'https://pumpapi.fun/api/token/Cm6fNnMk7NfzStP9CZpsQA2v3jjzbcYGAxdJySmHpump/image', // BUTTCOIN
-  'cm6fnnmk7nfzstp9czpsqa2v3jjzbcygaxdjysmhpump': 'https://pumpapi.fun/api/token/Cm6fNnMk7NfzStP9CZpsQA2v3jjzbcYGAxdJySmHpump/image', // BUTTCOIN (lowercase)
+  'Cm6fNnMk7NfzStP9CZpsQA2v3jjzbcYGAxdJySmHpump': 'https://cdn.dexscreener.com/cms/images/baf3d4bdaac47ef59f32c8ddc11f83e995f351be1eef6d4d192d72ff8def0020?width=800&height=800&quality=90', // Buttcoin
+  'cm6fnnmk7nfzstp9czpsqa2v3jjzbcygaxdjysmhpump': 'https://cdn.dexscreener.com/cms/images/baf3d4bdaac47ef59f32c8ddc11f83e995f351be1eef6d4d192d72ff8def0020?width=800&height=800&quality=90', // Buttcoin (lowercase)
 };
 
 /**

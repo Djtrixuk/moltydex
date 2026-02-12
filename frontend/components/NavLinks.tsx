@@ -4,12 +4,13 @@ import Link from 'next/link';
 const PRIMARY_LINKS = [
   { href: '/for-traders', label: 'Traders' },
   { href: '/developers', label: 'Developers' },
+  { href: '/sdk', label: 'SDK' },
   { href: '/api-providers', label: 'API Providers' },
   { href: '/blog', label: 'Blog' },
-  { href: '/use-cases', label: 'Use Cases' },
 ];
 
 const MORE_LINKS = [
+  { href: '/use-cases', label: 'Use Cases' },
   { href: '/examples', label: 'Examples' },
   { href: '/security', label: 'Security' },
   { href: '/whitepaper', label: 'Whitepaper' },

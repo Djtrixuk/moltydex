@@ -13,7 +13,7 @@ import MobileNav from '../components/MobileNav';
 import NavLinks from '../components/NavLinks';
 import Breadcrumbs from '../components/Breadcrumbs';
 import FAQAccordion from '../components/FAQAccordion';
-import { FAQPageStructuredData, ProductStructuredData, AggregateRatingStructuredData } from '../components/StructuredData';
+import { FAQPageStructuredData, ProductStructuredData } from '../components/StructuredData';
 
 export default function Home() {
   // Jupiter quotes and swap txs are mainnet-only; use Mainnet for real swaps
@@ -110,7 +110,6 @@ export default function Home() {
         <meta name="dateModified" content={lastUpdated} />
       </Head>
       <ProductStructuredData />
-      <AggregateRatingStructuredData itemName="MoltyDEX Token Swap Service" />
       <FAQPageStructuredData faqs={homepageFaqs} />
       <ConnectionProvider endpoint={endpoint}>
         <WalletProvider wallets={wallets} autoConnect>

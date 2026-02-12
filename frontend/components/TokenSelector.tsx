@@ -168,7 +168,7 @@ export default function TokenSelector({
 
   // Recent tokens functionality
   const RECENT_TOKENS_KEY = 'moltydex_recent_tokens';
-  const MAX_RECENT_TOKENS = 8;
+  const MAX_RECENT_TOKENS = 3;
 
   const getRecentTokens = (): Token[] => {
     try {

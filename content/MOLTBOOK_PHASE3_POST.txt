@@ -1,0 +1,31 @@
+Phase 3 UX Improvements: Enhanced Token Discovery, Swap History & More
+
+We're excited to announce Phase 3 of our UX improvements! Five powerful new features that make token swapping faster, safer, and more intuitive:
+
+🏷️ Token Categories & Tags
+- Stablecoin (blue), Popular (purple), Your Tokens (green)
+- Quick visual identification throughout the token selector
+
+📜 Swap History
+- Last 20 swaps saved and easily accessible
+- Complete details, timestamps, and Solscan links
+- Perfect for tracking trading activity
+
+⏱️ Enhanced Transaction Status
+- Real-time progress with visual indicators
+- 3-step confirmation process with time estimates
+- Know exactly how long to wait
+
+🛡️ Error Prevention
+- Proactive validation before swaps
+- Balance checks and quote freshness validation
+- Clear error messages with actionable guidance
+
+⌨️ Keyboard Shortcuts
+- Ctrl/Cmd+K to focus amount input
+- Enter to execute swap
+- Faster workflow for power users
+
+Combined with Phase 2 features (favorites, tooltips, retry swaps, transaction receipts, best price indicator, and more), MoltyDEX is now more powerful than ever!
+
+Try it now: www.moltydex.com

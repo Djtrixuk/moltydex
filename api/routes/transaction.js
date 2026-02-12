@@ -283,10 +283,17 @@ router.post('/webhook', async (req, res) => {
       });
     }
 
-    const webhookId = registerWebhook(signature, callbackUrl.toString(), metadata || {});
+    const result = registerWebhook(signature, callbackUrl.toString(), metadata || {});
+
+    if (result.error) {
+      return res.status(400).json({
+        error: result.error,
+        code: 'INVALID_CALLBACK_URL',
+      });
+    }
 
     res.json({
-      webhook_id: webhookId,
+      webhook_id: result.webhookId,
       signature,
       callback_url: callbackUrl.toString(),
       message: 'Webhook registered successfully. You will receive a notification when the transaction status changes.',

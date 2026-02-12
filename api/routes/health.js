@@ -4,7 +4,7 @@
 
 const express = require('express');
 const router = express.Router();
-const { JUPITER_ENDPOINTS } = require('../config/constants');
+const { JUPITER_ENDPOINTS, DEFAULTS } = require('../config/constants');
 
 /**
  * @swagger
@@ -37,7 +37,7 @@ const { JUPITER_ENDPOINTS } = require('../config/constants');
  *                   type: object
  */
 router.get('/health', async (req, res) => {
-  const FEE_BPS = parseInt(process.env.FEE_BPS || '10');
+  const FEE_BPS = DEFAULTS.FEE_BPS;
   const FEE_WALLET = process.env.FEE_WALLET || null;
   const JUPITER_API_KEY = process.env.JUPITER_API_KEY || '';
   const RPC_URL = process.env.SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com';

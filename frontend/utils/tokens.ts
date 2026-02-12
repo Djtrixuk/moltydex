@@ -80,6 +80,34 @@ export const POPULAR_TOKENS: Token[] = [
     decimals: 6,
     logo: 'https://cdn.dexscreener.com/cms/images/a47f7e68a57333159427d47315529b93b26bb5d353609aa9f4131364bbdf1b03?width=800&height=800&quality=90',
   },
+  {
+    symbol: 'RAY',
+    name: 'Raydium',
+    address: '4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R',
+    decimals: 6,
+    logo: 'https://cdn.dexscreener.com/cms/images/654ec0cee3ecf3fd5d55c56302d82300ee114ee1ff91e52897798b486993f6c8?width=800&height=800&quality=90',
+  },
+  {
+    symbol: 'DELUSIONAL',
+    name: 'Delusional Optimism',
+    address: '6KmwvVo8gDUVAnoAftMuyUTojfx6xtgm2xkHp2ixpump',
+    decimals: 6,
+    logo: 'https://cdn.dexscreener.com/cms/images/FHd1NdMM6malMhWt?width=800&height=800&quality=90',
+  },
+  {
+    symbol: 'WhiteWhale',
+    name: 'The White Whale',
+    address: 'a3W4qutoEJA4232T2gwZUfgYJTetr96pU4SJMwppump',
+    decimals: 6,
+    logo: 'https://cdn.dexscreener.com/cms/images/46023f12cc0f15eb355d1c2432714fc6cb52e2215695af82a1fcc8a503a265aa?width=800&height=800&quality=90',
+  },
+  {
+    symbol: 'Buttcoin',
+    name: 'Buttcoin',
+    address: 'Cm6fNnMk7NfzStP9CZpsQA2v3jjzbcYGAxdJySmHpump',
+    decimals: 6,
+    logo: 'https://cdn.dexscreener.com/cms/images/baf3d4bdaac47ef59f32c8ddc11f83e995f351be1eef6d4d192d72ff8def0020?width=800&height=800&quality=90',
+  },
 ];
 
 export function getTokenByAddress(address: string): Token | undefined {

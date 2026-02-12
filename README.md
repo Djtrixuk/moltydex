@@ -40,7 +40,7 @@ MoltyDEX enables AI agents to automatically handle x402 Payment Required respons
 - ✅ **Zero deployment costs** — No smart contract deployment needed
 - ✅ **No liquidity required** — Routes through existing DEXes
 - ✅ **Fast to launch** — API wrapper around Jupiter
-- ✅ **Revenue potential** — Small fee (0.1–0.5%) on each swap
+- ✅ **Zero platform fees** — Users pay only network + routing fees
 - ✅ **Best prices** — Jupiter finds optimal routes across all DEXes
 
 ---
@@ -50,7 +50,7 @@ MoltyDEX enables AI agents to automatically handle x402 Payment Required respons
 - **x402 Token Swaps** — Buy, sell, swap any x402-compatible SPL tokens
 - **Best Price Discovery** — Scans all major DEXs (Jupiter, Raydium, Orca, Meteora) for optimal routes
 - **Agent-friendly API** — Simple REST API for programmatic trading
-- **Small fee layer** — 0.1–0.5% fee (configurable)
+- **Zero platform fees** — You pay only Solana network fees and Jupiter routing fees
 - **Zero deployment costs** — Just a Node.js server (Vercel/Railway)
 
 ---
@@ -77,10 +77,16 @@ graph TB
 
 ```
 moltydex/
-├── api/              # Express.js API (routes through Jupiter + fee)
-├── frontend/         # Next.js frontend (optional)
+├── api/              # Express.js API (routes through Jupiter)
+├── agent/            # x402 Auto-Pay Agent (TypeScript)
+├── agent-api/        # Agent API service
+├── frontend/         # Next.js frontend
 ├── sdk/              # Python SDK
-└── agent/            # x402 Auto-Pay Agent (TypeScript)
+├── examples/         # Integration examples
+├── tests/            # Test suite
+├── scripts/          # Build and deployment scripts
+├── docs/             # Documentation and internal notes
+└── content/          # Blog posts, tweets, outreach content
 ```
 
 ---
@@ -178,11 +184,9 @@ curl -X POST https://api.moltydex.com/api/swap/build \
 
 ---
 
-## Revenue Model
+## Business Model
 
-- **Fee:** 0.1–0.5% per swap (configurable)
-- **Volume:** If agents swap $10k/day → $10–50/day revenue
-- **Costs:** ~$5/month hosting → profitable at low volume
+MoltyDEX currently operates at **0% platform fees** — users pay only Solana network fees and Jupiter routing fees. We are focused on building adoption and proving the x402 payment layer before introducing revenue. When volume reaches critical mass, sustainable protocol fees (0.05–0.1%) will be introduced on agent-initiated swaps.
 
 ## x402 Auto-Pay Agent
 
@@ -216,7 +220,7 @@ See **[agent/README.md](./agent/README.md)** for full documentation.
 ✅ **x402 Auto-Pay Agent** - Fully automated 402 payment handling  
 ✅ **Secure** - Client-side signing, private keys never leave your system  
 ✅ **Best Prices** - Routes through all major Solana DEXes  
-✅ **Low Fees** - 0.1% per swap
+✅ **Zero Platform Fees** - Network fees only
 
 ---
 

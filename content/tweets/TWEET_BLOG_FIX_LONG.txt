@@ -1,0 +1,11 @@
+🔧 Fixed blog post ordering on MoltyDEX!
+
+New posts now appear at the top of the blog page. Updated our functionality audit and progress update posts to display correctly.
+
+✅ Blog sorting fixed
+✅ New posts appear first
+✅ Documentation added for future posts
+
+Check it out: moltydex.com/blog
+
+#WebDev #Blogging #Solana #x402

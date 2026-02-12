@@ -1,0 +1,12 @@
+🚀 Phase 3 UX Improvements Live!
+
+5 powerful new features:
+🏷️ Token categories (Stablecoin/Popular/Your Tokens)
+📜 Swap history (last 20 swaps)
+⏱️ Enhanced transaction status with progress
+🛡️ Error prevention & validation
+⌨️ Keyboard shortcuts (Ctrl+K, Enter)
+
+Combined with Phase 2 (favorites, tooltips, retry swaps, receipts), MoltyDEX is more powerful than ever!
+
+Try: moltydex.com

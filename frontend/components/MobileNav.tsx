@@ -8,6 +8,7 @@ export default function MobileNav() {
   const navLinks = [
     { href: '/for-traders', label: 'For Traders' },
     { href: '/developers', label: 'For Developers' },
+    { href: '/sdk', label: 'SDK Docs' },
     { href: '/api-providers', label: 'For API Providers' },
     { href: '/blog', label: 'Blog' },
     { href: '/use-cases', label: 'Use Cases' },

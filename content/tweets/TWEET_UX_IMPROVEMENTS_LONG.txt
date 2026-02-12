@@ -1,0 +1,21 @@
+✨ Just shipped 5 UX improvements to MoltyDEX!
+
+🔍 Exchange Rate Display
+See "1 SOL = X USDC" format in the quote section - makes it easier to understand swap rates at a glance.
+
+📋 Copy Transaction Signatures
+One-click copy buttons for transaction signatures in both success and error states. Easier record keeping!
+
+🔄 Manual Balance Refresh
+Added refresh buttons (↻) next to token balances so you can manually update balances when needed.
+
+⭐ Recent Tokens
+Your last 8 selected tokens now appear at the top of the token selector for faster access.
+
+Why now? We just completed a comprehensive functionality audit and identified 50+ safe improvements. We're starting with these quick wins that enhance usability without touching core swap functionality.
+
+All changes are additive and non-breaking - existing features work exactly as before, just with better UX.
+
+Try the improvements: moltydex.com
+
+#Web3 #Solana #UX #DeFi

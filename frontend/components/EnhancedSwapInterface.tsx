@@ -5,6 +5,11 @@
 
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
+
+// Suppress debug logs in production (avoids leaking wallet addresses to browser console)
+const isDev = process.env.NODE_ENV === 'development';
+const debugLog = isDev ? console.log.bind(console) : (..._args: any[]) => {};
+
 import { Transaction, VersionedTransaction } from '@solana/web3.js';
 import {
   POPULAR_TOKENS,
@@ -287,10 +292,36 @@ export default function EnhancedSwapInterface() {
           setWalletTokenBalancesMap(balancesMap);
           (window as any).__walletTokenBalances = balancesMap;
           
-          console.log('[EnhancedSwapInterface] Ultra holdings loaded:', {
+          debugLog('[EnhancedSwapInterface] Ultra holdings loaded:', {
             count: tokens.length,
             solBalance: holdings.uiAmountString,
           });
+          
+          // Enrich unknown tokens with metadata from API (fire-and-forget)
+          const unknownTokens = tokens.filter(t => t.symbol.endsWith('...'));
+          if (unknownTokens.length > 0) {
+            Promise.allSettled(
+              unknownTokens.map(async (t) => {
+                try {
+                  const meta = await getTokenMetadata(t.address);
+                  return { address: t.address, symbol: meta.symbol, name: meta.name, decimals: meta.decimals ?? t.decimals, logo: meta.logo };
+                } catch {
+                  return null;
+                }
+              })
+            ).then((results) => {
+              const enriched = results
+                .map(r => r.status === 'fulfilled' ? r.value : null)
+                .filter((v): v is NonNullable<typeof v> & { symbol: string } => v !== null && !!v.symbol);
+              if (enriched.length === 0) return;
+              setWalletTokens(prev => prev.map(t => {
+                const match = enriched.find(e => e.address.toLowerCase() === t.address.toLowerCase());
+                return match ? { ...t, symbol: match.symbol, name: match.name, decimals: match.decimals, logo: match.logo || t.logo } : t;
+              }));
+              debugLog('[EnhancedSwapInterface] Enriched unknown tokens:', enriched.map(e => e.symbol));
+            });
+          }
+          
           return; // Ultra succeeded, skip legacy
         } catch (ultraErr) {
           console.warn('[EnhancedSwapInterface] Ultra holdings failed, falling back to legacy:', ultraErr);
@@ -316,7 +347,7 @@ export default function EnhancedSwapInterface() {
         setWalletTokenBalancesMap(balancesMap);
         (window as any).__walletTokenBalances = balancesMap;
         
-        console.log('[EnhancedSwapInterface] Legacy wallet tokens loaded:', {
+        debugLog('[EnhancedSwapInterface] Legacy wallet tokens loaded:', {
           count: tokens.length,
         });
       } catch (err) {
@@ -369,7 +400,7 @@ export default function EnhancedSwapInterface() {
           }
           
           setBalanceCache(cache);
-          console.log('[EnhancedSwapInterface] Ultra balances cached:', {
+          debugLog('[EnhancedSwapInterface] Ultra balances cached:', {
             tokenCount: Object.keys(cache).length,
             solBalance: cache[SOL_MINT],
           });
@@ -394,7 +425,7 @@ export default function EnhancedSwapInterface() {
         });
         
         setBalanceCache(cache);
-        console.log('[EnhancedSwapInterface] Legacy batch balances cached:', {
+        debugLog('[EnhancedSwapInterface] Legacy batch balances cached:', {
           successful: batchResponse.successful,
           failed: batchResponse.failed,
         });
@@ -478,7 +509,7 @@ export default function EnhancedSwapInterface() {
         setQuoteResponse({ ultra: true, ...ultraOrder });
       }
       
-      console.log('[fetchQuote] Ultra quote success:', {
+      debugLog('[fetchQuote] Ultra quote success:', {
         inAmount: ultraOrder.inAmount,
         outAmount: ultraOrder.outAmount,
         router: ultraOrder.router,
@@ -524,33 +555,42 @@ export default function EnhancedSwapInterface() {
     
     setTimeout(async () => {
       try {
-        console.log(`[SWAP] Refreshing balances after swap (attempt ${attempt}/${maxAttempts})...`);
+        debugLog(`[SWAP] Refreshing balances after swap (attempt ${attempt}/${maxAttempts})...`);
         
         // Try Ultra holdings first for faster balance refresh
         try {
           const holdings = await getUltraHoldings(publicKey.toString());
           const cache: { [key: string]: string | null } = {};
+          const walletCache: { [key: string]: string } = {};
           
           // SOL balance
           const SOL_MINT = 'So11111111111111111111111111111111111111112';
-          cache[SOL_MINT] = holdings.uiAmountString || '0';
+          const solBal = holdings.uiAmountString || '0';
+          cache[SOL_MINT] = solBal;
+          walletCache[SOL_MINT.toLowerCase()] = solBal;
           
           // SPL token balances
           if (holdings.tokens) {
             for (const [mint, accounts] of Object.entries(holdings.tokens)) {
               if (Array.isArray(accounts) && accounts.length > 0) {
-                // Sum all accounts for this mint
                 let totalUi = 0;
                 for (const acct of accounts) {
                   totalUi += acct.uiAmount || 0;
                 }
                 cache[mint] = totalUi.toString();
+                walletCache[mint.toLowerCase()] = totalUi.toString();
               }
             }
           }
           
           setBalanceCache(cache);
-          console.log('[SWAP] Balances refreshed via Ultra holdings');
+          // Update the global cache so useTokenBalance picks up new values
+          (window as any).__walletTokenBalances = walletCache;
+          setWalletTokenBalancesMap(walletCache);
+          // Trigger useTokenBalance hooks to re-read from updated cache
+          tokenInBalance.refresh();
+          tokenOutBalance.refresh();
+          debugLog('[SWAP] Balances refreshed via Ultra holdings');
           
           if (attempt < maxAttempts) {
             refreshBalancesAfterSwap(attempt + 1, maxAttempts);
@@ -563,16 +603,23 @@ export default function EnhancedSwapInterface() {
         const tokenMints = allTokens.map(t => t.address);
         const batchResponse = await getBatchBalances(publicKey.toString(), tokenMints);
         const cache: { [key: string]: string | null } = {};
+        const walletCache: { [key: string]: string } = {};
         batchResponse.results.forEach(result => {
           if (result.success && result.data) {
             const decimals = result.data.decimals ?? 9;
             const rawBalance = result.data.balance || '0';
-            cache[result.token_mint] = formatAmount(rawBalance, decimals);
+            const formatted = formatAmount(rawBalance, decimals);
+            cache[result.token_mint] = formatted;
+            walletCache[result.token_mint.toLowerCase()] = formatted;
           } else {
             cache[result.token_mint] = null;
           }
         });
         setBalanceCache(cache);
+        (window as any).__walletTokenBalances = walletCache;
+        setWalletTokenBalancesMap(walletCache);
+        tokenInBalance.refresh();
+        tokenOutBalance.refresh();
         
         if (attempt < maxAttempts) {
           refreshBalancesAfterSwap(attempt + 1, maxAttempts);
@@ -598,7 +645,7 @@ export default function EnhancedSwapInterface() {
     // Check if quote is stale - refetch if older than 20 seconds (more conservative than 30s warning)
     const quoteAge = Date.now() - quoteFetchedAt.current;
     if (quoteAge > 20_000) {
-      console.log('[SWAP] Quote is stale, refetching before swap:', {
+      debugLog('[SWAP] Quote is stale, refetching before swap:', {
         quoteAge,
         maxAge: 20_000,
       });
@@ -668,7 +715,7 @@ export default function EnhancedSwapInterface() {
       
       if (useUltra) {
         try {
-          console.log('[SWAP] Using Jupiter Ultra flow');
+          debugLog('[SWAP] Using Jupiter Ultra flow');
           
           // Track request for developer mode
           if (developerMode) {
@@ -698,7 +745,7 @@ export default function EnhancedSwapInterface() {
           const txBase64 = ultraOrder.transaction;
           const ultraRequestId = ultraOrder.requestId;
           
-          console.log('[SWAP] Ultra order received:', {
+          debugLog('[SWAP] Ultra order received:', {
             requestId: ultraRequestId,
             outAmount: ultraOrder.outAmount,
             router: ultraOrder.router,
@@ -736,7 +783,7 @@ export default function EnhancedSwapInterface() {
           const signedB64 = btoa(String.fromCharCode(...Array.from(signedSerialized)));
           const execResult = await executeUltraOrder(signedB64, ultraRequestId);
           
-          console.log('[SWAP] Ultra execute result:', execResult);
+          debugLog('[SWAP] Ultra execute result:', execResult);
           
           if (execResult.status === 'Success' && execResult.signature) {
             // Ultra swap succeeded - no polling needed, Ultra confirms it
@@ -808,7 +855,7 @@ export default function EnhancedSwapInterface() {
       }
       
       // ─── Legacy swap flow (fallback) ────────────────────────────────
-      console.log('[SWAP] Using legacy swap flow');
+      debugLog('[SWAP] Using legacy swap flow');
       
       // Track request for developer mode
       if (developerMode) {
@@ -1056,7 +1103,7 @@ export default function EnhancedSwapInterface() {
               
               setTimeout(async () => {
                 try {
-                  console.log(`[SWAP] Refreshing balances after swap (attempt ${attempt}/${maxAttempts})...`);
+                  debugLog(`[SWAP] Refreshing balances after swap (attempt ${attempt}/${maxAttempts})...`);
                   const tokenMints = allTokens.map(t => t.address);
                   const batchResponse = await getBatchBalances(publicKey.toString(), tokenMints);
                   
@@ -1077,14 +1124,14 @@ export default function EnhancedSwapInterface() {
                   const expectedUpdate = outputTokenBalance && parseFloat(outputTokenBalance) > 0;
                   
                   if (expectedUpdate || attempt >= maxAttempts) {
-                    console.log('[SWAP] ✅ Balances refreshed after swap', {
+                    debugLog('[SWAP] ✅ Balances refreshed after swap', {
                       attempt,
                       outputTokenBalance,
                       expectedUpdate,
                     });
                   } else {
                     // Retry if balance hasn't updated yet
-                    console.log('[SWAP] Balance not updated yet, retrying...', {
+                    debugLog('[SWAP] Balance not updated yet, retrying...', {
                       attempt,
                       outputTokenBalance,
                     });
@@ -1328,7 +1375,7 @@ export default function EnhancedSwapInterface() {
     // Always try to fetch metadata if needed, even if we have some data
     if (needsMetadata) {
       try {
-        console.log(`[handleTokenSelect] Fetching metadata for ${isInput ? 'input' : 'output'} token:`, token.address);
+        debugLog(`[handleTokenSelect] Fetching metadata for ${isInput ? 'input' : 'output'} token:`, token.address);
         
         // Fetch full token metadata from API with longer timeout for slow tokens
         const metadata = await Promise.race([
@@ -1346,7 +1393,7 @@ export default function EnhancedSwapInterface() {
           logo: metadata.logo || token.logo,
         };
         
-        console.log(`[handleTokenSelect] ✅ Fetched metadata for ${isInput ? 'input' : 'output'} token:`, {
+        debugLog(`[handleTokenSelect] ✅ Fetched metadata for ${isInput ? 'input' : 'output'} token:`, {
           address: token.address,
           symbol: tokenWithMetadata.symbol,
           name: tokenWithMetadata.name,
@@ -1359,7 +1406,7 @@ export default function EnhancedSwapInterface() {
         // If metadata fetch failed but we have a valid address, try one more time after a short delay
         // This handles cases where the API is temporarily slow
         if (token.address && token.address.length >= 32) {
-          console.log(`[handleTokenSelect] Retrying metadata fetch for ${token.address}...`);
+          debugLog(`[handleTokenSelect] Retrying metadata fetch for ${token.address}...`);
           setTimeout(async () => {
             try {
               const retryMetadata = await getTokenMetadata(token.address);
@@ -1387,7 +1434,7 @@ export default function EnhancedSwapInterface() {
                 });
               }
               
-              console.log(`[handleTokenSelect] ✅ Retry successful for ${token.address}:`, retryToken.symbol);
+              debugLog(`[handleTokenSelect] ✅ Retry successful for ${token.address}:`, retryToken.symbol);
             } catch (retryErr) {
               console.warn(`[handleTokenSelect] Retry also failed for ${token.address}:`, retryErr);
             }
@@ -1452,7 +1499,7 @@ export default function EnhancedSwapInterface() {
           decimals: metadata.decimals ?? token.decimals ?? 9,
           logo: metadata.logo || token.logo,
         };
-        console.log('[handleAddCustomToken] ✅ Fetched complete metadata:', {
+        debugLog('[handleAddCustomToken] ✅ Fetched complete metadata:', {
           address: token.address,
           symbol: tokenWithMetadata.symbol,
           name: tokenWithMetadata.name,
@@ -1488,7 +1535,7 @@ export default function EnhancedSwapInterface() {
             [tokenWithMetadata.address]: formattedBalance,
           }));
           
-          console.log('[handleAddCustomToken] ✅ Balance fetched for custom token:', {
+          debugLog('[handleAddCustomToken] ✅ Balance fetched for custom token:', {
             address: tokenWithMetadata.address,
             balance: formattedBalance,
           });
@@ -1937,9 +1984,8 @@ export default function EnhancedSwapInterface() {
               <div className="flex justify-between items-center text-gray-400">
                 <span>Exchange rate</span>
                 <span className="text-gray-300">
-                  1 {tokenIn.symbol} = {formatAmount(
-                    (parseFloat(quote.output_after_fee) / parseFloat(amountIn)).toString(),
-                    tokenOut.decimals
+                  1 {tokenIn.symbol} = {formatDisplayNumber(
+                    (parseFloat(quote.output_after_fee) / Math.pow(10, tokenOut.decimals) / parseFloat(amountIn)).toFixed(6)
                   )} {tokenOut.symbol}
                 </span>
               </div>

@@ -1,0 +1,20 @@
+Great question! The payment simulation endpoint is currently on our roadmap (from the audit recommendations) and would work exactly as you described.
+
+**What it would do:**
+- Allow agents to verify their payment logic without committing transactions
+- Return a complete breakdown: swap quote, fees, slippage, final amounts
+- Validate balance sufficiency and quote freshness
+- Return the same response structure as the real endpoint, but without executing anything
+
+**Safety benefits for trading bots:**
+- Test payment flows before committing funds
+- Validate fee calculations match expectations
+- Verify slippage tolerance is appropriate
+- Catch logic errors without risking real tokens
+
+**Current workaround:**
+Right now, agents can use `/api/x402/prepare-payment` which checks balance and returns swap quotes, but doesn't execute. However, a dedicated simulation endpoint would be cleaner and more explicit about being non-executing.
+
+We're prioritizing this for Phase 4 (API improvements) because it's exactly the kind of safety feature that makes autonomous agents more reliable. The request ID feature you mentioned is also high on that list - it's crucial for debugging distributed agent systems.
+
+Thanks for the feedback! This kind of input helps us prioritize what matters most to agent developers.

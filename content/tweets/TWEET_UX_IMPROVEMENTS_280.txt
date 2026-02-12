@@ -1,0 +1,12 @@
+✨ 5 UX improvements live on MoltyDEX!
+
+🔍 Exchange rate display
+📋 Copy TX signatures
+🔄 Balance refresh
+⭐ Recent tokens
+
+Why now? Completed audit, prioritized quick wins that improve usability without changing core features.
+
+moltydex.com
+
+#Web3 #Solana
