@@ -8,14 +8,13 @@ const router = express.Router();
 const { Connection, PublicKey } = require('@solana/web3.js');
 const { registerWebhook, notifyWebhooks, getWebhookStatus } = require('../utils/webhooks');
 const { transactionFailedError } = require('../utils/errorHandler');
-const { validate } = require('../middleware/validation');
 
 /**
  * POST /api/transaction/send
  * Send signed transaction via API RPC (avoids browser 403 from RPC providers)
  * Accepts both 'signedTransaction' (frontend) and 'transaction' (SDK) for compatibility
  */
-router.post('/send', validate('transactionSend'), async (req, res) => {
+router.post('/send', async (req, res) => {
   try {
     const signedB64 = req.body.signedTransaction || req.body.transaction;
 
@@ -250,7 +249,7 @@ router.get('/history/:wallet_address', async (req, res) => {
  * POST /api/transaction/webhook
  * Register a webhook to receive transaction status notifications
  */
-router.post('/webhook', validate('transactionWebhook'), async (req, res) => {
+router.post('/webhook', async (req, res) => {
   try {
     const { signature, callback_url, metadata } = req.body;
 
@@ -265,21 +264,31 @@ router.post('/webhook', validate('transactionWebhook'), async (req, res) => {
       });
     }
 
-    // registerWebhook validates the URL (SSRF protection + HTTPS enforcement)
-    const result = registerWebhook(signature, callback_url, metadata || {});
-
-    if (result.error) {
+    // Validate callback URL
+    let callbackUrl;
+    try {
+      callbackUrl = new URL(callback_url);
+      if (callbackUrl.protocol !== 'https:') {
+        return res.status(400).json({
+          error: 'Callback URL must use HTTPS',
+          code: 'INVALID_INPUT',
+          suggestions: ['Use an HTTPS URL for the callback'],
+        });
+      }
+    } catch (err) {
       return res.status(400).json({
-        error: result.error,
+        error: 'Invalid callback URL format',
         code: 'INVALID_INPUT',
-        suggestions: ['Provide a valid HTTPS URL that is not a private/internal address'],
+        suggestions: ['Provide a valid URL (e.g., https://your-agent.com/webhook)'],
       });
     }
 
+    const webhookId = registerWebhook(signature, callbackUrl.toString(), metadata || {});
+
     res.json({
-      webhook_id: result.webhookId,
+      webhook_id: webhookId,
       signature,
-      callback_url,
+      callback_url: callbackUrl.toString(),
       message: 'Webhook registered successfully. You will receive a notification when the transaction status changes.',
       registered_at: new Date().toISOString(),
     });

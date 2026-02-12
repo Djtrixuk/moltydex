@@ -8,17 +8,14 @@ const { Transaction, VersionedTransaction } = require('@solana/web3.js');
 const { fetchJupiterQuote } = require('../utils/jupiter');
 const { DEFAULTS, TOKENS } = require('../config/constants');
 const { jupiterUnavailableError, invalidInputError } = require('../utils/errorHandler');
-const { validate } = require('../middleware/validation');
-const { swapLimiter } = require('../middleware/rateLimit');
 const analyticsRouter = require('./analytics');
 const trackEvent = analyticsRouter.trackEvent;
-const swapTracker = require('../utils/swapTracker');
 
 /**
  * POST /api/swap/build
  * Build unsigned swap transaction (client signs securely)
  */
-router.post('/build', swapLimiter, validate('swapBuild'), async (req, res) => {
+router.post('/build', async (req, res) => {
   try {
     const {
       wallet_address,
@@ -138,20 +135,6 @@ router.post('/build', swapLimiter, validate('swapBuild'), async (req, res) => {
       isVersioned = false;
     }
 
-    // Validate transaction size (Solana max is 1232 bytes)
-    const MAX_TX_SIZE = 1232;
-    if (swapTransactionBuf.length > MAX_TX_SIZE) {
-      return res.status(422).json({
-        error: 'Transaction too large',
-        error_code: 'TRANSACTION_TOO_LARGE',
-        details: {
-          size: swapTransactionBuf.length,
-          max: MAX_TX_SIZE,
-        },
-        suggestion: 'Try a simpler route (set onlyDirectRoutes=true) or reduce the swap amount.',
-      });
-    }
-
     // Serialize transaction
     let serializedTransaction;
     if (isVersioned) {
@@ -169,8 +152,7 @@ router.post('/build', swapLimiter, validate('swapBuild'), async (req, res) => {
       volumeUsd = (parseFloat(outAmount) / 1e6).toFixed(2);
     }
 
-    // Track swap in both analytics and swap tracker (don't let tracking break swaps)
-    let trackedSwap = null;
+    // Track successful swap build (don't let tracking errors break swaps)
     try {
       await trackEvent('swap', {
         success: true,
@@ -180,25 +162,6 @@ router.post('/build', swapLimiter, validate('swapBuild'), async (req, res) => {
         volume_usd: volumeUsd,
       });
       await trackEvent('api_call', { endpoint: '/api/swap/build' });
-
-      // Persist swap record for history and points
-      trackedSwap = await swapTracker.trackSwap({
-        wallet_address,
-        input_mint,
-        output_mint,
-        input_amount: amount,
-        output_amount: outputAmount.toString(),
-        fee_amount: feeAmount.toString(),
-        fee_bps: 0,
-        slippage_bps,
-      });
-
-      // Award points
-      if (trackedSwap) {
-        await swapTracker.awardPoints(wallet_address, {
-          output_amount: outputAmount.toString(),
-        });
-      }
     } catch (trackErr) {
       console.error('[SWAP] Tracking error (non-fatal):', trackErr.message);
     }
@@ -213,7 +176,6 @@ router.post('/build', swapLimiter, validate('swapBuild'), async (req, res) => {
       fee_collected: false,
       fee_method: 'No fees configured',
       is_versioned: isVersioned,
-      swap_id: trackedSwap?.id || null,
     });
   } catch (err) {
     console.error('[SWAP] Error:', {

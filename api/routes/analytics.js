@@ -29,11 +29,6 @@ try {
   console.warn('[analytics] Redis not available, using in-memory storage:', err.message);
 }
 
-// Maximum entries per date/pair map to prevent unbounded memory growth
-const MAX_DATE_ENTRIES = 365; // ~1 year of daily entries
-const MAX_PAIR_ENTRIES = 500;
-const MAX_UNIQUE_WALLETS = 10000;
-
 // In-memory storage (fallback if Redis not available)
 // This will reset on each deployment, but gives basic tracking
 const usageStats = {
@@ -228,30 +223,6 @@ async function trackEvent(type, data = {}) {
         break;
     }
     
-    // Enforce size bounds on in-memory maps to prevent unbounded growth
-    if (!useRedis) {
-      const boundMap = (map, max) => {
-        const keys = Object.keys(map);
-        if (keys.length > max) {
-          // Remove oldest entries (first inserted)
-          keys.slice(0, keys.length - max).forEach(k => delete map[k]);
-        }
-      };
-      boundMap(stats.swaps.byDate, MAX_DATE_ENTRIES);
-      boundMap(stats.swaps.byTokenPair, MAX_PAIR_ENTRIES);
-      boundMap(stats.swaps.volumeUsdByDate || {}, MAX_DATE_ENTRIES);
-      boundMap(stats.x402Payments.byDate, MAX_DATE_ENTRIES);
-      boundMap(stats.quotes.byDate, MAX_DATE_ENTRIES);
-      boundMap(stats.balances.byDate, MAX_DATE_ENTRIES);
-      boundMap(stats.apiCalls.byDate, MAX_DATE_ENTRIES);
-      boundMap(stats.apiCalls.byEndpoint, MAX_PAIR_ENTRIES);
-      // Bound unique wallets Set
-      if (stats.uniqueWallets instanceof Set && stats.uniqueWallets.size > MAX_UNIQUE_WALLETS) {
-        const arr = Array.from(stats.uniqueWallets);
-        stats.uniqueWallets = new Set(arr.slice(arr.length - MAX_UNIQUE_WALLETS));
-      }
-    }
-
     // Save back to Redis or update in-memory
     if (useRedis) {
       await saveStats(stats);
@@ -374,17 +345,10 @@ router.get('/stats', async (req, res) => {
 
 /**
  * POST /api/analytics/track
- * Track an event — requires internal API key to prevent data injection
+ * Track an event (internal use)
  */
 router.post('/track', async (req, res) => {
   try {
-    // Require internal API key to prevent external data injection
-    const authHeader = req.headers.authorization;
-    const internalKey = process.env.ANALYTICS_API_KEY;
-    if (!internalKey || !authHeader || authHeader !== `Bearer ${internalKey}`) {
-      return res.status(403).json({ error: 'Forbidden', error_code: 'UNAUTHORIZED_TRACK' });
-    }
-
     const { type, data } = req.body;
     
     if (!type) {
@@ -403,151 +367,20 @@ router.post('/track', async (req, res) => {
 // Export trackEvent for use in other routes
 router.trackEvent = trackEvent;
 
-// -- Swap history, points, and leaderboard (powered by swapTracker) --
-
-const swapTracker = require('../utils/swapTracker');
-
-/**
- * GET /api/analytics/swaps/:wallet_address
- * Get swap history for a wallet
- */
-router.get('/swaps/:wallet_address', async (req, res) => {
-  try {
-    const { wallet_address } = req.params;
-    const limit = parseInt(req.query.limit) || 50;
-
-    if (!wallet_address) {
-      return res.status(400).json({ error: 'Missing wallet_address' });
-    }
-
-    const swaps = await swapTracker.getWalletSwaps(wallet_address, limit);
-    res.json({
-      wallet_address,
-      swaps,
-      count: swaps.length,
-      storage: swapTracker.getStorageInfo(),
-    });
-  } catch (err) {
-    console.error('[analytics] Wallet swaps error:', err.message);
-    res.status(500).json({ error: 'Failed to get wallet swaps' });
-  }
-});
-
-/**
- * GET /api/analytics/points/:wallet_address
- * Get points for a wallet
- */
-router.get('/points/:wallet_address', async (req, res) => {
-  try {
-    const { wallet_address } = req.params;
-
-    if (!wallet_address) {
-      return res.status(400).json({ error: 'Missing wallet_address' });
-    }
-
-    const points = await swapTracker.getWalletPoints(wallet_address);
-    const leaderboard = await swapTracker.getLeaderboard(100);
-    const rank = leaderboard.findIndex(entry => entry.wallet_address === wallet_address) + 1;
-
-    res.json({
-      wallet_address,
-      ...points,
-      rank: rank || null,
-      total_users: leaderboard.length,
-    });
-  } catch (err) {
-    console.error('[analytics] Points error:', err.message);
-    res.status(500).json({ error: 'Failed to get wallet points' });
-  }
-});
-
-/**
- * GET /api/analytics/leaderboard
- * Get points leaderboard
- */
-router.get('/leaderboard', async (req, res) => {
-  try {
-    const limit = parseInt(req.query.limit) || 100;
-    const leaderboard = await swapTracker.getLeaderboard(limit);
-
-    res.json({
-      leaderboard,
-      count: leaderboard.length,
-      timestamp: new Date().toISOString(),
-    });
-  } catch (err) {
-    console.error('[analytics] Leaderboard error:', err.message);
-    res.status(500).json({ error: 'Failed to get leaderboard' });
-  }
-});
-
-/**
- * POST /api/analytics/swap/:swap_id/signature
- * Update swap signature when transaction is confirmed
- */
-router.post('/swap/:swap_id/signature', async (req, res) => {
-  try {
-    const { swap_id } = req.params;
-    const { signature } = req.body;
-
-    if (!signature) {
-      return res.status(400).json({ error: 'Missing signature' });
-    }
-
-    const updated = await swapTracker.updateSwapSignature(swap_id, signature);
-
-    if (!updated) {
-      return res.status(404).json({ error: 'Swap not found' });
-    }
-
-    res.json({
-      swap_id,
-      signature,
-      updated: true,
-    });
-  } catch (err) {
-    console.error('[analytics] Update signature error:', err.message);
-    res.status(500).json({ error: 'Failed to update swap signature' });
-  }
-});
-
-/**
- * GET /api/analytics/swap-stats
- * Get swap tracking statistics (separate from general analytics)
- */
-router.get('/swap-stats', async (req, res) => {
-  try {
-    const stats = await swapTracker.getSwapStats();
-    res.json({
-      ...stats,
-      timestamp: new Date().toISOString(),
-    });
-  } catch (err) {
-    console.error('[analytics] Swap stats error:', err.message);
-    res.status(500).json({ error: 'Failed to get swap stats' });
-  }
-});
-
 /**
  * GET /api/analytics/debug
- * Debug endpoint — disabled in production, never leaks env vars
+ * Debug endpoint to check Redis configuration
  */
 router.get('/debug', (req, res) => {
-  if (process.env.NODE_ENV === 'production' && process.env.ENABLE_DEBUG !== 'true') {
-    return res.status(404).json({ error: 'Not found' });
-  }
-
   res.json({
-    analytics: {
-      redisConfigured: useRedis,
-      storage: useRedis ? 'redis' : 'memory',
+    redisConfigured: useRedis,
+    hasRedisClient: !!redis,
+    envVars: {
+      hasUrl: !!process.env.UPSTASH_REDIS_REST_URL,
+      hasToken: !!process.env.UPSTASH_REDIS_REST_TOKEN,
+      urlPrefix: process.env.UPSTASH_REDIS_REST_URL?.substring(0, 20) + '...' || 'not set',
     },
-    swapTracker: swapTracker.getStorageInfo(),
-    // Never expose env var values — only boolean presence checks
-    config: {
-      hasRedisUrl: !!process.env.UPSTASH_REDIS_REST_URL,
-      hasRedisToken: !!process.env.UPSTASH_REDIS_REST_TOKEN,
-    },
+    storage: useRedis ? 'redis' : 'memory',
   });
 });
 

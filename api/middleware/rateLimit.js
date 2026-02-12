@@ -14,10 +14,50 @@ const apiLimiter = rateLimit({
   standardHeaders: true, // Return rate limit info in `RateLimit-*` headers
   legacyHeaders: true, // Enable `X-RateLimit-*` headers for agent compatibility
   skip: (req) => {
-    // Only skip the global limiter for health checks (they have no side effects)
-    // Quote and swap endpoints get their own dedicated limiters applied at the route level
-    const fullPath = (req.originalUrl || req.url || '').split('?')[0].toLowerCase();
-    return fullPath.includes('/health');
+    // Skip rate limiting for health checks, balance endpoints, and quote endpoints
+    // These are read-only, cheap, and necessary for UI functionality
+    // Check both full path and path without /api prefix (Express path behavior)
+    const path = req.path || '';
+    const originalUrl = req.originalUrl || req.url || '';
+    const baseUrl = req.baseUrl || '';
+    
+    // Combine all possible path variations - check multiple formats
+    const fullPath = originalUrl.split('?')[0].toLowerCase(); // Remove query params and normalize
+    const relativePath = path.toLowerCase();
+    const urlPath = (req.url || '').split('?')[0].toLowerCase();
+    
+    // Check various path combinations - be very permissive for balance endpoints
+    const isHealth = fullPath.includes('/health') || relativePath.includes('/health') || urlPath.includes('/health');
+    const isBalance = fullPath.includes('/balance') || relativePath.includes('/balance') || urlPath.includes('/balance');
+    const isQuote = fullPath.includes('/quote') || relativePath.includes('/quote') || urlPath.includes('/quote');
+    const isBatchBalance = fullPath.includes('/batch/balance') || relativePath.includes('/batch/balance') || urlPath.includes('/batch/balance');
+    const isTokenMetadata = (fullPath.includes('/token') && !fullPath.includes('/tokens/')) || 
+                           (relativePath.includes('/token') && !relativePath.includes('/tokens/')) ||
+                           (urlPath.includes('/token') && !urlPath.includes('/tokens/'));
+    const isWalletTokens = fullPath.includes('/wallet/tokens') || relativePath.includes('/wallet/tokens') || urlPath.includes('/wallet/tokens');
+    
+    const shouldSkip = isHealth || isBalance || isQuote || isBatchBalance || isTokenMetadata || isWalletTokens;
+    
+    if (shouldSkip) {
+      console.log('[rateLimit] ✅ Skipping rate limit for:', { 
+        path, 
+        originalUrl, 
+        fullPath, 
+        relativePath,
+        urlPath,
+        reason: isHealth ? 'health' : isBalance ? 'balance' : isQuote ? 'quote' : isBatchBalance ? 'batch-balance' : isTokenMetadata ? 'token-metadata' : 'wallet-tokens'
+      });
+    } else {
+      console.log('[rateLimit] ⚠️ Rate limiting:', { 
+        path, 
+        originalUrl, 
+        fullPath, 
+        relativePath,
+        urlPath
+      });
+    }
+    
+    return shouldSkip;
   },
   // Custom handler to add rate limit info to response
   handler: (req, res) => {

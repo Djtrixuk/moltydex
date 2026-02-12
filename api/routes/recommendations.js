@@ -8,20 +8,6 @@ const router = express.Router();
 const axios = require('axios');
 const { getAgentMetadata, AGENT_FRIENDLY_TOKENS, COMMONLY_ACCEPTED_TOKENS } = require('../utils/agentMetadata');
 const { EXTERNAL_APIS, TOKENS } = require('../config/constants');
-const { getJupiterTokenList } = require('../utils/tokenCache');
-
-/**
- * GET /api/tokens (legacy — backward compatibility)
- * Returns first 100 tokens from cached Jupiter list
- */
-router.get('/', async (req, res) => {
-  try {
-    const tokens = (await getJupiterTokenList()).slice(0, 100);
-    res.json({ tokens });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
 
 /**
  * GET /api/tokens/recommend

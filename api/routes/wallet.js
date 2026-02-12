@@ -8,14 +8,13 @@ const router = express.Router();
 const { Connection, PublicKey, LAMPORTS_PER_SOL } = require('@solana/web3.js');
 const { TOKEN_PROGRAM_ID, TOKENS } = require('../config/constants');
 const { fetchTokenMetadata } = require('../utils/tokenMetadata');
-const { validateQuery } = require('../middleware/validation');
 
 /**
  * GET /api/wallet/tokens
  * Get all tokens owned by a wallet with metadata and balances
  * Returns tokens sorted by balance (highest first)
  */
-router.get('/tokens', validateQuery('walletTokens'), async (req, res) => {
+router.get('/tokens', async (req, res) => {
   try {
     const { wallet_address } = req.query;
 

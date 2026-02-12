@@ -10,8 +10,6 @@
 
 require('dotenv').config();
 const express = require('express');
-const helmet = require('helmet');
-const compression = require('compression');
 const { apiLimiter } = require('./middleware/rateLimit');
 
 // Route modules
@@ -25,35 +23,24 @@ const healthRoutes = require('./routes/health');
 
 const app = express();
 
-// Trust exactly 1 proxy hop (Vercel). Prevents X-Forwarded-For spoofing to bypass rate limits.
-app.set('trust proxy', 1);
+// Trust proxy headers from Vercel (required for express-rate-limit to work correctly)
+app.set('trust proxy', true);
 
-// Security headers via Helmet
-app.use(helmet({
-  contentSecurityPolicy: false, // CSP managed per-deployment (frontend has its own)
-  crossOriginEmbedderPolicy: false, // Allow embedding for wallet adapters
-}));
-
-// CORS middleware — restrict to known origins in production
-const ALLOWED_ORIGINS = (process.env.CORS_ORIGINS || 'https://moltydex.com,https://www.moltydex.com').split(',').map(s => s.trim());
-
+// CORS middleware
 app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  if (!origin || ALLOWED_ORIGINS.includes(origin) || ALLOWED_ORIGINS.includes('*')) {
-    res.set('Access-Control-Allow-Origin', origin || '*');
-  }
+  res.set('Access-Control-Allow-Origin', '*');
   res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Payment');
-  res.set('Access-Control-Max-Age', '86400');
+  res.set('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.sendStatus(200);
   next();
 });
 
-// Compression
+// Compression middleware
+const compression = require('compression');
 app.use(compression());
 
-// Body parsing with size limit (largest legitimate payload is ~5KB for batch requests)
-app.use(express.json({ limit: '16kb' }));
+// Body parsing and rate limiting
+app.use(express.json());
 app.use(require('./middleware/requestId')); // Add Request ID to all responses
 app.use(require('./middleware/rateLimitHeaders'));
 app.use(apiLimiter);
@@ -87,18 +74,18 @@ app.use('/api/tokens', require('./routes/recommendations')); // Mounted at /api/
 app.use('/api/analytics', require('./routes/analytics')); // Analytics tracking
 app.use('/api', healthRoutes);
 
-// Global error handler — must be last middleware (4 args required by Express)
-app.use((err, req, res, _next) => {
-  const requestId = res.getHeader('X-Request-ID') || 'unknown';
-  console.error(`[error] Unhandled error [${requestId}]:`, err.message);
-  if (process.env.NODE_ENV !== 'production') {
-    console.error(err.stack);
+// Legacy tokens endpoint (for backward compatibility)
+app.get('/api/tokens', async (req, res) => {
+  try {
+    const axios = require('axios');
+    const response = await axios.get('https://token.jup.ag/all');
+    const tokens = response.data
+      .filter((t) => t.chainId === 101 || t.chainId === 103)
+      .slice(0, 100);
+    res.json({ tokens });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
-  res.status(err.status || 500).json({
-    error: 'Internal server error',
-    error_code: 'INTERNAL_ERROR',
-    request_id: requestId,
-  });
 });
 
 // Server startup
@@ -141,11 +128,6 @@ const server = app.listen(PORT, HOST, () => {
   console.log(`  GET  /api/transaction/webhook/:id - Get webhook status`);
   console.log(`  GET  /api/rate-limit/status - Get rate limit status`);
   console.log(`  GET  /api/tokens/recommend - Get token recommendations`);
-  console.log(`  GET  /api/analytics/swaps/:wallet - Swap history for wallet`);
-  console.log(`  GET  /api/analytics/points/:wallet - Points for wallet`);
-  console.log(`  GET  /api/analytics/leaderboard - Points leaderboard`);
-  console.log(`  GET  /api/analytics/swap-stats - Swap tracking stats`);
-  console.log(`  POST /api/analytics/swap/:id/signature - Update swap signature`);
 });
 
 server.on('error', (err) => {
@@ -157,16 +139,3 @@ server.on('error', (err) => {
   }
   process.exit(1);
 });
-
-// Graceful shutdown
-function shutdown(signal) {
-  console.log(`\n[shutdown] ${signal} received, closing server...`);
-  server.close(() => {
-    console.log('[shutdown] Server closed.');
-    process.exit(0);
-  });
-  // Force exit after 10s if connections don't close
-  setTimeout(() => process.exit(1), 10000).unref();
-}
-process.on('SIGTERM', () => shutdown('SIGTERM'));
-process.on('SIGINT', () => shutdown('SIGINT'));

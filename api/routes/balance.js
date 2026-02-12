@@ -6,7 +6,6 @@ const express = require('express');
 const router = express.Router();
 const { getBalance } = require('../utils/balance');
 const { insufficientBalanceError, invalidInputError } = require('../utils/errorHandler');
-const { validateQuery } = require('../middleware/validation');
 const analyticsRouter = require('./analytics');
 const trackEvent = analyticsRouter.trackEvent;
 
@@ -14,7 +13,7 @@ const trackEvent = analyticsRouter.trackEvent;
  * GET /api/balance
  * Get token balance for a wallet address
  */
-router.get('/balance', validateQuery('balance'), async (req, res) => {
+router.get('/balance', async (req, res) => {
   try {
     const { wallet_address, token_mint } = req.query;
 

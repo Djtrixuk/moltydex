@@ -4,8 +4,7 @@
 
 const express = require('express');
 const router = express.Router();
-const { JUPITER_ENDPOINTS, DEFAULTS } = require('../config/constants');
-const swapTracker = require('../utils/swapTracker');
+const { JUPITER_ENDPOINTS } = require('../config/constants');
 
 /**
  * @swagger
@@ -27,7 +26,7 @@ const swapTracker = require('../utils/swapTracker');
  *                   example: ok
  *                 fee_bps:
  *                   type: number
- *                   example: 0
+ *                   example: 10
  *                 fee_wallet_configured:
  *                   type: boolean
  *                 jupiter_api_key_set:
@@ -38,7 +37,7 @@ const swapTracker = require('../utils/swapTracker');
  *                   type: object
  */
 router.get('/health', async (req, res) => {
-  const FEE_BPS = DEFAULTS.FEE_BPS;
+  const FEE_BPS = parseInt(process.env.FEE_BPS || '10');
   const FEE_WALLET = process.env.FEE_WALLET || null;
   const JUPITER_API_KEY = process.env.JUPITER_API_KEY || '';
   const RPC_URL = process.env.SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com';
@@ -76,9 +75,8 @@ router.get('/health', async (req, res) => {
       fee_collection_method: FEE_WALLET ? 'Jupiter native fees' : 'None',
       x402_integration: true,
       balance_checking: true,
-      swap_tracking: true,
-      points_program: true,
-      swap_storage: swapTracker.getStorageInfo(),
+      swap_tracking: false, // Temporarily disabled - needs database
+      points_program: false, // Temporarily disabled - needs database
     },
   });
 });

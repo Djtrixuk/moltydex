@@ -28,7 +28,6 @@ async function fetchJupiterQuote(params, apiKey = '') {
   const errors = [];
 
   for (const endpoint of JUPITER_ENDPOINTS) {
-    const quotePath = '/quote';
     try {
       // Build query params for Jupiter API
       const query = {
@@ -68,6 +67,9 @@ async function fetchJupiterQuote(params, apiKey = '') {
       // Note: asLegacyTransaction is NOT needed for quote endpoint
       // It's only used when building the swap transaction
 
+      // Jupiter API quote endpoint path
+      const quotePath = '/quote';
+      
       // Jupiter API requires x-api-key header (even for free tier)
       // Without it, returns 401 Unauthorized
       const requestHeaders = apiKey ? { 'x-api-key': apiKey } : {};

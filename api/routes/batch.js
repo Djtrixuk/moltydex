@@ -6,9 +6,6 @@
 const express = require('express');
 const router = express.Router();
 const axios = require('axios');
-const { validate } = require('../middleware/validation');
-const { fetchJupiterQuote } = require('../utils/jupiter');
-const { DEFAULTS } = require('../config/constants');
 const analyticsRouter = require('./analytics');
 const trackEvent = analyticsRouter.trackEvent;
 
@@ -17,7 +14,7 @@ const trackEvent = analyticsRouter.trackEvent;
  * Get multiple token balances in one request (optimized - single RPC call)
  * Uses getParsedTokenAccountsByOwner once, then filters client-side
  */
-router.post('/balance', validate('batchBalance'), async (req, res) => {
+router.post('/balance', async (req, res) => {
   try {
     const { wallet_address, token_mints } = req.body;
 
@@ -171,7 +168,7 @@ router.post('/balance', validate('batchBalance'), async (req, res) => {
  * POST /api/batch/balances (legacy - uses optimized batch endpoint internally)
  * @deprecated Use /api/batch/balance instead for better performance
  */
-router.post('/balances', validate('batchBalances'), async (req, res) => {
+router.post('/balances', async (req, res) => {
   try {
     const { requests } = req.body;
 
@@ -313,7 +310,7 @@ router.post('/balances', validate('batchBalances'), async (req, res) => {
  * POST /api/batch/quotes
  * Get multiple swap quotes in one request
  */
-router.post('/quotes', validate('batchQuotes'), async (req, res) => {
+router.post('/quotes', async (req, res) => {
   try {
     const { requests } = req.body;
 
@@ -325,49 +322,27 @@ router.post('/quotes', validate('batchQuotes'), async (req, res) => {
       return res.status(400).json({ error: 'Maximum 20 requests per batch' });
     }
 
-    const JUPITER_API_KEY = process.env.JUPITER_API_KEY || '';
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
     const quotePromises = requests.map(async (reqItem) => {
       try {
-        const quoteResult = await fetchJupiterQuote(
-          {
-            input_mint: reqItem.input_mint,
-            output_mint: reqItem.output_mint,
-            amount: reqItem.amount,
-            slippage_bps: reqItem.slippage_bps || DEFAULTS.SLIPPAGE_BPS,
-          },
-          JUPITER_API_KEY
-        );
+        const params = {
+          input_mint: reqItem.input_mint,
+          output_mint: reqItem.output_mint,
+          amount: reqItem.amount,
+          slippage_bps: reqItem.slippage_bps || 50,
+        };
 
-        if (!quoteResult || quoteResult.errors) {
-          return {
-            request: reqItem,
-            success: false,
-            error: quoteResult?.errors?.[0]?.message || 'Quote unavailable',
-          };
-        }
-
-        const data = quoteResult.data;
-        const outAmount = BigInt(data.outAmount || '0');
-        const feeAmount = 0n; // Zero platform fees
+        const response = await axios.get(`${baseUrl}/api/quote`, { params });
         return {
           request: reqItem,
           success: true,
-          data: {
-            input_mint: reqItem.input_mint,
-            output_mint: reqItem.output_mint,
-            input_amount: reqItem.amount,
-            output_amount: outAmount.toString(),
-            output_after_fee: outAmount.toString(),
-            fee_amount: feeAmount.toString(),
-            fee_bps: 0,
-            price_impact: data.priceImpactPct || '0',
-          },
+          data: response.data,
         };
       } catch (err) {
         return {
           request: reqItem,
           success: false,
-          error: err.message,
+          error: err.response?.data?.error || err.message,
         };
       }
     });
@@ -393,7 +368,7 @@ router.post('/quotes', validate('batchQuotes'), async (req, res) => {
  * POST /api/batch/token-metadata
  * Get metadata for multiple tokens in one request
  */
-router.post('/token-metadata', validate('batchTokenMetadata'), async (req, res) => {
+router.post('/token-metadata', async (req, res) => {
   try {
     const { token_addresses } = req.body;
 
@@ -405,46 +380,22 @@ router.post('/token-metadata', validate('batchTokenMetadata'), async (req, res) 
       return res.status(400).json({ error: 'Maximum 50 tokens per batch' });
     }
 
-    // Fetch Jupiter token list once for all lookups (instead of N self-HTTP calls)
-    const { EXTERNAL_APIS } = require('../config/constants');
-    let jupiterTokenMap = new Map();
-    try {
-      const jupResponse = await axios.get(EXTERNAL_APIS.JUPITER_TOKEN_LIST, { timeout: 10000 });
-      for (const t of jupResponse.data) {
-        if (t.chainId === 101 || t.chainId === 103) {
-          jupiterTokenMap.set(t.address, t);
-        }
-      }
-    } catch (err) {
-      console.warn('[batch] Failed to fetch Jupiter token list:', err.message);
-    }
-
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
     const metadataPromises = token_addresses.map(async (address) => {
       try {
-        const token = jupiterTokenMap.get(address);
-        if (token) {
-          return {
-            address,
-            success: true,
-            data: {
-              mint: token.address,
-              symbol: token.symbol,
-              name: token.name,
-              decimals: token.decimals,
-              logo: token.logoURI || null,
-            },
-          };
-        }
+        const response = await axios.get(`${baseUrl}/api/token`, {
+          params: { mint: address },
+        });
         return {
           address,
-          success: false,
-          error: 'Token not found in Jupiter token list',
+          success: true,
+          data: response.data,
         };
       } catch (err) {
         return {
           address,
           success: false,
-          error: err.message,
+          error: err.response?.data?.error || err.message,
         };
       }
     });

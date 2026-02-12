@@ -14,9 +14,9 @@
 function createErrorResponse(code, message, details = {}, suggestions = []) {
   return {
     error: message,
-    error_code: code,
-    ...(Object.keys(details).length > 0 && { details }),
-    ...(suggestions.length > 0 && { suggestions }),
+    code,
+    details,
+    suggestions,
     timestamp: new Date().toISOString(),
   };
 }

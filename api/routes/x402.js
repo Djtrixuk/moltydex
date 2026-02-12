@@ -5,13 +5,12 @@
 const express = require('express');
 const router = express.Router();
 const axios = require('axios');
-const { PublicKey } = require('@solana/web3.js');
+const { Connection, PublicKey } = require('@solana/web3.js');
 const { TOKENS } = require('../config/constants');
 const { getBalance } = require('../utils/balance');
 const { fetchJupiterQuote } = require('../utils/jupiter');
 const { executeWithRetry, isRateLimitError } = require('../utils/rpc');
 const { ERROR_CODES, sendErrorResponse } = require('../utils/errors');
-const { validate } = require('../middleware/validation');
 const analyticsRouter = require('./analytics');
 const trackEvent = analyticsRouter.trackEvent;
 
@@ -19,7 +18,7 @@ const trackEvent = analyticsRouter.trackEvent;
  * POST /api/x402/parse-payment
  * Parse x402 Payment Required response and extract payment requirements
  */
-router.post('/parse-payment', validate('parsePayment'), async (req, res) => {
+router.post('/parse-payment', async (req, res) => {
   try {
     const { payment_response_body } = req.body;
 
@@ -78,7 +77,7 @@ router.post('/parse-payment', validate('parsePayment'), async (req, res) => {
  * POST /api/x402/prepare-payment
  * Check balance and prepare swap if needed for x402 payment
  */
-router.post('/prepare-payment', validate('preparePayment'), async (req, res) => {
+router.post('/prepare-payment', async (req, res) => {
   try {
     const { wallet_address, payment_requirements, preferred_input_token } = req.body;
 
@@ -90,10 +89,12 @@ router.post('/prepare-payment', validate('preparePayment'), async (req, res) => 
     const requiredToken = payment.asset || payment.token_mint;
     const requiredAmount = BigInt(payment.amount);
 
-    // Check current balance (direct function call — no self-HTTP)
-    const { getConnection } = require('../utils/rpc');
-    const balanceResult = await getBalance(getConnection(), wallet_address, requiredToken);
-    const currentBalance = BigInt(balanceResult.balance || '0');
+    // Check current balance
+    const balanceResponse = await axios.get(`${req.protocol}://${req.get('host')}/api/balance`, {
+      params: { wallet_address, token_mint: requiredToken },
+    });
+
+    const currentBalance = BigInt(balanceResponse.data.balance || '0');
     const hasEnough = currentBalance >= requiredAmount;
 
     if (hasEnough) {
@@ -110,25 +111,17 @@ router.post('/prepare-payment', validate('preparePayment'), async (req, res) => 
       });
     }
 
-    // Need to swap — get quote (direct function call)
+    // Need to swap - get quote
     const inputToken = preferred_input_token || TOKENS.SOL;
     const swapAmount = requiredAmount - currentBalance;
-    const JUPITER_API_KEY = process.env.JUPITER_API_KEY || '';
 
-    const quoteResult = await fetchJupiterQuote(
-      { input_mint: inputToken, output_mint: requiredToken, amount: swapAmount.toString(), slippage_bps: 50 },
-      JUPITER_API_KEY
-    );
-
-    if (!quoteResult || quoteResult.errors) {
-      return res.status(503).json({
-        error: 'Failed to get swap quote',
-        message: quoteResult?.errors?.[0]?.message || 'Jupiter API unavailable',
-      });
-    }
-
-    const quoteData = quoteResult.data;
-    const outAmount = BigInt(quoteData.outAmount || '0');
+    const quoteResponse = await axios.get(`${req.protocol}://${req.get('host')}/api/quote`, {
+      params: {
+        input_mint: inputToken,
+        output_mint: requiredToken,
+        amount: swapAmount.toString(),
+      },
+    });
 
     try {
       await trackEvent('x402_payment', { action: 'prepare', success: true, swap_needed: true, wallet_address, token: requiredToken, shortfall: swapAmount.toString() });
@@ -144,10 +137,10 @@ router.post('/prepare-payment', validate('preparePayment'), async (req, res) => 
       swap_needed: {
         input_token: inputToken,
         output_token: requiredToken,
-        input_amount: swapAmount.toString(),
-        output_amount: outAmount.toString(),
-        fee_amount: '0',
-        price_impact: quoteData.priceImpactPct || '0',
+        input_amount: quoteResponse.data.input_amount,
+        output_amount: quoteResponse.data.output_after_fee,
+        fee_amount: quoteResponse.data.fee_amount,
+        price_impact: quoteResponse.data.price_impact,
       },
       swap_endpoint: '/api/swap/build',
     });
@@ -164,7 +157,7 @@ router.post('/prepare-payment', validate('preparePayment'), async (req, res) => 
  * Allows agents to verify their logic (including fees) without committing funds
  * Returns complete breakdown: swap quote, fees, slippage, final amounts
  */
-router.post('/simulate-payment', validate('simulatePayment'), async (req, res) => {
+router.post('/simulate-payment', async (req, res) => {
   try {
     const { wallet_address, payment_requirements, preferred_input_token } = req.body;
 
@@ -188,18 +181,19 @@ router.post('/simulate-payment', validate('simulatePayment'), async (req, res) =
     
     const requiredAmount = BigInt(payment.amount);
 
-    // Check current balance (direct function call — no self-HTTP)
-    let balanceResult;
+    // Check current balance (simulation - no execution)
+    let balanceResponse;
     try {
-      const { getConnection: getConn } = require('../utils/rpc');
-      balanceResult = await getBalance(getConn(), wallet_address, requiredToken);
+      balanceResponse = await axios.get(`${req.protocol}://${req.get('host')}/api/balance`, {
+        params: { wallet_address, token_mint: requiredToken },
+      });
     } catch (err) {
       return sendErrorResponse(res, ERROR_CODES.BALANCE_CHECK_FAILED, 'Failed to check balance', {
         message: err.message,
       }, 500);
     }
 
-    const currentBalance = BigInt(balanceResult.balance || '0');
+    const currentBalance = BigInt(balanceResponse.data.balance || '0');
     const hasEnough = currentBalance >= requiredAmount;
 
     // If sufficient balance, return simulation result
@@ -236,40 +230,22 @@ router.post('/simulate-payment', validate('simulatePayment'), async (req, res) =
     const inputToken = preferred_input_token || TOKENS.SOL;
     const swapAmount = requiredAmount - currentBalance;
 
-    let quoteResult;
+    let quoteResponse;
     try {
-      const JUPITER_API_KEY = process.env.JUPITER_API_KEY || '';
-      quoteResult = await fetchJupiterQuote(
-        { input_mint: inputToken, output_mint: requiredToken, amount: swapAmount.toString(), slippage_bps: 50 },
-        JUPITER_API_KEY
-      );
-      if (!quoteResult || quoteResult.errors) {
-        return sendErrorResponse(res, ERROR_CODES.QUOTE_FAILED, 'Failed to get swap quote', {
-          message: quoteResult?.errors?.[0]?.message || 'Jupiter API unavailable',
-        }, 503);
-      }
+      quoteResponse = await axios.get(`${req.protocol}://${req.get('host')}/api/quote`, {
+        params: {
+          input_mint: inputToken,
+          output_mint: requiredToken,
+          amount: swapAmount.toString(),
+        },
+      });
     } catch (err) {
       return sendErrorResponse(res, ERROR_CODES.QUOTE_FAILED, 'Failed to get swap quote', {
         message: err.message,
       }, 500);
     }
 
-    const jupQuote = quoteResult.data;
-    const simOutAmount = BigInt(jupQuote.outAmount || '0');
-    const quote = {
-      input_amount: swapAmount.toString(),
-      output_amount: simOutAmount.toString(),
-      output_after_fee: simOutAmount.toString(),
-      fee_amount: '0',
-      price_impact: jupQuote.priceImpactPct || '0',
-      slippage_bps: 50,
-      fee_breakdown: {
-        aggregator_fee: '0',
-        network_fee: '0.000005',
-        priority_fee: '0',
-        total_cost: '0',
-      },
-    };
+    const quote = quoteResponse.data;
 
     try {
       await trackEvent('x402_payment', { action: 'simulate', success: true, swap_needed: true, wallet_address, shortfall: swapAmount.toString() });
@@ -327,10 +303,9 @@ router.post('/simulate-payment', validate('simulatePayment'), async (req, res) =
  */
 router.get('/recommended-tokens', async (req, res) => {
   try {
-    const { getJupiterTokenList } = require('../utils/tokenCache');
-    const allTokens = await getJupiterTokenList();
-    const tokens = allTokens
-      .filter((t) => t.symbol === 'USDC' || t.symbol === 'USDT' || t.symbol === 'SOL')
+    const response = await axios.get('https://token.jup.ag/all');
+    const tokens = response.data
+      .filter((t) => (t.chainId === 101 || t.chainId === 103) && (t.symbol === 'USDC' || t.symbol === 'USDT' || t.symbol === 'SOL'))
       .map((t) => ({
         symbol: t.symbol,
         name: t.name,
@@ -355,7 +330,7 @@ router.get('/recommended-tokens', async (req, res) => {
  * Complete x402 payment flow: parse, check balance, swap if needed, return payment status
  * This is a one-call solution for agents
  */
-router.post('/auto-pay', validate('autoPay'), async (req, res) => {
+router.post('/auto-pay', async (req, res) => {
   try {
     const { 
       payment_response_body, 
