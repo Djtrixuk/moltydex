@@ -7,20 +7,44 @@
   
   <!-- Homepage -->
   <url>
-    <loc>https://moltydex.com/</loc>
+    <loc>https://www.moltydex.com/</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
     <image:image>
-      <image:loc>https://moltydex.com/favicon.png</image:loc>
+      <image:loc>https://www.moltydex.com/favicon.png</image:loc>
       <image:title>MoltyDEX Logo</image:title>
       <image:caption>x402 Token Aggregator for AI Agents</image:caption>
     </image:image>
   </url>
   
+  <!-- SDK Documentation -->
+  <url>
+    <loc>https://www.moltydex.com/sdk</loc>
+    <lastmod>2026-02-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- x402 Payments Page -->
+  <url>
+    <loc>https://www.moltydex.com/x402-payments</loc>
+    <lastmod>2026-02-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- Changelog -->
+  <url>
+    <loc>https://www.moltydex.com/changelog</loc>
+    <lastmod>2026-02-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
   <!-- Developers Page -->
   <url>
-    <loc>https://moltydex.com/developers</loc>
+    <loc>https://www.moltydex.com/developers</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
@@ -28,7 +52,7 @@
   
   <!-- API Providers Page -->
   <url>
-    <loc>https://moltydex.com/api-providers</loc>
+    <loc>https://www.moltydex.com/api-providers</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
@@ -36,7 +60,7 @@
   
   <!-- Whitepaper -->
   <url>
-    <loc>https://moltydex.com/whitepaper</loc>
+    <loc>https://www.moltydex.com/whitepaper</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -44,7 +68,7 @@
   
   <!-- API Documentation -->
   <url>
-    <loc>https://moltydex.com/api-docs</loc>
+    <loc>https://www.moltydex.com/api-docs</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -52,7 +76,7 @@
   
   <!-- Use Cases Page -->
   <url>
-    <loc>https://moltydex.com/use-cases</loc>
+    <loc>https://www.moltydex.com/use-cases</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
@@ -60,7 +84,7 @@
   
   <!-- Examples Page -->
   <url>
-    <loc>https://moltydex.com/examples</loc>
+    <loc>https://www.moltydex.com/examples</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
@@ -68,7 +92,7 @@
   
   <!-- FAQ Page -->
   <url>
-    <loc>https://moltydex.com/faq</loc>
+    <loc>https://www.moltydex.com/faq</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -76,7 +100,7 @@
   
   <!-- Pricing Page -->
   <url>
-    <loc>https://moltydex.com/pricing</loc>
+    <loc>https://www.moltydex.com/pricing</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
@@ -84,7 +108,7 @@
   
   <!-- Integrations Page -->
   <url>
-    <loc>https://moltydex.com/integrations</loc>
+    <loc>https://www.moltydex.com/integrations</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
@@ -92,7 +116,7 @@
   
   <!-- Security Page -->
   <url>
-    <loc>https://moltydex.com/security</loc>
+    <loc>https://www.moltydex.com/security</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
@@ -100,7 +124,7 @@
   
   <!-- For Traders Page -->
   <url>
-    <loc>https://moltydex.com/for-traders</loc>
+    <loc>https://www.moltydex.com/for-traders</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
@@ -108,7 +132,7 @@
   
   <!-- Privacy Policy Page -->
   <url>
-    <loc>https://moltydex.com/privacy</loc>
+    <loc>https://www.moltydex.com/privacy</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -116,7 +140,7 @@
   
   <!-- Blog Index -->
   <url>
-    <loc>https://moltydex.com/blog</loc>
+    <loc>https://www.moltydex.com/blog</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
@@ -124,225 +148,204 @@
   
   <!-- SEO-Optimized Blog Posts -->
   <url>
-    <loc>https://moltydex.com/blog/token-mismatch-problem-breaking-agent-automation</loc>
+    <loc>https://www.moltydex.com/blog/token-mismatch-problem-breaking-agent-automation</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
-    <loc>https://moltydex.com/blog/real-world-use-cases-moltydex-x402-payments</loc>
+    <loc>https://www.moltydex.com/blog/real-world-use-cases-moltydex-x402-payments</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
-    <loc>https://moltydex.com/blog/why-moltydex-beats-manual-swapping-for-agents</loc>
+    <loc>https://www.moltydex.com/blog/why-moltydex-beats-manual-swapping-for-agents</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
-    <loc>https://moltydex.com/blog/how-moltydex-handles-x402-payments-automatically</loc>
+    <loc>https://www.moltydex.com/blog/how-moltydex-handles-x402-payments-automatically</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
-    <loc>https://moltydex.com/blog/beta-tester-program-moltydex-rewards</loc>
+    <loc>https://www.moltydex.com/blog/beta-tester-program-moltydex-rewards</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
-    <loc>https://moltydex.com/blog/why-moltydex-offers-zero-platform-fees</loc>
+    <loc>https://www.moltydex.com/blog/why-moltydex-offers-zero-platform-fees</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
-    <loc>https://moltydex.com/blog/getting-started-moltydex-5-minutes-complete-guide</loc>
+    <loc>https://www.moltydex.com/blog/getting-started-moltydex-5-minutes-complete-guide</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
-    <loc>https://moltydex.com/blog/how-to-integrate-moltydex-ai-agent-complete-guide</loc>
+    <loc>https://www.moltydex.com/blog/how-to-integrate-moltydex-ai-agent-complete-guide</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
-    <loc>https://moltydex.com/blog/comparing-moltydex-other-dex-aggregators-complete-guide</loc>
+    <loc>https://www.moltydex.com/blog/comparing-moltydex-other-dex-aggregators-complete-guide</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
-    <loc>https://moltydex.com/blog/complete-guide-x402-payment-handler</loc>
+    <loc>https://www.moltydex.com/blog/complete-guide-x402-payment-handler</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
-    <loc>https://moltydex.com/blog/complete-guide-x402-communities-where-to-join</loc>
+    <loc>https://www.moltydex.com/blog/complete-guide-x402-communities-where-to-join</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   
-  <!-- Original Blog Posts -->
+  <!-- Original Blog Posts (duplicates with SEO version omitted from sitemap) -->
   <url>
-    <loc>https://moltydex.com/blog/getting-started-with-moltydex-in-5-minutes</loc>
+    <loc>https://www.moltydex.com/blog/how-to-build-x402-agent</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
-    <loc>https://moltydex.com/blog/how-to-integrate-moltydex-with-your-agent</loc>
+    <loc>https://www.moltydex.com/blog/building-x402-enabled-apis</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
-    <loc>https://moltydex.com/blog/how-to-build-x402-agent</loc>
+    <loc>https://www.moltydex.com/blog/how-to-choose-a-dex-aggregator-for-agents</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
-    <loc>https://moltydex.com/blog/building-x402-enabled-apis</loc>
+    <loc>https://www.moltydex.com/blog/understanding-x402-protocol-for-developers</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
-    <loc>https://moltydex.com/blog/comparing-moltydex-to-other-dex-aggregators</loc>
+    <loc>https://www.moltydex.com/blog/solana-x402-payment-best-practices</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
-    <loc>https://moltydex.com/blog/how-to-choose-a-dex-aggregator-for-agents</loc>
+    <loc>https://www.moltydex.com/blog/the-complete-guide-to-x402-payments-on-solana</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
-    <loc>https://moltydex.com/blog/understanding-x402-protocol-for-developers</loc>
+    <loc>https://www.moltydex.com/blog/the-future-of-agent-payments</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
-    <loc>https://moltydex.com/blog/solana-x402-payment-best-practices</loc>
+    <loc>https://www.moltydex.com/blog/why-we-built-moltydex</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
-    <loc>https://moltydex.com/blog/the-complete-guide-to-x402-payments-on-solana</loc>
+    <loc>https://www.moltydex.com/blog/why-moltydex-is-different</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
-    <loc>https://moltydex.com/blog/the-future-of-agent-payments</loc>
+    <loc>https://www.moltydex.com/blog/why-moltydex-is-secure</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
-    <loc>https://moltydex.com/blog/why-we-built-moltydex</loc>
+    <loc>https://www.moltydex.com/blog/why-moltydex-is-the-best-dex-aggregator-for-traders</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
-    <loc>https://moltydex.com/blog/why-moltydex-is-different</loc>
+    <loc>https://www.moltydex.com/blog/5-ways-moltydex-improves-agent-automation</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
-    <loc>https://moltydex.com/blog/why-moltydex-is-secure</loc>
+    <loc>https://www.moltydex.com/blog/moltydex-vs-manual-token-management</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
-    <loc>https://moltydex.com/blog/why-moltydex-is-the-best-dex-aggregator-for-traders</loc>
+    <loc>https://www.moltydex.com/blog/x402-payment-guide</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
-    <loc>https://moltydex.com/blog/5-ways-moltydex-improves-agent-automation</loc>
-    <lastmod>2026-02-11</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  
-  <url>
-    <loc>https://moltydex.com/blog/moltydex-vs-manual-token-management</loc>
-    <lastmod>2026-02-11</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  
-  <url>
-    <loc>https://moltydex.com/blog/x402-payment-guide</loc>
-    <lastmod>2026-02-11</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  
-  <url>
-    <loc>https://moltydex.com/blog/moltydex-progress-update-february-2026</loc>
+    <loc>https://www.moltydex.com/blog/moltydex-progress-update-february-2026</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
-    <loc>https://moltydex.com/blog/moltydex-functionality-audit-february-2026</loc>
+    <loc>https://www.moltydex.com/blog/moltydex-functionality-audit-february-2026</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
-    <loc>https://moltydex.com/blog/phase-3-ux-improvements-february-2026</loc>
+    <loc>https://www.moltydex.com/blog/phase-3-ux-improvements-february-2026</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://moltydex.com/blog/mpc-wallet-support-ai-agents-moltydex</loc>
+    <loc>https://www.moltydex.com/blog/mpc-wallet-support-ai-agents-moltydex</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
@@ -350,24 +353,56 @@
 
   <!-- Newer Blog Posts -->
   <url>
-    <loc>https://moltydex.com/blog/beta-ai-agent-program-test-moltydex</loc>
+    <loc>https://www.moltydex.com/blog/beta-ai-agent-program-test-moltydex</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://moltydex.com/blog/x402-vs-subscription-pricing-complete-comparison</loc>
+    <loc>https://www.moltydex.com/blog/x402-vs-subscription-pricing-complete-comparison</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://moltydex.com/blog/moltydex-beta-program-mdex-airdrop</loc>
+    <loc>https://www.moltydex.com/blog/moltydex-beta-program-mdex-airdrop</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+  </url>
+
+  <!-- Hackathon Results -->
+  <url>
+    <loc>https://www.moltydex.com/blog/colosseum-hackathon-results-22nd-out-of-750</loc>
+    <lastmod>2026-02-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Parasol ecosystem explainer -->
+  <url>
+    <loc>https://www.moltydex.com/blog/parasol-so-ai-trading-agents-solana-moltydex-ecosystem</loc>
+    <lastmod>2026-03-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Agent Voting Guide -->
+  <url>
+    <loc>https://www.moltydex.com/blog/how-to-make-an-agent-vote-moltydex-hackathon</loc>
+    <lastmod>2026-02-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Hackathon Day Recap -->
+  <url>
+    <loc>https://www.moltydex.com/blog/moltydex-hackathon-day-recap-february-2026</loc>
+    <lastmod>2026-02-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
 
 </urlset>
